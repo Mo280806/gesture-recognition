@@ -1,50 +1,134 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>数字+多手势识别</title>
+    <title>智能手势识别</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/handpose@0.0.7/dist/handpose.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #111; color: white; font-family: Arial, sans-serif; display: flex; min-height: 100vh; }
-        
-        .video-container { flex: 3; position: relative; height: 100vh; }
-        video, canvas { position: absolute; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-        canvas { pointer-events: none; }
-        
-        .action-panel { 
-            flex: 1; background: #222; padding: 20px; 
-            display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; gap: 20px; 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
         }
-        .action-title { font-size: 24px; color: #0f0; }
-        .action-icon { font-size: 90px; min-height: 100px; line-height: 100px; }
-        .action-number { font-size: 120px; font-weight: bold; color: #fff; }
-        .action-name { font-size: 28px; text-align: center; }
-        .loading { 
-            position: absolute; top: 50%; left: 50%; 
-            transform: translate(-50%, -50%); 
-            background: rgba(0,0,0,0.85); 
-            padding: 25px 35px; 
-            border-radius: 12px; 
+
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            display: flex;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 电脑布局：左相机 右面板 */
+        @media (min-width: 768px) {
+            body { flex-direction: row; }
+        }
+
+        /* 手机布局：上相机 下面板 */
+        @media (max-width: 767px) {
+            body { flex-direction: column; }
+            .video-container { height: 65vh; }
+            .action-panel { height: 35vh; padding: 15px; gap: 10px; }
+            .action-title { font-size: 20px; }
+            .action-icon { font-size: 60px; }
+            .action-name { font-size: 24px; }
+        }
+
+        /* 视频容器 + 高级边框 */
+        .video-container {
+            flex: 3;
+            position: relative;
+            height: 100vh;
+            padding: 12px;
+            background: #111;
+        }
+
+        .camera-box {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 3px solid rgba(0, 255, 120, 0.3);
+            box-shadow: 0 0 30px rgba(0,0,0,0.7);
+        }
+
+        video, canvas {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        canvas {
+            pointer-events: none;
+        }
+
+        /* 右侧识别面板 */
+        .action-panel {
+            flex: 1;
+            background: linear-gradient(180deg, #181818, #0f0f0f);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
+            border-left: 1px solid #333;
+        }
+
+        .action-title {
+            font-size: 26px;
+            color: #00ff80;
+            font-weight: 500;
+            text-shadow: 0 0 10px rgba(0,255,120,0.3);
+        }
+
+        .action-icon {
+            font-size: 90px;
+            filter: drop-shadow(0 0 12px rgba(255,255,255,0.2));
+        }
+
+        .action-name {
+            font-size: 32px;
+            font-weight: bold;
+            color: #f0f0f0;
             text-align: center;
-            font-size: 18px;
+        }
+
+        /* 加载遮罩 */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.85);
+            padding: 22px 35px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 17px;
+            z-index: 999;
+            border: 1px solid #444;
         }
     </style>
 </head>
+
 <body>
     <div class="video-container">
-        <video autoplay playsinline muted id="video"></video>
-        <canvas id="canvas"></canvas>
-        <div class="loading" id="loading">正在加载模型，请稍候...</div>
+        <div class="camera-box">
+            <video autoplay playsinline muted id="video"></video>
+            <canvas id="canvas"></canvas>
+        </div>
+        <div class="loading" id="loading">正在加载AI模型，请稍候...</div>
     </div>
 
     <div class="action-panel">
-        <div class="action-title">当前手势</div>
-        <div class="action-icon" id="action-icon"></div>
-        <div class="action-number" id="action-number">-</div>
+        <div class="action-title">📡 实时手势识别</div>
+        <div class="action-icon" id="action-icon">🤚</div>
         <div class="action-name" id="action-name">等待识别</div>
     </div>
 
@@ -54,13 +138,14 @@
         const ctx = canvas.getContext('2d');
         const loadingText = document.getElementById('loading');
         const actionIcon = document.getElementById('action-icon');
-        const actionNumber = document.getElementById('action-number');
         const actionName = document.getElementById('action-name');
-        
-        let model;
-        let lastGesture = { icon: "", number: "-", name: "等待识别" };
-        const gestureStableCount = { count: 0, threshold: 5 };
 
+        let model;
+        let lastGesture = "等待识别";
+        let stableCount = 0;
+        const STABLE_THRESHOLD = 5; // 防抖：连续识别5次才更新
+
+        // 加载模型
         async function loadModel() {
             try {
                 model = await handpose.load();
@@ -72,13 +157,14 @@
             }
         }
 
+        // 启动摄像头
         async function startCamera() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: { facingMode: 'user', width: 640, height: 480 }
                 });
                 video.srcObject = stream;
-                
+
                 return new Promise(resolve => {
                     video.onloadedmetadata = () => {
                         canvas.width = video.videoWidth;
@@ -89,11 +175,12 @@
                     };
                 });
             } catch (err) {
-                loadingText.innerText = "❌ 摄像头权限被拒绝！";
+                loadingText.innerText = "❌ 摄像头权限被拒绝";
                 console.error(err);
             }
         }
 
+        // 实时检测循环
         async function detectFrame() {
             if (!model || video.readyState !== 4) {
                 requestAnimationFrame(detectFrame);
@@ -109,39 +196,43 @@
                     const landmarks = predictions[0].landmarks;
                     drawHand(ctx, landmarks);
                     
-                    const currentGesture = recognizeGesture(landmarks);
-                    if (currentGesture.name === lastGesture.name) {
-                        gestureStableCount.count++;
+                    const gesture = recognizeGesture(landmarks);
+                    
+                    // 防抖稳定识别
+                    if (gesture.name === lastGesture) {
+                        stableCount++;
                     } else {
-                        gestureStableCount.count = 0;
-                        lastGesture = currentGesture;
+                        stableCount = 0;
+                        lastGesture = gesture.name;
                     }
 
-                    if (gestureStableCount.count >= gestureStableCount.threshold) {
-                        actionIcon.innerText = currentGesture.icon;
-                        actionNumber.innerText = currentGesture.number;
-                        actionName.innerText = currentGesture.name;
+                    if (stableCount >= STABLE_THRESHOLD) {
+                        actionIcon.innerText = gesture.icon;
+                        actionName.innerText = gesture.name;
                     }
                 } else {
-                    actionIcon.innerText = "";
-                    actionNumber.innerText = "-";
+                    actionIcon.innerText = "🤚";
                     actionName.innerText = "未检测到手";
-                    gestureStableCount.count = 0;
+                    stableCount = 0;
                 }
             } catch (e) {
-                console.warn("检测帧异常", e);
+                console.warn("检测异常", e);
             }
+
             requestAnimationFrame(detectFrame);
         }
 
+        // 绘制手部关键点
         function drawHand(ctx, landmarks) {
-            landmarks.forEach((point) => {
+            // 画点
+            landmarks.forEach(point => {
                 ctx.beginPath();
                 ctx.arc(point[0], point[1], 5, 0, 2 * Math.PI);
-                ctx.fillStyle = "#FF0000";
+                ctx.fillStyle = "#ff3333";
                 ctx.fill();
             });
 
+            // 画线
             const connections = [
                 [0,1],[1,2],[2,3],[3,4],
                 [0,5],[5,6],[6,7],[7,8],
@@ -150,87 +241,58 @@
                 [0,17],[17,18],[18,19],[19,20],
                 [5,9],[9,13],[13,17]
             ];
-            ctx.strokeStyle = "#00FF00";
+
+            ctx.strokeStyle = "#00ff80";
             ctx.lineWidth = 3;
-            connections.forEach(([start, end]) => {
+            connections.forEach(([s, e]) => {
                 ctx.beginPath();
-                ctx.moveTo(landmarks[start][0], landmarks[start][1]);
-                ctx.lineTo(landmarks[end][0], landmarks[end][1]);
+                ctx.moveTo(landmarks[s][0], landmarks[s][1]);
+                ctx.lineTo(landmarks[e][0], landmarks[e][1]);
                 ctx.stroke();
             });
         }
 
+        // 两点距离
         function getDistance(p1, p2) {
-            return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
+            return Math.hypot(p1[0] - p2[0], p1[1] - p2[1]);
         }
 
+        // 增强版手势识别
         function recognizeGesture(landmarks) {
             const thumbTip = landmarks[4];
-            const thumbBase = landmarks[3];
             const indexTip = landmarks[8];
-            const indexBase = landmarks[6];
             const middleTip = landmarks[12];
-            const middleBase = landmarks[10];
             const ringTip = landmarks[16];
-            const ringBase = landmarks[14];
             const pinkyTip = landmarks[20];
+
+            const indexBase = landmarks[6];
+            const middleBase = landmarks[10];
+            const ringBase = landmarks[14];
             const pinkyBase = landmarks[18];
+            const thumbBase = landmarks[3];
 
-            const isFingerUp = (tip, base, threshold = 20) => getDistance(tip, base) > threshold;
-            const indexUp = isFingerUp(indexTip, indexBase, 25);
-            const middleUp = isFingerUp(middleTip, middleBase, 25);
-            const ringUp = isFingerUp(ringTip, ringBase, 25);
-            const pinkyUp = isFingerUp(pinkyTip, pinkyBase, 25);
-            const thumbUp = getDistance(thumbTip, thumbBase) > 20;
-            const upFingers = [indexUp, middleUp, ringUp, pinkyUp].filter(Boolean).length;
+            // 判断手指是否伸直
+            const isUp = (tip, base) => getDistance(tip, base) > 25;
 
-            const thumbIndexDist = getDistance(thumbTip, indexTip);
-            const thumbPinkyDist = getDistance(thumbTip, pinkyTip);
+            const indexUp = isUp(indexTip, indexBase);
+            const middleUp = isUp(middleTip, middleBase);
+            const ringUp = isUp(ringTip, ringBase);
+            const pinkyUp = isUp(pinkyTip, pinkyBase);
+            const thumbUp = isUp(thumbTip, thumbBase);
 
-            // 1. 优先识别OK手势，避免和数字4冲突
-            if (thumbIndexDist < 40 && middleUp && ringUp && pinkyUp) {
-                return { icon: "👌", number: "-", name: "OK手势" };
-            }
-            // 2. 摇滚/666手势
-            if (thumbUp && pinkyUp && !indexUp && !middleUp && !ringUp) {
-                return { icon: "🤘", number: "-", name: "摇滚手势/666" };
-            }
-            // 3. 打电话手势
-            if (thumbUp && pinkyUp && indexUp && middleUp && ringUp) {
-                return { icon: "🤙", number: "-", name: "打电话手势" };
-            }
-            // 4. 数字0: 握拳
-            if (upFingers === 0 && !thumbUp) {
-                return { icon: "✊", number: "0", name: "数字0/握拳" };
-            }
-            // 5. 数字1: 只有食指伸出
-            if (indexUp && !middleUp && !ringUp && !pinkyUp && !thumbUp) {
-                return { icon: "☝️", number: "1", name: "数字1" };
-            }
-            // 6. 数字2: 食指+中指伸出
-            if (indexUp && middleUp && !ringUp && !pinkyUp && !thumbUp) {
-                return { icon: "✌️", number: "2", name: "数字2/剪刀手" };
-            }
-            // 7. 数字3: 食指+中指+无名指伸出
-            if (indexUp && middleUp && ringUp && !pinkyUp && !thumbUp) {
-                return { icon: "", number: "3", name: "数字3" };
-            }
-            // 8. 数字4: 除拇指外四指伸出（严格条件：拇指必须弯曲）
-            if (indexUp && middleUp && ringUp && pinkyUp && !thumbUp) {
-                return { icon: "", number: "4", name: "数字4" };
-            }
-            // 9. 数字5: 五指全部伸出
-            if (indexUp && middleUp && ringUp && pinkyUp && thumbUp) {
-                return { icon: "✋", number: "5", name: "数字5/手掌张开" };
-            }
-            // 10. 点赞: 只有拇指竖起
-            if (thumbUp && upFingers === 0) {
-                return { icon: "👍", number: "-", name: "点赞" };
-            }
+            const upCount = [indexUp, middleUp, ringUp, pinkyUp].filter(Boolean).length;
 
-            return { icon: "", number: "-", name: "未识别手势" };
+            // 识别逻辑
+            if (upCount === 0 && !thumbUp) return { icon: "✊", name: "握拳" };
+            if (indexUp && middleUp && !ringUp && !pinkyUp) return { icon: "✌️", name: "剪刀手" };
+            if (thumbUp && upCount === 0) return { icon: "👍", name: "点赞" };
+            if (upCount >= 4 && thumbUp) return { icon: "✋", name: "手掌张开" };
+            if (indexUp && !middleUp && !ringUp && !pinkyUp) return { icon: "☝️", name: "数字1" };
+
+            return { icon: "🤚", name: "识别中" };
         }
 
+        // 启动
         loadModel();
     </script>
 </body>

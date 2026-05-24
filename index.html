@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Gesture Recognition</title>
+<title>AI 手势识别</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/hands.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js"></script>
@@ -52,7 +52,7 @@ body{
     gap:18px;
 }
 
-/* 摄像头 */
+/* 摄像头区域 */
 
 .camera-card{
 
@@ -181,7 +181,7 @@ canvas{
     z-index:999;
 }
 
-/* 结果 */
+/* 结果区域 */
 
 .result-card{
 
@@ -206,7 +206,7 @@ canvas{
 
 .name{
 
-    font-size:30px;
+    font-size:28px;
 
     font-weight:600;
 
@@ -260,11 +260,11 @@ canvas{
         <div class="header">
 
             <div class="title">
-                Gesture Recognition
+                AI Gesture Recognition
             </div>
 
             <div class="subtitle">
-                Real-time Hand Tracking
+                实时手势识别系统
             </div>
 
         </div>
@@ -293,11 +293,11 @@ canvas{
     <div class="result-card">
 
         <div class="name" id="name">
-            WAITING
+            等待识别
         </div>
 
         <div class="desc">
-            Real-time AI Gesture Recognition
+            实时 AI 手势识别
         </div>
 
     </div>
@@ -338,7 +338,7 @@ function resizeCanvas(){
         video.videoHeight;
 }
 
-/* finger */
+/* 判断手指 */
 
 function fingerUp(tip,pip){
 
@@ -383,7 +383,9 @@ function recognize(lm){
         !ring &&
         !pinky
     ){
-        return {text:"THUMBS UP"};
+        return {
+            text:"点赞"
+        };
     }
 
     /* 数字1 ☝️ */
@@ -391,32 +393,40 @@ function recognize(lm){
         index &&
         !middle &&
         !ring &&
-        !pinky
+        !pinky &&
+        !thumb
     ){
-        return {text:"ONE"};
+        return {
+            text:"数字1"
+        };
     }
 
-    /* 剪刀 ✌️ */
+    /* 数字2 / 剪刀 ✌️ */
     if(
         index &&
         middle &&
         !ring &&
         !pinky
     ){
-        return {text:"PEACE"};
+        return {
+            text:"数字2 / 剪刀"
+        };
     }
 
-    /* 三 */
+    /* 数字3 */
     if(
         index &&
         middle &&
         ring &&
-        !pinky
+        !pinky &&
+        !thumb
     ){
-        return {text:"THREE"};
+        return {
+            text:"数字3"
+        };
     }
 
-    /* 四 */
+    /* 数字4 */
     if(
         index &&
         middle &&
@@ -424,10 +434,12 @@ function recognize(lm){
         pinky &&
         !thumb
     ){
-        return {text:"FOUR"};
+        return {
+            text:"数字4"
+        };
     }
 
-    /* 五 ✋ */
+    /* 数字5 / 张开手掌 */
     if(
         thumb &&
         index &&
@@ -435,7 +447,22 @@ function recognize(lm){
         ring &&
         pinky
     ){
-        return {text:"OPEN PALM"};
+        return {
+            text:"数字5 / 张开手掌"
+        };
+    }
+
+    /* 数字6 / 打电话 🤙 */
+    if(
+        thumb &&
+        pinky &&
+        !index &&
+        !middle &&
+        !ring
+    ){
+        return {
+            text:"数字6 / 打电话"
+        };
     }
 
     /* 拳头 ✊ */
@@ -446,7 +473,9 @@ function recognize(lm){
         !ring &&
         !pinky
     ){
-        return {text:"FIST"};
+        return {
+            text:"握拳"
+        };
     }
 
     /* OK 👌 */
@@ -456,7 +485,9 @@ function recognize(lm){
         ring &&
         pinky
     ){
-        return {text:"OK"};
+        return {
+            text:"OK"
+        };
     }
 
     /* 摇滚 🤘 */
@@ -466,18 +497,9 @@ function recognize(lm){
         !middle &&
         !ring
     ){
-        return {text:"ROCK"};
-    }
-
-    /* 打电话 🤙 */
-    if(
-        thumb &&
-        pinky &&
-        !index &&
-        !middle &&
-        !ring
-    ){
-        return {text:"CALL ME"};
+        return {
+            text:"摇滚"
+        };
     }
 
     /* LOVE */
@@ -488,10 +510,12 @@ function recognize(lm){
         !middle &&
         !ring
     ){
-        return {text:"LOVE"};
+        return {
+            text:"我爱你"
+        };
     }
 
-    /* GUN 👉 */
+    /* 手枪 👉 */
     if(
         thumb &&
         index &&
@@ -499,10 +523,12 @@ function recognize(lm){
         !ring &&
         !pinky
     ){
-        return {text:"GUN"};
+        return {
+            text:"手枪"
+        };
     }
 
-    /* STOP ✋ */
+    /* 停止 */
     if(
         !thumb &&
         index &&
@@ -510,27 +536,18 @@ function recognize(lm){
         ring &&
         pinky
     ){
-        return {text:"STOP"};
-    }
-
-    /* VICTORY */
-    if(
-        index &&
-        middle &&
-        thumb &&
-        !ring &&
-        !pinky
-    ){
-        return {text:"VICTORY"};
+        return {
+            text:"停止"
+        };
     }
 
     return {
 
-        text:"TRACKING"
+        text:"识别中..."
     };
 }
 
-/* 画手 */
+/* 绘制手部 */
 
 function drawHand(points){
 
@@ -616,7 +633,7 @@ hands.setOptions({
     minTrackingConfidence:0.65
 });
 
-/* results */
+/* 识别结果 */
 
 hands.onResults(results => {
 
@@ -667,11 +684,11 @@ hands.onResults(results => {
         );
 
         nameDom.innerText =
-            "NO HAND";
+            "未检测到手";
     }
 });
 
-/* start */
+/* 启动 */
 
 async function startCamera(){
 
@@ -726,7 +743,7 @@ async function startCamera(){
     }
 }
 
-/* click */
+/* 点击 */
 
 document
 .getElementById("startBtn")

@@ -1,19 +1,512 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 
 <head>
 <meta charset="UTF-8">
-<title>测试页面</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI实时手势识别</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/hands.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js"></script>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial;
+}
+
+body{
+    background:#080810;
+    color:white;
+    display:flex;
+    height:100vh;
+    overflow:hidden;
+}
+
+.left{
+    flex:3;
+    position:relative;
+    padding:10px;
+}
+
+.frame{
+    width:100%;
+    height:100%;
+    border-radius:20px;
+    overflow:hidden;
+    position:relative;
+    background:black;
+    border:2px solid #00dcff;
+}
+
+video,
+canvas{
+    position:absolute;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transform:scaleX(-1);
+}
+
+canvas{
+    pointer-events:none;
+}
+
+.right{
+    flex:1;
+    background:#11131a;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    gap:25px;
+}
+
+.title{
+    font-size:28px;
+    color:#00dcff;
+}
+
+.icon{
+    font-size:100px;
+}
+
+.name{
+    font-size:36px;
+    font-weight:bold;
+}
+
+.desc{
+    color:#999;
+    font-size:16px;
+}
+
+#startBtn{
+    position:absolute;
+    top:20px;
+    right:20px;
+    z-index:999;
+    padding:14px 22px;
+    border:none;
+    border-radius:12px;
+    background:#00dcff;
+    color:black;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.loading{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:rgba(0,0,0,0.8);
+    padding:20px 30px;
+    border-radius:12px;
+    z-index:999;
+}
+
+</style>
 </head>
 
-<body style="background:black;color:white;">
+<body>
 
-<h1>网页成功运行</h1>
+<div class="left">
 
-<button onclick="alert('JS正常')">
-点我测试
-</button>
+    <div class="frame">
+
+        <video
+            id="video"
+            autoplay
+            muted
+            playsinline>
+        </video>
+
+        <canvas id="canvas"></canvas>
+
+        <button id="startBtn">
+            启动摄像头
+        </button>
+
+    </div>
+
+    <div class="loading" id="loading">
+        点击右上角启动
+    </div>
+
+</div>
+
+<div class="right">
+
+    <div class="title">
+        🤖 AI实时手势识别
+    </div>
+
+    <div class="icon" id="icon">
+        🤚
+    </div>
+
+    <div class="name" id="name">
+        等待识别
+    </div>
+
+    <div class="desc">
+        支持 👍 ✌️ ✋ 🤘 👌 🤙
+    </div>
+
+</div>
+
+<script>
+
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+const iconDom = document.getElementById("icon");
+const nameDom = document.getElementById("name");
+const loading = document.getElementById("loading");
+
+let lastGesture = "";
+let stableCount = 0;
+
+const STABLE_THRESHOLD = 4;
+
+function resizeCanvas(){
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+}
+
+function fingerUp(tip,pip){
+
+    return tip.y < pip.y;
+}
+
+function distance(a,b){
+
+    return Math.hypot(
+        a.x - b.x,
+        a.y - b.y
+    );
+}
+
+function recognize(lm){
+
+    const thumb =
+        Math.abs(lm[4].x - lm[2].x) > 0.08;
+
+    const index =
+        fingerUp(lm[8],lm[6]);
+
+    const middle =
+        fingerUp(lm[12],lm[10]);
+
+    const ring =
+        fingerUp(lm[16],lm[14]);
+
+    const pinky =
+        fingerUp(lm[20],lm[18]);
+
+    const thumbIndexNear =
+        distance(lm[4],lm[8]) < 0.06;
+
+    // 👍
+    if(
+        thumb &&
+        !index &&
+        !middle &&
+        !ring &&
+        !pinky
+    ){
+        return {
+            icon:"👍",
+            name:"点赞"
+        };
+    }
+
+    // ☝️
+    if(
+        index &&
+        !middle &&
+        !ring &&
+        !pinky
+    ){
+        return {
+            icon:"☝️",
+            name:"数字1"
+        };
+    }
+
+    // ✌️
+    if(
+        index &&
+        middle &&
+        !ring &&
+        !pinky
+    ){
+        return {
+            icon:"✌️",
+            name:"数字2"
+        };
+    }
+
+    // ✋
+    if(
+        thumb &&
+        index &&
+        middle &&
+        ring &&
+        pinky
+    ){
+        return {
+            icon:"✋",
+            name:"数字5"
+        };
+    }
+
+    // 🤘
+    if(
+        index &&
+        pinky &&
+        !middle &&
+        !ring
+    ){
+        return {
+            icon:"🤘",
+            name:"摇滚手势"
+        };
+    }
+
+    // 🤙
+    if(
+        thumb &&
+        pinky &&
+        !index &&
+        !middle &&
+        !ring
+    ){
+        return {
+            icon:"🤙",
+            name:"打电话"
+        };
+    }
+
+    // 👌
+    if(
+        thumbIndexNear &&
+        middle &&
+        ring &&
+        pinky
+    ){
+        return {
+            icon:"👌",
+            name:"OK"
+        };
+    }
+
+    return {
+        icon:"🤚",
+        name:"识别中"
+    };
+}
+
+function drawHand(points){
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    const lines = [
+
+        [0,1],[1,2],[2,3],[3,4],
+
+        [0,5],[5,6],[6,7],[7,8],
+
+        [0,9],[9,10],[10,11],[11,12],
+
+        [0,13],[13,14],[14,15],[15,16],
+
+        [0,17],[17,18],[18,19],[19,20]
+    ];
+
+    ctx.strokeStyle = "#00ffd0";
+    ctx.lineWidth = 2;
+
+    for(const [a,b] of lines){
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            points[a].x * canvas.width,
+            points[a].y * canvas.height
+        );
+
+        ctx.lineTo(
+            points[b].x * canvas.width,
+            points[b].y * canvas.height
+        );
+
+        ctx.stroke();
+    }
+
+    for(const p of points){
+
+        ctx.beginPath();
+
+        ctx.arc(
+            p.x * canvas.width,
+            p.y * canvas.height,
+            5,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fillStyle = "#ff4060";
+
+        ctx.fill();
+    }
+}
+
+const hands = new Hands({
+
+    locateFile:file => {
+
+        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/${file}`;
+    }
+});
+
+hands.setOptions({
+
+    maxNumHands:1,
+
+    modelComplexity:1,
+
+    minDetectionConfidence:0.7,
+
+    minTrackingConfidence:0.7
+});
+
+hands.onResults(results => {
+
+    if(
+        results.multiHandLandmarks &&
+        results.multiHandLandmarks.length > 0
+    ){
+
+        const lm =
+            results.multiHandLandmarks[0];
+
+        drawHand(lm);
+
+        const gesture =
+            recognize(lm);
+
+        if(gesture.name === lastGesture){
+
+            stableCount++;
+
+        }else{
+
+            stableCount = 0;
+
+            lastGesture = gesture.name;
+        }
+
+        if(stableCount >= STABLE_THRESHOLD){
+
+            iconDom.innerText =
+                gesture.icon;
+
+            nameDom.innerText =
+                gesture.name;
+        }
+
+    }else{
+
+        stableCount = 0;
+
+        ctx.clearRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        iconDom.innerText = "🤚";
+
+        nameDom.innerText =
+            "未检测到手";
+    }
+});
+
+async function startCamera(){
+
+    try{
+
+        loading.innerText =
+            "正在启动摄像头...";
+
+        const stream =
+            await navigator.mediaDevices.getUserMedia({
+
+                video:{
+                    facingMode:"user",
+                    width:{ideal:640},
+                    height:{ideal:480}
+                },
+
+                audio:false
+            });
+
+        video.srcObject = stream;
+
+        await video.play();
+
+        resizeCanvas();
+
+        loading.style.display =
+            "none";
+
+        const camera =
+            new Camera(video,{
+
+                onFrame:async()=>{
+
+                    await hands.send({
+                        image:video
+                    });
+                },
+
+                width:640,
+                height:480
+            });
+
+        camera.start();
+
+    }catch(err){
+
+        console.error(err);
+
+        loading.innerText =
+            "摄像头启动失败";
+    }
+}
+
+document
+.getElementById("startBtn")
+.onclick = ()=>{
+
+    startCamera();
+};
+
+</script>
 
 </body>
-
 </html>

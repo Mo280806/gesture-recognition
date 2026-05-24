@@ -16,39 +16,97 @@
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Arial;
+    font-family:"Segoe UI",Arial,sans-serif;
 }
 
 body{
-    background:#080810;
+
+    background:
+    radial-gradient(circle at top,#13233d,#070b14);
+
     color:white;
+
     display:flex;
+
     height:100vh;
+
     overflow:hidden;
+}
+
+/* 手机布局 */
+@media(max-width:768px){
+
+    body{
+        flex-direction:column;
+    }
+
+    .left{
+        flex:7;
+    }
+
+    .right{
+
+        flex:3;
+
+        border-top:
+        1px solid rgba(255,255,255,0.08);
+    }
+
+    .title{
+        font-size:22px;
+    }
+
+    .icon{
+        font-size:72px;
+    }
+
+    .name{
+        font-size:28px;
+    }
 }
 
 .left{
+
     flex:3;
+
     position:relative;
-    padding:10px;
+
+    padding:12px;
 }
 
 .frame{
+
     width:100%;
+
     height:100%;
-    border-radius:20px;
+
+    border-radius:24px;
+
     overflow:hidden;
+
     position:relative;
+
     background:black;
-    border:2px solid #00dcff;
+
+    border:
+    1px solid rgba(0,220,255,0.3);
+
+    box-shadow:
+    0 0 30px rgba(0,220,255,0.15),
+    inset 0 0 40px rgba(0,0,0,0.5);
 }
 
 video,
 canvas{
+
     position:absolute;
+
     width:100%;
+
     height:100%;
+
     object-fit:cover;
+
     transform:scaleX(-1);
 }
 
@@ -57,57 +115,123 @@ canvas{
 }
 
 .right{
+
     flex:1;
-    background:#11131a;
+
+    background:
+    linear-gradient(
+        180deg,
+        #121826,
+        #0a0f18
+    );
+
     display:flex;
+
     flex-direction:column;
+
     justify-content:center;
+
     align-items:center;
-    gap:25px;
+
+    gap:22px;
+
+    border-left:
+    1px solid rgba(255,255,255,0.06);
+
+    box-shadow:
+    0 0 40px rgba(0,0,0,0.35);
 }
 
 .title{
+
     font-size:28px;
+
     color:#00dcff;
+
+    text-shadow:
+    0 0 12px rgba(0,220,255,0.35);
 }
 
 .icon{
+
     font-size:100px;
+
+    transition:0.25s;
 }
 
 .name{
-    font-size:36px;
+
+    font-size:38px;
+
     font-weight:bold;
 }
 
 .desc{
-    color:#999;
-    font-size:16px;
+
+    color:#8a97aa;
+
+    font-size:15px;
 }
 
 #startBtn{
+
     position:absolute;
+
     top:20px;
     right:20px;
+
     z-index:999;
-    padding:14px 22px;
+
+    padding:14px 24px;
+
     border:none;
-    border-radius:12px;
-    background:#00dcff;
-    color:black;
-    font-size:16px;
+
+    border-radius:14px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #00dcff,
+        #007bff
+    );
+
+    color:white;
+
+    font-size:15px;
+
+    font-weight:bold;
+
     cursor:pointer;
+
+    box-shadow:
+    0 4px 20px rgba(0,220,255,0.35);
+
+    transition:0.25s;
+}
+
+#startBtn:hover{
+
+    transform:translateY(-2px);
 }
 
 .loading{
+
     position:absolute;
+
     top:50%;
     left:50%;
+
     transform:translate(-50%,-50%);
-    background:rgba(0,0,0,0.8);
+
+    background:rgba(0,0,0,0.75);
+
     padding:20px 30px;
-    border-radius:12px;
+
+    border-radius:14px;
+
     z-index:999;
+
+    backdrop-filter:blur(10px);
 }
 
 </style>
@@ -135,7 +259,7 @@ canvas{
     </div>
 
     <div class="loading" id="loading">
-        点击右上角启动
+        点击右上角启动 AI
     </div>
 
 </div>
@@ -155,30 +279,44 @@ canvas{
     </div>
 
     <div class="desc">
-        支持 👍 ✌️ ✋ 🤘 👌 🤙
+        支持 👍 ✌️ ✋ 🤘 👌 🤙 ☝️
     </div>
 
 </div>
 
 <script>
 
-const video = document.getElementById("video");
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const video =
+    document.getElementById("video");
 
-const iconDom = document.getElementById("icon");
-const nameDom = document.getElementById("name");
-const loading = document.getElementById("loading");
+const canvas =
+    document.getElementById("canvas");
+
+const ctx =
+    canvas.getContext("2d");
+
+const iconDom =
+    document.getElementById("icon");
+
+const nameDom =
+    document.getElementById("name");
+
+const loading =
+    document.getElementById("loading");
 
 let lastGesture = "";
+
 let stableCount = 0;
 
 const STABLE_THRESHOLD = 4;
 
 function resizeCanvas(){
 
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    canvas.width =
+        video.videoWidth;
+
+    canvas.height =
+        video.videoHeight;
 }
 
 function fingerUp(tip,pip){
@@ -196,8 +334,10 @@ function distance(a,b){
 
 function recognize(lm){
 
-    const thumb =
-        Math.abs(lm[4].x - lm[2].x) > 0.08;
+    // 点赞专用
+    const thumbUp =
+        lm[4].y < lm[3].y &&
+        lm[3].y < lm[2].y;
 
     const index =
         fingerUp(lm[8],lm[6]);
@@ -216,7 +356,7 @@ function recognize(lm){
 
     // 👍
     if(
-        thumb &&
+        thumbUp &&
         !index &&
         !middle &&
         !ring &&
@@ -256,7 +396,7 @@ function recognize(lm){
 
     // ✋
     if(
-        thumb &&
+        thumbUp &&
         index &&
         middle &&
         ring &&
@@ -283,7 +423,7 @@ function recognize(lm){
 
     // 🤙
     if(
-        thumb &&
+        thumbUp &&
         pinky &&
         !index &&
         !middle &&
@@ -309,7 +449,9 @@ function recognize(lm){
     }
 
     return {
+
         icon:"🤚",
+
         name:"识别中"
     };
 }
@@ -337,6 +479,7 @@ function drawHand(points){
     ];
 
     ctx.strokeStyle = "#00ffd0";
+
     ctx.lineWidth = 2;
 
     for(const [a,b] of lines){
@@ -408,7 +551,9 @@ hands.onResults(results => {
         const gesture =
             recognize(lm);
 
-        if(gesture.name === lastGesture){
+        if(
+            gesture.name === lastGesture
+        ){
 
             stableCount++;
 
@@ -416,10 +561,13 @@ hands.onResults(results => {
 
             stableCount = 0;
 
-            lastGesture = gesture.name;
+            lastGesture =
+                gesture.name;
         }
 
-        if(stableCount >= STABLE_THRESHOLD){
+        if(
+            stableCount >= STABLE_THRESHOLD
+        ){
 
             iconDom.innerText =
                 gesture.icon;
@@ -439,7 +587,8 @@ hands.onResults(results => {
             canvas.height
         );
 
-        iconDom.innerText = "🤚";
+        iconDom.innerText =
+            "🤚";
 
         nameDom.innerText =
             "未检测到手";
@@ -505,6 +654,11 @@ document
 
     startCamera();
 };
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
 
 </script>
 

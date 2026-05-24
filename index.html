@@ -265,7 +265,7 @@ canvas{
             </div>
 
             <div class="subtitle">
-                可识别数字/ok/摇滚/点赞等
+                支持双手 / 数字 / 手势识别
             </div>
 
         </div>
@@ -298,7 +298,7 @@ canvas{
         </div>
 
         <div class="desc">
-            实时手势识别
+            AI实时手势识别
         </div>
 
     </div>
@@ -410,7 +410,8 @@ function recognize(lm){
         index &&
         middle &&
         !ring &&
-        !pinky
+        !pinky &&
+        !thumb
     ){
         return {
             text:"数字2 / 剪刀"
@@ -441,7 +442,7 @@ function recognize(lm){
         !thumb
     ){
         return {
-            text:"数字5 / 张开手掌"
+            text:"数字4"
         };
     }
 
@@ -455,7 +456,7 @@ function recognize(lm){
         pinky
     ){
         return {
-            text:"数字4"
+            text:"数字5 / 张开手掌"
         };
     }
 
@@ -496,7 +497,7 @@ function recognize(lm){
         pinky
     ){
         return {
-            text:"数字3 / OK"
+            text:"OK / 数字3"
         };
     }
 
@@ -506,7 +507,8 @@ function recognize(lm){
         index &&
         pinky &&
         !middle &&
-        !ring
+        !ring &&
+        !thumb
     ){
         return {
             text:"摇滚"
@@ -564,13 +566,6 @@ function recognize(lm){
 /* 绘制手部 */
 
 function drawHand(points){
-
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
 
     const lines = [
 
@@ -638,7 +633,7 @@ const hands = new Hands({
 
 hands.setOptions({
 
-    maxNumHands:1,
+    maxNumHands:2,
 
     modelComplexity:1,
 
@@ -651,21 +646,37 @@ hands.setOptions({
 
 hands.onResults(results => {
 
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
     if(
         results.multiHandLandmarks &&
         results.multiHandLandmarks.length > 0
     ){
 
-        const lm =
-            results.multiHandLandmarks[0];
+        let texts = [];
 
-        drawHand(lm);
+        for(const lm of results.multiHandLandmarks){
 
-        const gesture =
-            recognize(lm);
+            drawHand(lm);
+
+            const gesture =
+                recognize(lm);
+
+            texts.push(
+                gesture.text
+            );
+        }
+
+        const finalText =
+            texts.join(" + ");
 
         if(
-            gesture.text === lastGesture
+            finalText === lastGesture
         ){
 
             stableCount++;
@@ -675,7 +686,7 @@ hands.onResults(results => {
             stableCount = 0;
 
             lastGesture =
-                gesture.text;
+                finalText;
         }
 
         if(
@@ -683,19 +694,12 @@ hands.onResults(results => {
         ){
 
             nameDom.innerText =
-                gesture.text;
+                finalText;
         }
 
     }else{
 
         stableCount = 0;
-
-        ctx.clearRect(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
 
         nameDom.innerText =
             "未检测到手";

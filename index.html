@@ -20,101 +20,41 @@
     font-family:
     -apple-system,
     BlinkMacSystemFont,
-    "SF Pro Display",
     "Segoe UI",
     sans-serif;
 }
 
 body{
 
-    background:#0b0b0f;
+    background:#ffffff;
 
-    color:white;
+    color:#10243e;
 
     height:100vh;
 
     display:flex;
 
-    flex-direction:column;
-
-    overflow:hidden;
-}
-
-/* 顶部 */
-
-.topbar{
-
-    height:72px;
-
-    display:flex;
+    justify-content:center;
 
     align-items:center;
-
-    justify-content:space-between;
-
-    padding:0 24px;
-
-    border-bottom:
-    1px solid rgba(255,255,255,0.06);
-
-    background:
-    rgba(10,10,14,0.8);
-
-    backdrop-filter:blur(20px);
 }
 
-.logo{
-
-    font-size:20px;
-
-    font-weight:600;
-
-    letter-spacing:0.5px;
-}
-
-.status{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:8px;
-
-    color:#8e8e98;
-
-    font-size:14px;
-}
-
-.dot{
-
-    width:8px;
-
-    height:8px;
-
-    border-radius:50%;
-
-    background:#3cff94;
-
-    box-shadow:
-    0 0 10px #3cff94;
-}
-
-/* 主体 */
+/* 主容器 */
 
 .container{
 
-    flex:1;
+    width:min(920px,94vw);
+
+    height:min(92vh,920px);
 
     display:flex;
 
     flex-direction:column;
 
-    padding:20px;
-
-    gap:20px;
+    gap:18px;
 }
 
-/* 摄像头 */
+/* 相机区域 */
 
 .camera-card{
 
@@ -124,15 +64,15 @@ body{
 
     overflow:hidden;
 
-    border-radius:32px;
+    border-radius:24px;
 
-    background:#111;
+    background:#f4f7fb;
 
     border:
-    1px solid rgba(255,255,255,0.06);
+    1px solid #d7e3f2;
 
     box-shadow:
-    0 10px 40px rgba(0,0,0,0.45);
+    0 10px 30px rgba(16,36,62,0.08);
 }
 
 video,
@@ -153,60 +93,39 @@ canvas{
     pointer-events:none;
 }
 
-/* 底部结果 */
+/* 顶部标题 */
 
-.result-card{
+.header{
 
-    height:180px;
+    position:absolute;
 
-    border-radius:30px;
+    top:18px;
 
-    background:
-    rgba(255,255,255,0.04);
+    left:20px;
 
-    border:
-    1px solid rgba(255,255,255,0.06);
-
-    backdrop-filter:blur(20px);
+    z-index:10;
 
     display:flex;
 
     flex-direction:column;
 
-    align-items:center;
-
-    justify-content:center;
-
-    gap:12px;
+    gap:4px;
 }
 
-/* 图标 */
+.title{
 
-.icon{
+    font-size:18px;
 
-    font-size:72px;
+    font-weight:600;
 
-    transition:0.25s;
+    color:#163a63;
 }
 
-/* 名字 */
+.subtitle{
 
-.name{
+    font-size:13px;
 
-    font-size:34px;
-
-    font-weight:700;
-
-    letter-spacing:0.5px;
-}
-
-/* 描述 */
-
-.desc{
-
-    color:#8d8d96;
-
-    font-size:14px;
+    color:#6d7f95;
 }
 
 /* 按钮 */
@@ -223,17 +142,17 @@ canvas{
 
     border:none;
 
-    background:white;
+    background:#163a63;
 
-    color:black;
+    color:white;
 
-    padding:12px 18px;
+    padding:10px 16px;
 
-    border-radius:14px;
+    border-radius:12px;
 
-    font-size:14px;
+    font-size:13px;
 
-    font-weight:600;
+    font-weight:500;
 
     cursor:pointer;
 
@@ -242,7 +161,7 @@ canvas{
 
 #startBtn:hover{
 
-    transform:scale(1.03);
+    background:#204c80;
 }
 
 /* loading */
@@ -256,21 +175,71 @@ canvas{
 
     transform:translate(-50%,-50%);
 
-    background:
-    rgba(20,20,26,0.88);
+    background:rgba(255,255,255,0.92);
+
+    color:#163a63;
 
     border:
-    1px solid rgba(255,255,255,0.08);
+    1px solid #dce6f2;
 
-    padding:16px 24px;
+    padding:14px 20px;
 
-    border-radius:18px;
+    border-radius:14px;
 
-    font-size:14px;
-
-    color:#d0d0d5;
+    font-size:13px;
 
     z-index:999;
+}
+
+/* 结果区域 */
+
+.result-card{
+
+    height:140px;
+
+    border-radius:22px;
+
+    background:#f8fafc;
+
+    border:
+    1px solid #d7e3f2;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+}
+
+/* 图标 */
+
+.icon{
+
+    font-size:48px;
+
+    transition:0.2s;
+}
+
+/* 文字 */
+
+.name{
+
+    font-size:24px;
+
+    font-weight:600;
+
+    color:#163a63;
+}
+
+.desc{
+
+    font-size:13px;
+
+    color:#7b8da3;
 }
 
 /* 手机端 */
@@ -279,22 +248,31 @@ canvas{
 
     .container{
 
+        width:100vw;
+
+        height:100vh;
+
         padding:14px;
+    }
+
+    .camera-card{
+
+        flex:1;
     }
 
     .result-card{
 
-        height:160px;
+        height:120px;
     }
 
     .icon{
 
-        font-size:60px;
+        font-size:42px;
     }
 
     .name{
 
-        font-size:28px;
+        font-size:20px;
     }
 }
 
@@ -303,31 +281,23 @@ canvas{
 
 <body>
 
-<!-- 顶部 -->
-
-<div class="topbar">
-
-    <div class="logo">
-        AI Gesture Vision
-    </div>
-
-    <div class="status">
-
-        <div class="dot"></div>
-
-        ONLINE
-
-    </div>
-
-</div>
-
-<!-- 主体 -->
-
 <div class="container">
 
-    <!-- 摄像头 -->
+    <!-- 相机 -->
 
     <div class="camera-card">
+
+        <div class="header">
+
+            <div class="title">
+                AI Gesture Recognition
+            </div>
+
+            <div class="subtitle">
+                Real-time Hand Tracking
+            </div>
+
+        </div>
 
         <video
             id="video"
@@ -343,7 +313,7 @@ canvas{
         </button>
 
         <div class="loading" id="loading">
-            点击启动 AI 手势识别
+            点击右上角启动摄像头
         </div>
 
     </div>
@@ -361,7 +331,7 @@ canvas{
         </div>
 
         <div class="desc">
-            Real-time AI Gesture Recognition
+            AI Real-time Gesture Recognition
         </div>
 
     </div>
@@ -394,7 +364,7 @@ let stableCount = 0;
 
 const STABLE_THRESHOLD = 4;
 
-/* 画布大小 */
+/* resize */
 
 function resizeCanvas(){
 
@@ -405,7 +375,7 @@ function resizeCanvas(){
         video.videoHeight;
 }
 
-/* 判断手指 */
+/* finger */
 
 function fingerUp(tip,pip){
 
@@ -420,7 +390,7 @@ function distance(a,b){
     );
 }
 
-/* 手势识别 */
+/* recognize */
 
 function recognize(lm){
 
@@ -506,7 +476,7 @@ function recognize(lm){
     ){
         return {
             icon:"🤘",
-            name:"摇滚手势"
+            name:"摇滚"
         };
     }
 
@@ -545,7 +515,7 @@ function recognize(lm){
     };
 }
 
-/* 绘制骨架 */
+/* draw */
 
 function drawHand(points){
 
@@ -570,7 +540,7 @@ function drawHand(points){
     ];
 
     ctx.strokeStyle =
-        "rgba(255,255,255,0.7)";
+        "#163a63";
 
     ctx.lineWidth = 2;
 
@@ -603,7 +573,8 @@ function drawHand(points){
             Math.PI * 2
         );
 
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle =
+            "#163a63";
 
         ctx.fill();
     }
@@ -630,7 +601,7 @@ hands.setOptions({
     minTrackingConfidence:0.7
 });
 
-/* 识别结果 */
+/* result */
 
 hands.onResults(results => {
 
@@ -691,7 +662,7 @@ hands.onResults(results => {
     }
 });
 
-/* 启动摄像头 */
+/* start */
 
 async function startCamera(){
 
@@ -746,7 +717,7 @@ async function startCamera(){
     }
 }
 
-/* 点击启动 */
+/* click */
 
 document
 .getElementById("startBtn")

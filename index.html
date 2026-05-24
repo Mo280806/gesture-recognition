@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>AI Gesture Vision</title>
+<title>Gesture Recognition</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/hands.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js"></script>
@@ -28,7 +28,7 @@ body{
 
     background:#ffffff;
 
-    color:#10243e;
+    color:#163a63;
 
     height:100vh;
 
@@ -43,9 +43,9 @@ body{
 
 .container{
 
-    width:min(920px,94vw);
+    width:min(900px,94vw);
 
-    height:min(92vh,920px);
+    height:min(92vh,900px);
 
     display:flex;
 
@@ -54,7 +54,7 @@ body{
     gap:18px;
 }
 
-/* 相机区域 */
+/* 摄像头区域 */
 
 .camera-card{
 
@@ -66,13 +66,13 @@ body{
 
     border-radius:24px;
 
-    background:#f4f7fb;
+    background:#f5f8fc;
 
     border:
-    1px solid #d7e3f2;
+    1px solid #dbe5f0;
 
     box-shadow:
-    0 10px 30px rgba(16,36,62,0.08);
+    0 10px 30px rgba(22,58,99,0.08);
 }
 
 video,
@@ -93,7 +93,7 @@ canvas{
     pointer-events:none;
 }
 
-/* 顶部标题 */
+/* 顶部 */
 
 .header{
 
@@ -104,12 +104,6 @@ canvas{
     left:20px;
 
     z-index:10;
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:4px;
 }
 
 .title{
@@ -123,12 +117,14 @@ canvas{
 
 .subtitle{
 
+    margin-top:4px;
+
     font-size:13px;
 
-    color:#6d7f95;
+    color:#6f8298;
 }
 
-/* 按钮 */
+/* 启动按钮 */
 
 #startBtn{
 
@@ -152,8 +148,6 @@ canvas{
 
     font-size:13px;
 
-    font-weight:500;
-
     cursor:pointer;
 
     transition:0.2s;
@@ -161,7 +155,7 @@ canvas{
 
 #startBtn:hover{
 
-    background:#204c80;
+    background:#204b7c;
 }
 
 /* loading */
@@ -175,7 +169,7 @@ canvas{
 
     transform:translate(-50%,-50%);
 
-    background:rgba(255,255,255,0.92);
+    background:rgba(255,255,255,0.96);
 
     color:#163a63;
 
@@ -195,14 +189,14 @@ canvas{
 
 .result-card{
 
-    height:140px;
+    height:130px;
 
     border-radius:22px;
 
     background:#f8fafc;
 
     border:
-    1px solid #d7e3f2;
+    1px solid #dbe5f0;
 
     display:flex;
 
@@ -215,22 +209,13 @@ canvas{
     gap:8px;
 }
 
-/* 图标 */
-
-.icon{
-
-    font-size:48px;
-
-    transition:0.2s;
-}
-
-/* 文字 */
-
 .name{
 
-    font-size:24px;
+    font-size:30px;
 
     font-weight:600;
+
+    letter-spacing:1px;
 
     color:#163a63;
 }
@@ -239,10 +224,10 @@ canvas{
 
     font-size:13px;
 
-    color:#7b8da3;
+    color:#8091a5;
 }
 
-/* 手机端 */
+/* 手机 */
 
 @media(max-width:768px){
 
@@ -255,24 +240,14 @@ canvas{
         padding:14px;
     }
 
-    .camera-card{
-
-        flex:1;
-    }
-
     .result-card{
 
-        height:120px;
-    }
-
-    .icon{
-
-        font-size:42px;
+        height:110px;
     }
 
     .name{
 
-        font-size:20px;
+        font-size:24px;
     }
 }
 
@@ -283,7 +258,7 @@ canvas{
 
 <div class="container">
 
-    <!-- 相机 -->
+    <!-- 摄像头 -->
 
     <div class="camera-card">
 
@@ -322,16 +297,12 @@ canvas{
 
     <div class="result-card">
 
-        <div class="icon" id="icon">
-            🤚
-        </div>
-
         <div class="name" id="name">
-            等待识别
+            WAITING
         </div>
 
         <div class="desc">
-            Real-time Gesture Recognition
+            Real-time AI Gesture Recognition
         </div>
 
     </div>
@@ -348,9 +319,6 @@ const canvas =
 
 const ctx =
     canvas.getContext("2d");
-
-const iconDom =
-    document.getElementById("icon");
 
 const nameDom =
     document.getElementById("name");
@@ -413,7 +381,7 @@ function recognize(lm){
     const thumbIndexNear =
         distance(lm[4],lm[8]) < 0.06;
 
-    // 👍
+    // THUMBS UP
     if(
         thumbUp &&
         !index &&
@@ -422,12 +390,11 @@ function recognize(lm){
         !pinky
     ){
         return {
-            icon:"👍",
-            name:"点赞"
+            text:"THUMBS UP"
         };
     }
 
-    // ☝️
+    // ONE
     if(
         index &&
         !middle &&
@@ -435,12 +402,11 @@ function recognize(lm){
         !pinky
     ){
         return {
-            icon:"☝️",
-            name:"数字1"
+            text:"ONE"
         };
     }
 
-    // ✌️
+    // PEACE
     if(
         index &&
         middle &&
@@ -448,12 +414,36 @@ function recognize(lm){
         !pinky
     ){
         return {
-            icon:"✌️",
-            name:"数字2"
+            text:"PEACE"
         };
     }
 
-    // ✋
+    // THREE
+    if(
+        index &&
+        middle &&
+        ring &&
+        !pinky
+    ){
+        return {
+            text:"THREE"
+        };
+    }
+
+    // FOUR
+    if(
+        index &&
+        middle &&
+        ring &&
+        pinky &&
+        !thumbUp
+    ){
+        return {
+            text:"FOUR"
+        };
+    }
+
+    // OPEN PALM
     if(
         thumbUp &&
         index &&
@@ -462,12 +452,24 @@ function recognize(lm){
         pinky
     ){
         return {
-            icon:"✋",
-            name:"数字5"
+            text:"OPEN PALM"
         };
     }
 
-    // 🤘
+    // FIST
+    if(
+        !thumbUp &&
+        !index &&
+        !middle &&
+        !ring &&
+        !pinky
+    ){
+        return {
+            text:"FIST"
+        };
+    }
+
+    // ROCK
     if(
         index &&
         pinky &&
@@ -475,12 +477,11 @@ function recognize(lm){
         !ring
     ){
         return {
-            icon:"🤘",
-            name:"摇滚"
+            text:"ROCK"
         };
     }
 
-    // 🤙
+    // CALL ME
     if(
         thumbUp &&
         pinky &&
@@ -489,12 +490,11 @@ function recognize(lm){
         !ring
     ){
         return {
-            icon:"🤙",
-            name:"打电话"
+            text:"CALL ME"
         };
     }
 
-    // 👌
+    // OK
     if(
         thumbIndexNear &&
         middle &&
@@ -502,16 +502,13 @@ function recognize(lm){
         pinky
     ){
         return {
-            icon:"👌",
-            name:"OK"
+            text:"OK"
         };
     }
 
     return {
 
-        icon:"🤚",
-
-        name:"识别中"
+        text:"TRACKING"
     };
 }
 
@@ -601,7 +598,7 @@ hands.setOptions({
     minTrackingConfidence:0.7
 });
 
-/* result */
+/* results */
 
 hands.onResults(results => {
 
@@ -619,7 +616,7 @@ hands.onResults(results => {
             recognize(lm);
 
         if(
-            gesture.name === lastGesture
+            gesture.text === lastGesture
         ){
 
             stableCount++;
@@ -629,18 +626,15 @@ hands.onResults(results => {
             stableCount = 0;
 
             lastGesture =
-                gesture.name;
+                gesture.text;
         }
 
         if(
             stableCount >= STABLE_THRESHOLD
         ){
 
-            iconDom.innerText =
-                gesture.icon;
-
             nameDom.innerText =
-                gesture.name;
+                gesture.text;
         }
 
     }else{
@@ -654,11 +648,8 @@ hands.onResults(results => {
             canvas.height
         );
 
-        iconDom.innerText =
-            "🤚";
-
         nameDom.innerText =
-            "未检测到手";
+            "NO HAND";
     }
 });
 

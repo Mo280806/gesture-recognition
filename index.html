@@ -22,12 +22,10 @@
             overflow: hidden;
         }
 
-        /* 电脑布局 */
         @media (min-width: 768px) {
             body { flex-direction: row; }
         }
 
-        /* 手机布局 */
         @media (max-width: 767px) {
             body { flex-direction: column; }
             .video-container { height: 60vh; }
@@ -37,7 +35,6 @@
             .action-name { font-size: 24px; }
         }
 
-        /* 视频区域 */
         .video-container {
             flex: 3;
             position: relative;
@@ -68,7 +65,6 @@
             transform: scaleX(-1);
         }
 
-        /* 右侧面板 */
         .action-panel {
             flex: 1;
             background: linear-gradient(180deg, #121218, #0c0c14);
@@ -102,7 +98,6 @@
             text-shadow: 0 0 10px rgba(255,255,255,0.15);
         }
 
-        /* 加载 */
         .loading {
             position: absolute;
             top: 50%;
@@ -145,9 +140,8 @@
         let model;
         let lastGesture = "";
         let stableCount = 0;
-        const STABLE = 5;
+        const STABLE = 4;
 
-        // 加载模型
         async function loadModel() {
             try {
                 await tf.setBackend('webgl');
@@ -160,7 +154,6 @@
             }
         }
 
-        // 启动摄像头
         async function startCamera() {
             const opt = {
                 video: { facingMode: 'user', width: 480, height: 360, frameRate: 15 }
@@ -179,7 +172,6 @@
             }
         }
 
-        // 检测循环
         async function detectLoop() {
             if (!model) return requestAnimationFrame(detectLoop);
 
@@ -206,10 +198,9 @@
                 }
             } catch (e) {}
 
-            setTimeout(() => requestAnimationFrame(detectLoop), 40);
+            setTimeout(() => requestAnimationFrame(detectLoop), 45);
         }
 
-        // 绘制手部
         function drawHand(pts) {
             ctx.fillStyle = "#ff3050";
             pts.forEach(p => { ctx.beginPath(); ctx.arc(p[0], p[1], 4, 0, 6.28); ctx.fill(); });
@@ -231,35 +222,39 @@
             });
         }
 
-        // 计算距离
         function d(a,b) {
             return Math.hypot(a[0]-b[0], a[1]-b[1]);
         }
 
-        // ==============================================
-        // 超级手势库（合并了你原来的 + 我优化的）
-        // ==============================================
         function getGesture(lm) {
-            const t  = d(lm[4], lm[3]) > 20;
-            const i  = d(lm[8], lm[6]) > 22;
-            const m  = d(lm[12], lm[10]) > 22;
-            const r  = d(lm[16], lm[14]) > 22;
-            const p  = d(lm[20], lm[18]) > 22;
-            const ti = d(lm[4], lm[8]) < 35;
+            const thumbTip = lm[4], thumbMid = lm[3];
+            const indexTip = lm[8], indexMid = lm[6];
+            const midTip = lm[12], midMid = lm[10];
+            const ringTip = lm[16], ringMid = lm[14];
+            const pinkTip = lm[20], pinkMid = lm[18];
 
-            const c = [i,m,r,p].filter(Boolean).length;
+            // 精细判定阈值
+            const thumbUp = d(thumbTip, thumbMid) > 18;
+            const indexUp = d(indexTip, indexMid) > 24;
+            const midUp = d(midTip, midMid) > 24;
+            const ringUp = d(ringTip, ringMid) > 24;
+            const pinkUp = d(pinkTip, pinkMid) > 24;
 
-            if (ti && m && r && p) return { icon: "👌", name: "OK手势" };
-            if (t && p && !i && !m && !r) return { icon: "🤘", name: "666/摇滚" };
-            if (t && !i && !m && !r && !p) return { icon: "👍", name: "点赞" };
-            if (i && m && r && p && t) return { icon: "✋", name: "数字5" };
-            if (i && m && r && p && !t) return { icon: "🖐️", name: "数字4" };
-            if (i && m && r && !p) return { icon: "🖑", name: "数字3" };
-            if (i && m && !r && !p) return { icon: "✌️", name: "数字2/剪刀" };
-            if (i && !m && !r && !p) return { icon: "☝️", name: "数字1" };
-            if (!i && !m && !r && !p && !t) return { icon: "✊", name: "数字0/握拳" };
-            if (t && i && m && r && p) return { icon: "🤙", name: "打电话" };
-            
+            const thumbIndexClose = d(thumbTip, indexTip) < 32;
+            const fingerCount = [indexUp, midUp, ringUp, pinkUp].filter(Boolean).length;
+
+            // 优先级从特殊手势到数字手势
+            if(thumbIndexClose && midUp && ringUp && pinkUp) return { icon: "👌", name: "OK手势" };
+            if(thumbUp && pinkUp && !indexUp && !midUp && !ringUp) return { icon: "🤘", name: "666/摇滚" };
+            if(thumbUp && !indexUp && !midUp && !ringUp && !pinkUp) return { icon: "👍", name: "点赞" };
+            if(thumbUp && indexUp && midUp && ringUp && pinkUp) return { icon: "🤙", name: "打电话" };
+            if(!indexUp && !midUp && !ringUp && !pinkUp && !thumbUp) return { icon: "✊", name: "数字0/握拳" };
+            if(indexUp && !midUp && !ringUp && !pinkUp && !thumbUp) return { icon: "☝️", name: "数字1" };
+            if(indexUp && midUp && !ringUp && !pinkUp && !thumbUp) return { icon: "✌️", name: "数字2/剪刀" };
+            if(indexUp && midUp && ringUp && !pinkUp && !thumbUp) return { icon: "🖑", name: "数字3" };
+            if(indexUp && midUp && ringUp && pinkUp && !thumbUp) return { icon: "🖐️", name: "数字4" };
+            if(indexUp && midUp && ringUp && pinkUp && thumbUp) return { icon: "✋", name: "数字5" };
+
             return { icon: "🤚", name: "识别中" };
         }
 

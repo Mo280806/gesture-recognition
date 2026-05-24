@@ -265,7 +265,7 @@ canvas{
             </div>
 
             <div class="subtitle">
-                支持双手 / 数字 / 手势识别
+                数字/ok/摇滚/点赞等，支持双手
             </div>
 
         </div>
@@ -298,7 +298,7 @@ canvas{
         </div>
 
         <div class="desc">
-            AI实时手势识别
+            实时手势识别
         </div>
 
     </div>
@@ -442,7 +442,7 @@ function recognize(lm){
         !thumb
     ){
         return {
-            text:"数字4"
+            text:"数字5 / 张开手掌"
         };
     }
 
@@ -456,7 +456,7 @@ function recognize(lm){
         pinky
     ){
         return {
-            text:"数字5 / 张开手掌"
+            text:"数字4"
         };
     }
 
@@ -514,21 +514,6 @@ function recognize(lm){
             text:"摇滚"
         };
     }
-
-    /* 我爱你 */
-
-    if(
-        thumb &&
-        index &&
-        pinky &&
-        !middle &&
-        !ring
-    ){
-        return {
-            text:"我爱你"
-        };
-    }
-
     /* 手枪 */
 
     if(
@@ -539,7 +524,7 @@ function recognize(lm){
         !pinky
     ){
         return {
-            text:"手枪"
+            text:"数字8 / 手枪"
         };
     }
 

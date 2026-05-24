@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>AI 手势识别</title>
+<title>AI手势识别系统</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/hands.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js"></script>
@@ -20,7 +20,8 @@
     font-family:
     -apple-system,
     BlinkMacSystemFont,
-    "Segoe UI",
+    "PingFang SC",
+    "Microsoft YaHei",
     sans-serif;
 }
 
@@ -155,7 +156,7 @@ canvas{
     background:#204b7c;
 }
 
-/* loading */
+/* 加载提示 */
 
 .loading{
 
@@ -260,11 +261,11 @@ canvas{
         <div class="header">
 
             <div class="title">
-                AI Gesture Recognition
+                AI手势识别系统
             </div>
 
             <div class="subtitle">
-                实时手势识别系统
+                实时手部动作追踪
             </div>
 
         </div>
@@ -297,7 +298,7 @@ canvas{
         </div>
 
         <div class="desc">
-            实时 AI 手势识别
+            实时AI手势识别
         </div>
 
     </div>
@@ -327,7 +328,7 @@ let stableCount = 0;
 
 const STABLE_THRESHOLD = 3;
 
-/* resize */
+/* 自适应 */
 
 function resizeCanvas(){
 
@@ -375,7 +376,8 @@ function recognize(lm){
     const thumbIndexNear =
         distance(lm[4],lm[8]) < 0.06;
 
-    /* 点赞 👍 */
+    /* 点赞 */
+
     if(
         thumb &&
         !index &&
@@ -388,7 +390,8 @@ function recognize(lm){
         };
     }
 
-    /* 数字1 ☝️ */
+    /* 数字1 */
+
     if(
         index &&
         !middle &&
@@ -401,7 +404,8 @@ function recognize(lm){
         };
     }
 
-    /* 数字2 / 剪刀 ✌️ */
+    /* 数字2 / 剪刀 */
+
     if(
         index &&
         middle &&
@@ -414,6 +418,7 @@ function recognize(lm){
     }
 
     /* 数字3 */
+
     if(
         index &&
         middle &&
@@ -427,6 +432,7 @@ function recognize(lm){
     }
 
     /* 数字4 */
+
     if(
         index &&
         middle &&
@@ -440,6 +446,7 @@ function recognize(lm){
     }
 
     /* 数字5 / 张开手掌 */
+
     if(
         thumb &&
         index &&
@@ -452,7 +459,8 @@ function recognize(lm){
         };
     }
 
-    /* 数字6 / 打电话 🤙 */
+    /* 数字6 / 打电话 */
+
     if(
         thumb &&
         pinky &&
@@ -465,7 +473,8 @@ function recognize(lm){
         };
     }
 
-    /* 拳头 ✊ */
+    /* 握拳 */
+
     if(
         !thumb &&
         !index &&
@@ -478,7 +487,8 @@ function recognize(lm){
         };
     }
 
-    /* OK 👌 */
+    /* OK */
+
     if(
         thumbIndexNear &&
         middle &&
@@ -490,7 +500,8 @@ function recognize(lm){
         };
     }
 
-    /* 摇滚 🤘 */
+    /* 摇滚 */
+
     if(
         index &&
         pinky &&
@@ -502,7 +513,8 @@ function recognize(lm){
         };
     }
 
-    /* LOVE */
+    /* 我爱你 */
+
     if(
         thumb &&
         index &&
@@ -515,7 +527,8 @@ function recognize(lm){
         };
     }
 
-    /* 手枪 👉 */
+    /* 手枪 */
+
     if(
         thumb &&
         index &&
@@ -529,6 +542,7 @@ function recognize(lm){
     }
 
     /* 停止 */
+
     if(
         !thumb &&
         index &&
@@ -688,7 +702,7 @@ hands.onResults(results => {
     }
 });
 
-/* 启动 */
+/* 启动摄像头 */
 
 async function startCamera(){
 
@@ -743,7 +757,7 @@ async function startCamera(){
     }
 }
 
-/* 点击 */
+/* 点击启动 */
 
 document
 .getElementById("startBtn")

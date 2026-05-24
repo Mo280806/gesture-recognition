@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>AI实时手势识别</title>
+<title>AI实时手势识别系统</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/hands.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js"></script>
@@ -16,13 +16,16 @@
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:"Segoe UI",Arial,sans-serif;
+    font-family:
+    "Inter",
+    "Segoe UI",
+    sans-serif;
 }
 
 body{
 
     background:
-    radial-gradient(circle at top,#13233d,#070b14);
+    radial-gradient(circle at top,#1d3358,#050816 70%);
 
     color:white;
 
@@ -31,6 +34,33 @@ body{
     height:100vh;
 
     overflow:hidden;
+}
+
+/* 科技网格背景 */
+body::before{
+
+    content:"";
+
+    position:fixed;
+
+    inset:0;
+
+    background-image:
+
+    linear-gradient(
+        rgba(255,255,255,0.03) 1px,
+        transparent 1px
+    ),
+
+    linear-gradient(
+        90deg,
+        rgba(255,255,255,0.03) 1px,
+        transparent 1px
+    );
+
+    background-size:40px 40px;
+
+    pointer-events:none;
 }
 
 /* 手机布局 */
@@ -45,9 +75,7 @@ body{
     }
 
     .right{
-
         flex:3;
-
         border-top:
         1px solid rgba(255,255,255,0.08);
     }
@@ -63,6 +91,10 @@ body{
     .name{
         font-size:28px;
     }
+
+    .desc{
+        font-size:13px;
+    }
 }
 
 .left{
@@ -71,16 +103,15 @@ body{
 
     position:relative;
 
-    padding:12px;
+    padding:14px;
 }
 
 .frame{
 
     width:100%;
-
     height:100%;
 
-    border-radius:24px;
+    border-radius:30px;
 
     overflow:hidden;
 
@@ -89,11 +120,47 @@ body{
     background:black;
 
     border:
-    1px solid rgba(0,220,255,0.3);
+    1px solid rgba(0,220,255,0.35);
 
     box-shadow:
+
     0 0 30px rgba(0,220,255,0.15),
-    inset 0 0 40px rgba(0,0,0,0.5);
+
+    0 0 80px rgba(0,100,255,0.15),
+
+    inset 0 0 40px rgba(0,0,0,0.6);
+}
+
+/* 扫描光效 */
+.frame::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+
+    linear-gradient(
+        to bottom,
+        transparent,
+        rgba(0,220,255,0.08),
+        transparent
+    );
+
+    animation:scan 4s linear infinite;
+}
+
+@keyframes scan{
+
+    0%{
+        transform:translateY(-100%);
+    }
+
+    100%{
+        transform:translateY(100%);
+    }
 }
 
 video,
@@ -118,11 +185,16 @@ canvas{
 
     flex:1;
 
+    position:relative;
+
+    backdrop-filter:blur(24px);
+
     background:
+
     linear-gradient(
         180deg,
-        #121826,
-        #0a0f18
+        rgba(18,24,38,0.92),
+        rgba(10,15,24,0.96)
     );
 
     display:flex;
@@ -136,41 +208,90 @@ canvas{
     gap:22px;
 
     border-left:
-    1px solid rgba(255,255,255,0.06);
+    1px solid rgba(255,255,255,0.08);
 
     box-shadow:
-    0 0 40px rgba(0,0,0,0.35);
+    -10px 0 30px rgba(0,0,0,0.25);
 }
 
 .title{
 
-    font-size:28px;
+    font-size:30px;
+
+    font-weight:700;
+
+    letter-spacing:1px;
 
     color:#00dcff;
 
     text-shadow:
-    0 0 12px rgba(0,220,255,0.35);
+    0 0 18px rgba(0,220,255,0.5);
 }
 
 .icon{
 
-    font-size:100px;
+    font-size:110px;
+
+    animation:pulse 2s infinite;
+
+    filter:
+    drop-shadow(
+        0 0 20px rgba(255,255,255,0.3)
+    );
 
     transition:0.25s;
 }
 
+@keyframes pulse{
+
+    0%{
+        transform:scale(1);
+    }
+
+    50%{
+        transform:scale(1.08);
+    }
+
+    100%{
+        transform:scale(1);
+    }
+}
+
 .name{
 
-    font-size:38px;
+    font-size:42px;
 
-    font-weight:bold;
+    font-weight:800;
+
+    letter-spacing:1px;
 }
 
 .desc{
 
-    color:#8a97aa;
+    color:#8fa5c6;
 
     font-size:15px;
+
+    text-align:center;
+
+    line-height:1.8;
+}
+
+.ai-status{
+
+    position:absolute;
+
+    bottom:30px;
+
+    left:30px;
+
+    color:#00ffae;
+
+    font-size:14px;
+
+    opacity:0.9;
+
+    line-height:1.7;
 }
 
 #startBtn{
@@ -182,36 +303,42 @@ canvas{
 
     z-index:999;
 
-    padding:14px 24px;
+    padding:14px 26px;
 
     border:none;
 
-    border-radius:14px;
+    border-radius:16px;
 
     background:
+
     linear-gradient(
         135deg,
         #00dcff,
-        #007bff
+        #0066ff
     );
 
     color:white;
 
     font-size:15px;
 
-    font-weight:bold;
+    font-weight:700;
 
     cursor:pointer;
 
-    box-shadow:
-    0 4px 20px rgba(0,220,255,0.35);
-
     transition:0.25s;
+
+    box-shadow:
+
+    0 0 20px rgba(0,220,255,0.35),
+
+    0 0 40px rgba(0,100,255,0.2);
 }
 
 #startBtn:hover{
 
-    transform:translateY(-2px);
+    transform:
+    translateY(-2px)
+    scale(1.03);
 }
 
 .loading{
@@ -223,15 +350,21 @@ canvas{
 
     transform:translate(-50%,-50%);
 
-    background:rgba(0,0,0,0.75);
+    background:rgba(0,0,0,0.65);
 
-    padding:20px 30px;
+    border:
+    1px solid rgba(255,255,255,0.08);
 
-    border-radius:14px;
+    padding:20px 34px;
+
+    border-radius:18px;
 
     z-index:999;
 
-    backdrop-filter:blur(10px);
+    backdrop-filter:blur(16px);
+
+    box-shadow:
+    0 0 30px rgba(0,0,0,0.3);
 }
 
 </style>
@@ -253,13 +386,13 @@ canvas{
         <canvas id="canvas"></canvas>
 
         <button id="startBtn">
-            启动摄像头
+            启动AI识别
         </button>
 
     </div>
 
     <div class="loading" id="loading">
-        点击右上角启动 AI
+        点击右上角启动系统
     </div>
 
 </div>
@@ -267,7 +400,7 @@ canvas{
 <div class="right">
 
     <div class="title">
-        🤖 AI实时手势识别
+        🤖 AI Gesture Vision
     </div>
 
     <div class="icon" id="icon">
@@ -279,7 +412,16 @@ canvas{
     </div>
 
     <div class="desc">
+        实时AI视觉识别系统<br>
         支持 👍 ✌️ ✋ 🤘 👌 🤙 ☝️
+    </div>
+
+    <div class="ai-status">
+
+        AI Tracking ● ONLINE<br>
+        FPS: 30<br>
+        MODEL: MediaPipe Hands
+
     </div>
 
 </div>
@@ -334,7 +476,6 @@ function distance(a,b){
 
 function recognize(lm){
 
-    // 点赞专用
     const thumbUp =
         lm[4].y < lm[3].y &&
         lm[3].y < lm[2].y;
@@ -600,7 +741,7 @@ async function startCamera(){
     try{
 
         loading.innerText =
-            "正在启动摄像头...";
+            "正在启动AI视觉系统...";
 
         const stream =
             await navigator.mediaDevices.getUserMedia({

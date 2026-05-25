@@ -3,11 +3,13 @@
 
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
-<title>手势识别系统</title>
+<title>AI 手势交互系统</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/hands.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js"></script>
 
 <style>
@@ -40,17 +42,72 @@ body{
     align-items:center;
 }
 
+/* 主容器 */
+
 .container{
 
-    width:min(920px,94vw);
+    width:min(980px,95vw);
 
-    height:min(92vh,920px);
+    height:min(94vh,940px);
 
     display:flex;
 
     flex-direction:column;
 
     gap:18px;
+}
+
+/* 顶部 */
+
+.topbar{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+}
+
+.logo{
+
+    font-size:22px;
+
+    font-weight:700;
+
+    color:#163a63;
+}
+
+.mode-box{
+
+    display:flex;
+
+    gap:10px;
+}
+
+.mode-btn{
+
+    border:none;
+
+    background:#eef3f9;
+
+    color:#163a63;
+
+    padding:10px 18px;
+
+    border-radius:12px;
+
+    font-size:14px;
+
+    cursor:pointer;
+
+    transition:0.25s;
+}
+
+.mode-btn.active{
+
+    background:#163a63;
+
+    color:white;
 }
 
 /* 摄像头区域 */
@@ -63,11 +120,11 @@ body{
 
     overflow:hidden;
 
-    border-radius:24px;
+    border-radius:28px;
 
     background:#f5f8fc;
 
-    border:1px solid #dbe5f0;
+    border:1px solid #dce6f2;
 
     box-shadow:
     0 10px 30px rgba(22,58,99,0.08);
@@ -91,9 +148,9 @@ canvas{
     pointer-events:none;
 }
 
-/* 顶部 */
+/* 状态栏 */
 
-.header{
+.status{
 
     position:absolute;
 
@@ -102,27 +159,21 @@ canvas{
     left:20px;
 
     z-index:10;
-}
 
-.title{
+    background:rgba(255,255,255,0.9);
 
-    font-size:18px;
+    padding:10px 14px;
 
-    font-weight:600;
-
-    color:#163a63;
-}
-
-.subtitle{
-
-    margin-top:4px;
+    border-radius:14px;
 
     font-size:13px;
 
-    color:#6f8298;
+    color:#163a63;
+
+    backdrop-filter:blur(10px);
 }
 
-/* 按钮 */
+/* 启动按钮 */
 
 #startBtn{
 
@@ -140,23 +191,16 @@ canvas{
 
     color:white;
 
-    padding:10px 16px;
+    padding:12px 18px;
 
-    border-radius:12px;
-
-    font-size:13px;
+    border-radius:14px;
 
     cursor:pointer;
 
-    transition:0.2s;
+    font-size:13px;
 }
 
-#startBtn:hover{
-
-    background:#204b7c;
-}
-
-/* 加载提示 */
+/* loading */
 
 .loading{
 
@@ -167,13 +211,9 @@ canvas{
 
     transform:translate(-50%,-50%);
 
-    background:rgba(255,255,255,0.96);
+    background:white;
 
-    color:#163a63;
-
-    border:1px solid #dce6f2;
-
-    padding:14px 20px;
+    padding:16px 22px;
 
     border-radius:14px;
 
@@ -184,34 +224,36 @@ canvas{
 
 /* 结果区域 */
 
-.result-card{
+.bottom-panel{
 
-    height:130px;
+    height:170px;
 
-    border-radius:22px;
+    border-radius:26px;
 
     background:#f8fafc;
 
-    border:1px solid #dbe5f0;
+    border:1px solid #dce6f2;
 
     display:flex;
 
     flex-direction:column;
 
-    align-items:center;
-
     justify-content:center;
 
-    gap:8px;
+    align-items:center;
+
+    gap:10px;
+
+    position:relative;
+
+    overflow:hidden;
 }
 
-.name{
+.result{
 
-    font-size:28px;
+    font-size:34px;
 
-    font-weight:600;
-
-    letter-spacing:1px;
+    font-weight:700;
 
     color:#163a63;
 }
@@ -220,7 +262,108 @@ canvas{
 
     font-size:13px;
 
-    color:#8091a5;
+    color:#71859a;
+}
+
+/* 点赞 */
+
+.like-box{
+
+    position:absolute;
+
+    right:24px;
+
+    top:20px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    font-size:15px;
+
+    color:#163a63;
+}
+
+.like-heart{
+
+    color:#ff3d6e;
+
+    font-size:20px;
+}
+
+/* 菜单 */
+
+.menu{
+
+    display:flex;
+
+    gap:14px;
+
+    margin-top:10px;
+}
+
+.menu-item{
+
+    padding:12px 20px;
+
+    border-radius:14px;
+
+    background:#eef3f9;
+
+    color:#163a63;
+
+    transition:0.25s;
+
+    font-size:14px;
+}
+
+.menu-item.active{
+
+    background:#163a63;
+
+    color:white;
+
+    transform:scale(1.05);
+}
+
+/* 光标 */
+
+.cursor{
+
+    position:absolute;
+
+    width:22px;
+
+    height:22px;
+
+    border-radius:50%;
+
+    background:#163a63;
+
+    border:4px solid white;
+
+    z-index:20;
+
+    pointer-events:none;
+
+    transition:0.05s linear;
+}
+
+/* 页码 */
+
+.page{
+
+    position:absolute;
+
+    left:24px;
+
+    bottom:18px;
+
+    font-size:13px;
+
+    color:#6c7f92;
 }
 
 /* 手机 */
@@ -236,14 +379,16 @@ canvas{
         padding:14px;
     }
 
-    .result-card{
+    .result{
 
-        height:110px;
+        font-size:26px;
     }
 
-    .name{
+    .menu{
 
-        font-size:22px;
+        flex-wrap:wrap;
+
+        justify-content:center;
     }
 }
 
@@ -254,20 +399,42 @@ canvas{
 
 <div class="container">
 
+    <!-- 顶部 -->
+
+    <div class="topbar">
+
+        <div class="logo">
+            AI 手势交互系统
+        </div>
+
+        <div class="mode-box">
+
+            <button
+                class="mode-btn active"
+                id="recognizeMode">
+
+                手势识别
+            </button>
+
+            <button
+                class="mode-btn"
+                id="controlMode">
+
+                手势操控
+            </button>
+
+        </div>
+
+    </div>
+
     <!-- 摄像头 -->
 
     <div class="camera-card">
 
-        <div class="header">
+        <div class="status"
+             id="status">
 
-            <div class="title">
-                手势识别系统
-            </div>
-
-            <div class="subtitle">
-                数字/ok/摇滚/点赞等，支持双手
-            </div>
-
+            ● 等待启动
         </div>
 
         <video
@@ -279,26 +446,77 @@ canvas{
 
         <canvas id="canvas"></canvas>
 
+        <div class="cursor"
+             id="cursor"></div>
+
         <button id="startBtn">
-            启动识别
+            启动摄像头
         </button>
 
-        <div class="loading" id="loading">
-            点击右上角启动摄像头
+        <div class="loading"
+             id="loading">
+
+            点击右上角启动
         </div>
 
     </div>
 
     <!-- 结果 -->
 
-    <div class="result-card">
+    <div class="bottom-panel">
 
-        <div class="name" id="name">
+        <div class="like-box">
+
+            <span class="like-heart">
+                ❤️
+            </span>
+
+            <span id="likeCount">
+                0
+            </span>
+
+        </div>
+
+        <div class="result"
+             id="result">
+
             等待识别
         </div>
 
         <div class="desc">
-            实时手势识别
+
+            实时 AI 手势交互
+
+        </div>
+
+        <!-- 菜单 -->
+
+        <div class="menu">
+
+            <div class="menu-item"
+                 id="menu1">
+
+                首页
+            </div>
+
+            <div class="menu-item"
+                 id="menu2">
+
+                图片
+            </div>
+
+            <div class="menu-item"
+                 id="menu3">
+
+                设置
+            </div>
+
+        </div>
+
+        <div class="page"
+             id="page">
+
+            当前页：1
         </div>
 
     </div>
@@ -316,19 +534,69 @@ const canvas =
 const ctx =
     canvas.getContext("2d");
 
-const nameDom =
-    document.getElementById("name");
+const resultDom =
+    document.getElementById("result");
 
 const loading =
     document.getElementById("loading");
 
+const statusDom =
+    document.getElementById("status");
+
+const cursor =
+    document.getElementById("cursor");
+
+const likeCountDom =
+    document.getElementById("likeCount");
+
+const pageDom =
+    document.getElementById("page");
+
+const recognizeBtn =
+    document.getElementById("recognizeMode");
+
+const controlBtn =
+    document.getElementById("controlMode");
+
+let mode = "recognize";
+
+let likeCount = 0;
+
+let currentPage = 1;
+
 let lastGesture = "";
 
-let stableCount = 0;
+let lastX = 0;
 
-const STABLE_THRESHOLD = 3;
+let pageCooldown = false;
 
-/* 自适应 */
+/* 模式切换 */
+
+recognizeBtn.onclick = ()=>{
+
+    mode = "recognize";
+
+    recognizeBtn.classList.add("active");
+
+    controlBtn.classList.remove("active");
+
+    resultDom.innerText =
+        "识别模式";
+};
+
+controlBtn.onclick = ()=>{
+
+    mode = "control";
+
+    controlBtn.classList.add("active");
+
+    recognizeBtn.classList.remove("active");
+
+    resultDom.innerText =
+        "操控模式";
+};
+
+/* resize */
 
 function resizeCanvas(){
 
@@ -339,7 +607,7 @@ function resizeCanvas(){
         video.videoHeight;
 }
 
-/* 判断手指 */
+/* 手指 */
 
 function fingerUp(tip,pip){
 
@@ -349,8 +617,8 @@ function fingerUp(tip,pip){
 function distance(a,b){
 
     return Math.hypot(
-        a.x - b.x,
-        a.y - b.y
+        a.x-b.x,
+        a.y-b.y
     );
 }
 
@@ -373,10 +641,8 @@ function recognize(lm){
     const pinky =
         fingerUp(lm[20],lm[18]);
 
-    const thumbIndexNear =
+    const thumbNear =
         distance(lm[4],lm[8]) < 0.06;
-
-    /* 点赞 */
 
     if(
         thumb &&
@@ -385,82 +651,35 @@ function recognize(lm){
         !ring &&
         !pinky
     ){
-        return {
-            text:"点赞"
-        };
+        return "点赞";
     }
-
-    /* 数字1 */
 
     if(
         index &&
         !middle &&
         !ring &&
-        !pinky &&
-        !thumb
+        !pinky
     ){
-        return {
-            text:"数字1"
-        };
+        return "数字1";
     }
-
-    /* 数字2 / 剪刀 */
 
     if(
         index &&
         middle &&
         !ring &&
-        !pinky &&
-        !thumb
+        !pinky
     ){
-        return {
-            text:"数字2 / 剪刀"
-        };
+        return "数字2";
     }
 
-    /* 数字3 */
-
     if(
-        index &&
-        middle &&
-        ring &&
-        !pinky &&
-        !thumb
-    ){
-        return {
-            text:"数字3"
-        };
-    }
-
-    /* 数字4 */
-
-    if(
-        index &&
-        middle &&
-        ring &&
-        pinky &&
-        !thumb
-    ){
-        return {
-            text:"数字5 / 张开手掌"
-        };
-    }
-
-    /* 数字5 / 张开手掌 */
-
-    if(
-        thumb &&
-        index &&
+        thumbNear &&
         middle &&
         ring &&
         pinky
     ){
-        return {
-            text:"数字4"
-        };
+        return "OK";
     }
-
-    /* 数字6 / 打电话 */
 
     if(
         thumb &&
@@ -469,12 +688,8 @@ function recognize(lm){
         !middle &&
         !ring
     ){
-        return {
-            text:"数字6 / 打电话"
-        };
+        return "打电话";
     }
-
-    /* 握拳 */
 
     if(
         !thumb &&
@@ -483,72 +698,23 @@ function recognize(lm){
         !ring &&
         !pinky
     ){
-        return {
-            text:"握拳"
-        };
+        return "握拳";
     }
-
-    /* OK */
-
-    if(
-        thumbIndexNear &&
-        middle &&
-        ring &&
-        pinky
-    ){
-        return {
-            text:"OK / 数字3"
-        };
-    }
-
-    /* 摇滚 */
 
     if(
         index &&
+        middle &&
+        ring &&
         pinky &&
-        !middle &&
-        !ring &&
-        !thumb
+        thumb
     ){
-        return {
-            text:"摇滚"
-        };
-    }
-    /* 手枪 */
-
-    if(
-        thumb &&
-        index &&
-        !middle &&
-        !ring &&
-        !pinky
-    ){
-        return {
-            text:"数字8 / 手枪"
-        };
+        return "张开手掌";
     }
 
-    /* 停止 */
-
-    if(
-        !thumb &&
-        index &&
-        middle &&
-        ring &&
-        pinky
-    ){
-        return {
-            text:"停止"
-        };
-    }
-
-    return {
-
-        text:"识别中..."
-    };
+    return "识别中...";
 }
 
-/* 绘制手部 */
+/* 绘制 */
 
 function drawHand(points){
 
@@ -596,7 +762,7 @@ function drawHand(points){
             p.y * canvas.height,
             4,
             0,
-            Math.PI * 2
+            Math.PI*2
         );
 
         ctx.fillStyle =
@@ -606,11 +772,124 @@ function drawHand(points){
     }
 }
 
+/* 菜单交互 */
+
+function updateMenu(x,y){
+
+    const items =
+        document.querySelectorAll(".menu-item");
+
+    items.forEach(item=>{
+
+        item.classList.remove("active");
+
+        const rect =
+            item.getBoundingClientRect();
+
+        if(
+
+            x > rect.left &&
+            x < rect.right &&
+            y > rect.top &&
+            y < rect.bottom
+        ){
+
+            item.classList.add("active");
+
+            resultDom.innerText =
+                "已选择：" +
+                item.innerText;
+        }
+    });
+}
+
+/* 翻页 */
+
+function handleSwipe(x){
+
+    if(pageCooldown) return;
+
+    if(x - lastX > 0.15){
+
+        currentPage++;
+
+        pageDom.innerText =
+            "当前页：" +
+            currentPage;
+
+        pageCooldown = true;
+
+        setTimeout(()=>{
+
+            pageCooldown = false;
+
+        },1000);
+    }
+
+    if(lastX - x > 0.15){
+
+        currentPage--;
+
+        if(currentPage < 1)
+            currentPage = 1;
+
+        pageDom.innerText =
+            "当前页：" +
+            currentPage;
+
+        pageCooldown = true;
+
+        setTimeout(()=>{
+
+            pageCooldown = false;
+
+        },1000);
+    }
+
+    lastX = x;
+}
+
+/* 点赞 */
+
+function handleLike(gesture,lm){
+
+    const thumbDown =
+        lm[4].y > lm[3].y;
+
+    if(
+        gesture === "点赞" &&
+        lastGesture !== "点赞"
+    ){
+
+        likeCount++;
+
+        likeCountDom.innerText =
+            likeCount;
+    }
+
+    if(
+        thumbDown &&
+        lastGesture !== "取消点赞"
+    ){
+
+        likeCount--;
+
+        if(likeCount < 0)
+            likeCount = 0;
+
+        likeCountDom.innerText =
+            likeCount;
+
+        lastGesture =
+            "取消点赞";
+    }
+}
+
 /* MediaPipe */
 
 const hands = new Hands({
 
-    locateFile:file => {
+    locateFile:file=>{
 
         return `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/${file}`;
     }
@@ -622,14 +901,12 @@ hands.setOptions({
 
     modelComplexity:1,
 
-    minDetectionConfidence:0.65,
+    minDetectionConfidence:0.7,
 
-    minTrackingConfidence:0.65
+    minTrackingConfidence:0.7
 });
 
-/* 识别结果 */
-
-hands.onResults(results => {
+hands.onResults(results=>{
 
     ctx.clearRect(
         0,
@@ -639,59 +916,76 @@ hands.onResults(results => {
     );
 
     if(
+
         results.multiHandLandmarks &&
         results.multiHandLandmarks.length > 0
     ){
 
-        let texts = [];
+        statusDom.innerText =
+            "● 检测到手势";
 
-        for(const lm of results.multiHandLandmarks){
+        const lm =
+            results.multiHandLandmarks[0];
 
-            drawHand(lm);
+        drawHand(lm);
 
-            const gesture =
-                recognize(lm);
+        const gesture =
+            recognize(lm);
 
-            texts.push(
-                gesture.text
+        if(mode === "recognize"){
+
+            resultDom.innerText =
+                gesture;
+        }
+
+        /* 操控模式 */
+
+        if(mode === "control"){
+
+            const finger =
+                lm[8];
+
+            const x =
+                (1-finger.x)
+                * window.innerWidth;
+
+            const y =
+                finger.y
+                * window.innerHeight;
+
+            cursor.style.left =
+                x + "px";
+
+            cursor.style.top =
+                y + "px";
+
+            updateMenu(x,y);
+
+            handleSwipe(finger.x);
+
+            handleLike(
+                gesture,
+                lm
             );
+
+            resultDom.innerText =
+                "操控中";
         }
 
-        const finalText =
-            texts.join(" + ");
-
-        if(
-            finalText === lastGesture
-        ){
-
-            stableCount++;
-
-        }else{
-
-            stableCount = 0;
-
-            lastGesture =
-                finalText;
-        }
-
-        if(
-            stableCount >= STABLE_THRESHOLD
-        ){
-
-            nameDom.innerText =
-                finalText;
-        }
+        lastGesture =
+            gesture;
 
     }else{
 
-        stableCount = 0;
+        statusDom.innerText =
+            "● 未检测到手";
 
-        nameDom.innerText =
-            "未检测到手";
+        resultDom.innerText =
+            "等待识别";
     }
 });
 
-/* 启动摄像头 */
+/* 启动 */
 
 async function startCamera(){
 
@@ -712,7 +1006,8 @@ async function startCamera(){
                 audio:false
             });
 
-        video.srcObject = stream;
+        video.srcObject =
+            stream;
 
         await video.play();
 
@@ -720,6 +1015,9 @@ async function startCamera(){
 
         loading.style.display =
             "none";
+
+        statusDom.innerText =
+            "● 摄像头已连接";
 
         const camera =
             new Camera(video,{
@@ -745,8 +1043,6 @@ async function startCamera(){
             "摄像头启动失败";
     }
 }
-
-/* 点击启动 */
 
 document
 .getElementById("startBtn")

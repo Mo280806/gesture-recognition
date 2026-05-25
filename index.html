@@ -320,7 +320,7 @@ canvas{
 
     gap:24px;
 
-    transition:.35s;
+    transition:.08s linear;
 }
 
 .control-title{
@@ -331,7 +331,7 @@ canvas{
 
     color:#163a63;
 
-    transition:.25s;
+    transition:.2s;
 }
 
 .control-text{
@@ -340,7 +340,7 @@ canvas{
 
     color:#6f8298;
 
-    transition:.25s;
+    transition:.2s;
 }
 
 /* 点赞动画 */
@@ -529,7 +529,7 @@ canvas{
                 class="control-text"
                 id="controlText">
 
-                食指方向控制页面移动
+                用食指移动文字
             </div>
 
         </div>
@@ -670,8 +670,6 @@ function distance(a,b){
 
 function recognize(lm){
 
-    /* 改进点赞 */
-
     const thumbUp =
         lm[4].y < lm[3].y &&
         lm[3].y < lm[2].y;
@@ -691,7 +689,7 @@ function recognize(lm){
     const thumbIndexNear =
         distance(lm[4],lm[8]) < 0.06;
 
-    /* 握拳优先 */
+    /* 握拳 */
 
     if(
         !thumbUp &&
@@ -703,6 +701,8 @@ function recognize(lm){
         return "握拳";
     }
 
+    /* 点赞 */
+
     if(
         thumbUp &&
         !index &&
@@ -713,6 +713,8 @@ function recognize(lm){
         return "点赞";
     }
 
+    /* 数字1 */
+
     if(
         index &&
         !middle &&
@@ -721,6 +723,8 @@ function recognize(lm){
     ){
         return "数字1";
     }
+
+    /* 数字2 */
 
     if(
         index &&
@@ -731,6 +735,8 @@ function recognize(lm){
         return "数字2 / 剪刀";
     }
 
+    /* 数字3 */
+
     if(
         index &&
         middle &&
@@ -739,6 +745,8 @@ function recognize(lm){
     ){
         return "数字3";
     }
+
+    /* 数字4 */
 
     if(
         index &&
@@ -750,6 +758,8 @@ function recognize(lm){
         return "数字4";
     }
 
+    /* 数字5 */
+
     if(
         thumbUp &&
         index &&
@@ -759,6 +769,8 @@ function recognize(lm){
     ){
         return "数字5 / 张开手掌";
     }
+
+    /* 数字6 */
 
     if(
         thumbUp &&
@@ -770,6 +782,8 @@ function recognize(lm){
         return "数字6 / 打电话";
     }
 
+    /* OK */
+
     if(
         thumbIndexNear &&
         middle &&
@@ -779,6 +793,8 @@ function recognize(lm){
         return "OK";
     }
 
+    /* 摇滚 */
+
     if(
         index &&
         pinky &&
@@ -786,16 +802,6 @@ function recognize(lm){
         !ring
     ){
         return "摇滚";
-    }
-
-    if(
-        thumbUp &&
-        index &&
-        pinky &&
-        !middle &&
-        !ring
-    ){
-        return "我爱你";
     }
 
     return "识别中...";
@@ -880,8 +886,6 @@ hands.setOptions({
     minTrackingConfidence:0.65
 });
 
-/* 状态 */
-
 let likeLock = false;
 
 /* 识别 */
@@ -939,50 +943,46 @@ hands.onResults(results => {
                 const indexTip =
                     lm[8];
 
-                const wrist =
-                    lm[0];
+                /* 文字跟随手移动 */
 
-                /* 上下左右 */
+                const moveX =
+                    (0.5 - indexTip.x) * 260;
+
+                const moveY =
+                    (indexTip.y - 0.5) * 220;
+
+                controlContent.style.transform =
+                    `translate(${moveX}px, ${moveY}px)`;
+
+                /* 提示 */
 
                 if(
-                    indexTip.x < wrist.x - 0.18
+                    moveX < -60
                 ){
-
-                    controlContent.style.transform =
-                        "translateX(-120px)";
-
-                    controlText.innerText =
-                        "向左移动";
-                }
-
-                else if(
-                    indexTip.x > wrist.x + 0.18
-                ){
-
-                    controlContent.style.transform =
-                        "translateX(120px)";
 
                     controlText.innerText =
                         "向右移动";
                 }
 
                 else if(
-                    indexTip.y < wrist.y - 0.18
+                    moveX > 60
                 ){
 
-                    controlContent.style.transform =
-                        "translateY(-100px)";
+                    controlText.innerText =
+                        "向左移动";
+                }
+
+                else if(
+                    moveY < -50
+                ){
 
                     controlText.innerText =
                         "向上移动";
                 }
 
                 else if(
-                    indexTip.y > wrist.y + 0.18
+                    moveY > 50
                 ){
-
-                    controlContent.style.transform =
-                        "translateY(100px)";
 
                     controlText.innerText =
                         "向下移动";
@@ -990,8 +990,8 @@ hands.onResults(results => {
 
                 else{
 
-                    controlContent.style.transform =
-                        "translate(0,0)";
+                    controlText.innerText =
+                        "手势控制中";
                 }
 
                 /* 握拳缩小 */
@@ -1000,23 +1000,23 @@ hands.onResults(results => {
 
                     controlTitle.style.transform =
                         "scale(0.7)";
-
-                    controlText.innerText =
-                        "握拳缩小";
                 }
 
                 /* 张开放大 */
 
-                if(
+                else if(
                     result ===
                     "数字5 / 张开手掌"
                 ){
 
                     controlTitle.style.transform =
                         "scale(1.4)";
+                }
 
-                    controlText.innerText =
-                        "张开手掌放大";
+                else{
+
+                    controlTitle.style.transform =
+                        "scale(1)";
                 }
 
                 /* 点赞 */

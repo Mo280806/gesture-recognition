@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>AI 手势交互系统</title>
+<title>AI手势交互系统</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/hands.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js"></script>
@@ -16,7 +16,6 @@
     margin:0;
     padding:0;
     box-sizing:border-box;
-
     font-family:
     -apple-system,
     BlinkMacSystemFont,
@@ -26,26 +25,17 @@
 }
 
 body{
-
     background:#ffffff;
-
     color:#163a63;
-
-    height:100vh;
-
     overflow:hidden;
 }
 
-/* 主容器 */
+/* 主页面 */
 
-.container{
-
-    width:100%;
-
+.page{
+    width:100vw;
     height:100vh;
-
     display:flex;
-
     flex-direction:column;
 }
 
@@ -55,35 +45,19 @@ body{
 
     height:72px;
 
-    border-bottom:1px solid #dbe5f0;
-
     display:flex;
 
     align-items:center;
 
-    justify-content:space-between;
+    justify-content:center;
 
-    padding:0 24px;
+    gap:14px;
+
+    border-bottom:1px solid #e5edf5;
 
     background:white;
 
-    z-index:100;
-}
-
-.logo{
-
-    font-size:22px;
-
-    font-weight:700;
-
-    color:#163a63;
-}
-
-.mode-buttons{
-
-    display:flex;
-
-    gap:12px;
+    z-index:20;
 }
 
 .mode-btn{
@@ -94,15 +68,15 @@ body{
 
     color:#163a63;
 
-    padding:10px 18px;
+    padding:12px 22px;
 
-    border-radius:12px;
+    border-radius:14px;
 
     cursor:pointer;
 
-    transition:0.2s;
+    font-size:15px;
 
-    font-size:14px;
+    transition:0.25s;
 }
 
 .mode-btn.active{
@@ -112,28 +86,36 @@ body{
     color:white;
 }
 
-/* 页面 */
+/* 页面区域 */
 
-.page{
+.view{
 
     flex:1;
 
     position:relative;
 
-    overflow:hidden;
+    display:none;
 }
 
-/* ====================== */
-/* 手势识别模式 */
-/* ====================== */
+.view.active{
+    display:block;
+}
 
-#recognitionPage{
+/* ========= 原来的识别页面 ========= */
+
+.detect-wrap{
+
+    width:min(900px,94vw);
+
+    height:min(88vh,900px);
+
+    margin:auto;
+
+    padding-top:20px;
 
     display:flex;
 
     flex-direction:column;
-
-    padding:18px;
 
     gap:18px;
 }
@@ -144,16 +126,13 @@ body{
 
     position:relative;
 
-    border-radius:24px;
-
     overflow:hidden;
+
+    border-radius:24px;
 
     background:#f5f8fc;
 
     border:1px solid #dbe5f0;
-
-    box-shadow:
-    0 10px 30px rgba(22,58,99,0.08);
 }
 
 video,
@@ -171,78 +150,7 @@ canvas{
 }
 
 canvas{
-
     pointer-events:none;
-}
-
-.header{
-
-    position:absolute;
-
-    top:18px;
-
-    left:20px;
-
-    z-index:10;
-}
-
-.title{
-
-    font-size:18px;
-
-    font-weight:600;
-}
-
-.subtitle{
-
-    margin-top:4px;
-
-    font-size:13px;
-
-    color:#6f8298;
-}
-
-#startBtn{
-
-    position:absolute;
-
-    top:18px;
-
-    right:18px;
-
-    z-index:20;
-
-    border:none;
-
-    background:#163a63;
-
-    color:white;
-
-    padding:10px 16px;
-
-    border-radius:12px;
-
-    cursor:pointer;
-}
-
-.loading{
-
-    position:absolute;
-
-    top:50%;
-    left:50%;
-
-    transform:translate(-50%,-50%);
-
-    background:white;
-
-    padding:14px 20px;
-
-    border-radius:14px;
-
-    border:1px solid #dbe5f0;
-
-    z-index:30;
 }
 
 .result-card{
@@ -257,49 +165,29 @@ canvas{
 
     display:flex;
 
-    flex-direction:column;
-
     justify-content:center;
 
     align-items:center;
-}
-
-.result-text{
 
     font-size:28px;
 
-    font-weight:700;
+    font-weight:600;
 }
 
-.result-desc{
+/* ========= 操控页面 ========= */
 
-    margin-top:8px;
+.control-page{
 
-    font-size:13px;
-
-    color:#8091a5;
-}
-
-/* ====================== */
-/* 操控模式 */
-/* ====================== */
-
-#controlPage{
-
-    display:none;
+    position:relative;
 
     width:100%;
 
     height:100%;
-
-    position:relative;
-
-    background:#ffffff;
 }
 
-/* 小摄像头 */
+/* 左上角小相机 */
 
-.mini-camera{
+.small-camera{
 
     position:absolute;
 
@@ -307,7 +195,7 @@ canvas{
 
     left:20px;
 
-    width:260px;
+    width:240px;
 
     height:180px;
 
@@ -319,46 +207,23 @@ canvas{
 
     border:1px solid #dbe5f0;
 
-    box-shadow:
-    0 8px 24px rgba(22,58,99,0.12);
-
-    z-index:50;
+    z-index:10;
 }
 
-.mini-camera video,
-.mini-camera canvas{
+/* 中央文字 */
+
+.control-text{
 
     position:absolute;
 
-    width:100%;
+    top:50%;
 
-    height:100%;
-}
+    left:50%;
 
-/* 引导区 */
+    transform:
+    translate(-50%,-50%);
 
-.guide{
-
-    width:100%;
-
-    height:100%;
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    justify-content:center;
-
-    gap:24px;
-
-    transition:0.3s;
-}
-
-.guide-title{
-
-    font-size:42px;
+    font-size:56px;
 
     font-weight:700;
 
@@ -367,98 +232,47 @@ canvas{
     transition:0.3s;
 }
 
-.guide-text{
+/* 点赞动画 */
 
-    font-size:18px;
-
-    color:#6f8298;
-
-    transition:0.3s;
-}
-
-/* 点赞特效 */
-
-.like-effect{
+.like{
 
     position:absolute;
 
-    top:50%;
+    right:80px;
 
-    left:50%;
+    top:100px;
 
-    transform:translate(-50%,-50%);
-
-    font-size:120px;
+    font-size:80px;
 
     opacity:0;
 
-    pointer-events:none;
+    transform:scale(0.5);
 
     transition:0.5s;
-
-    z-index:999;
 }
 
-.like-effect.show{
+.like.show{
 
     opacity:1;
 
-    transform:
-    translate(-50%,-50%)
-    scale(1.2);
+    transform:scale(1.2);
 }
 
-/* 平移动画 */
+/* 引导 */
 
-.move-left{
+.tip{
 
-    transform:
-    translateX(-120px);
-}
+    position:absolute;
 
-.move-right{
+    bottom:30px;
 
-    transform:
-    translateX(120px);
-}
+    width:100%;
 
-.move-up{
+    text-align:center;
 
-    transform:
-    translateY(-80px);
-}
+    color:#7a8ea5;
 
-.move-down{
-
-    transform:
-    translateY(80px);
-}
-
-/* 手机 */
-
-@media(max-width:768px){
-
-    .mini-camera{
-
-        width:180px;
-
-        height:130px;
-    }
-
-    .guide-title{
-
-        font-size:28px;
-    }
-
-    .guide-text{
-
-        font-size:15px;
-    }
-
-    .result-text{
-
-        font-size:22px;
-    }
+    font-size:14px;
 }
 
 </style>
@@ -466,141 +280,81 @@ canvas{
 
 <body>
 
-<div class="container">
+<div class="page">
 
-    <!-- 顶部 -->
+    <!-- 顶部切换 -->
 
     <div class="topbar">
 
-        <div class="logo">
-            AI 手势交互系统
-        </div>
+        <button
+            class="mode-btn active"
+            id="detectBtn">
 
-        <div class="mode-buttons">
+            手势识别
+        </button>
 
-            <button
-                class="mode-btn active"
-                id="btnRecognition">
+        <button
+            class="mode-btn"
+            id="controlBtn">
 
-                手势识别
-            </button>
+            手势操控
+        </button>
 
-            <button
-                class="mode-btn"
-                id="btnControl">
+    </div>
 
-                手势操控
-            </button>
+    <!-- 手势识别 -->
+
+    <div class="view active" id="detectView">
+
+        <div class="detect-wrap">
+
+            <div class="camera-card">
+
+                <video id="video" autoplay muted playsinline></video>
+
+                <canvas id="canvas"></canvas>
+
+            </div>
+
+            <div class="result-card" id="resultText">
+
+                等待识别
+
+            </div>
 
         </div>
 
     </div>
 
-    <!-- 页面 -->
+    <!-- 手势操控 -->
 
-    <div class="page">
+    <div class="view" id="controlView">
 
-        <!-- ================= -->
-        <!-- 手势识别 -->
-        <!-- ================= -->
+        <div class="control-page">
 
-        <div id="recognitionPage">
+            <div class="small-camera">
 
-            <div class="camera-card">
+                <video id="video2" autoplay muted playsinline></video>
 
-                <div class="header">
-
-                    <div class="title">
-                        手势识别系统
-                    </div>
-
-                    <div class="subtitle">
-                        支持双手识别
-                    </div>
-
-                </div>
-
-                <video
-                    id="video"
-                    autoplay
-                    muted
-                    playsinline>
-                </video>
-
-                <canvas id="canvas"></canvas>
-
-                <button id="startBtn">
-                    启动识别
-                </button>
-
-                <div
-                    class="loading"
-                    id="loading">
-
-                    点击右上角启动摄像头
-                </div>
+                <canvas id="canvas2"></canvas>
 
             </div>
 
-            <div class="result-card">
+            <div class="control-text" id="controlText">
 
-                <div
-                    class="result-text"
-                    id="resultText">
-
-                    等待识别
-                </div>
-
-                <div class="result-desc">
-                    实时 AI 手势识别
-                </div>
+                张开手放大
 
             </div>
 
-        </div>
-
-        <!-- ================= -->
-        <!-- 手势操控 -->
-        <!-- ================= -->
-
-        <div id="controlPage">
-
-            <div class="mini-camera">
-
-                <video
-                    id="controlVideo"
-                    autoplay
-                    muted
-                    playsinline>
-                </video>
-
-                <canvas id="controlCanvas"></canvas>
-
-            </div>
-
-            <div class="guide" id="guide">
-
-                <div
-                    class="guide-title"
-                    id="guideTitle">
-
-                    手势操控模式
-                </div>
-
-                <div
-                    class="guide-text"
-                    id="guideText">
-
-                    张开手掌放大 · 握拳缩小 · 左右挥动切换
-                </div>
-
-            </div>
-
-            <div
-                class="like-effect"
-                id="likeEffect">
+            <div class="like" id="like">
 
                 👍
+            </div>
+
+            <div class="tip">
+
+                握拳缩小 · 张开放大 · 左右挥动移动 · 点赞触发特效
+
             </div>
 
         </div>
@@ -611,173 +365,114 @@ canvas{
 
 <script>
 
-/* ====================== */
 /* 元素 */
-/* ====================== */
 
 const video =
-    document.getElementById("video");
+document.getElementById("video");
 
 const canvas =
-    document.getElementById("canvas");
+document.getElementById("canvas");
 
 const ctx =
-    canvas.getContext("2d");
+canvas.getContext("2d");
 
-const controlVideo =
-    document.getElementById("controlVideo");
+const video2 =
+document.getElementById("video2");
 
-const controlCanvas =
-    document.getElementById("controlCanvas");
+const canvas2 =
+document.getElementById("canvas2");
 
-const controlCtx =
-    controlCanvas.getContext("2d");
+const ctx2 =
+canvas2.getContext("2d");
 
 const resultText =
-    document.getElementById("resultText");
+document.getElementById("resultText");
 
-const loading =
-    document.getElementById("loading");
+const controlText =
+document.getElementById("controlText");
 
-const guide =
-    document.getElementById("guide");
+const like =
+document.getElementById("like");
 
-const guideTitle =
-    document.getElementById("guideTitle");
+/* 模式切换 */
 
-const guideText =
-    document.getElementById("guideText");
+const detectView =
+document.getElementById("detectView");
 
-const likeEffect =
-    document.getElementById("likeEffect");
+const controlView =
+document.getElementById("controlView");
 
-/* 页面切换 */
+document.getElementById("detectBtn").onclick=()=>{
 
-const recognitionPage =
-    document.getElementById("recognitionPage");
+    detectView.classList.add("active");
+    controlView.classList.remove("active");
 
-const controlPage =
-    document.getElementById("controlPage");
+    document.getElementById("detectBtn")
+    .classList.add("active");
 
-const btnRecognition =
-    document.getElementById("btnRecognition");
-
-const btnControl =
-    document.getElementById("btnControl");
-
-let currentMode =
-    "recognition";
-
-/* ====================== */
-/* 切换页面 */
-/* ====================== */
-
-btnRecognition.onclick = ()=>{
-
-    currentMode =
-        "recognition";
-
-    recognitionPage.style.display =
-        "flex";
-
-    controlPage.style.display =
-        "none";
-
-    btnRecognition.classList.add(
-        "active"
-    );
-
-    btnControl.classList.remove(
-        "active"
-    );
+    document.getElementById("controlBtn")
+    .classList.remove("active");
 };
 
-btnControl.onclick = ()=>{
+document.getElementById("controlBtn").onclick=()=>{
 
-    currentMode =
-        "control";
+    controlView.classList.add("active");
+    detectView.classList.remove("active");
 
-    recognitionPage.style.display =
-        "none";
+    document.getElementById("controlBtn")
+    .classList.add("active");
 
-    controlPage.style.display =
-        "block";
-
-    btnControl.classList.add(
-        "active"
-    );
-
-    btnRecognition.classList.remove(
-        "active"
-    );
+    document.getElementById("detectBtn")
+    .classList.remove("active");
 };
 
-/* ====================== */
-/* 工具函数 */
-/* ====================== */
+/* resize */
 
-function resizeCanvas(){
+function resize(){
 
     canvas.width =
-        video.videoWidth;
+    video.videoWidth;
 
     canvas.height =
-        video.videoHeight;
+    video.videoHeight;
 
-    controlCanvas.width =
-        controlVideo.videoWidth;
+    canvas2.width =
+    video2.videoWidth;
 
-    controlCanvas.height =
-        controlVideo.videoHeight;
+    canvas2.height =
+    video2.videoHeight;
 }
 
-function fingerUp(tip,pip){
+/* 判断 */
 
-    return tip.y < pip.y;
+function fingerUp(t,p){
+
+    return t.y < p.y;
 }
 
-function distance(a,b){
-
-    return Math.hypot(
-        a.x - b.x,
-        a.y - b.y
-    );
-}
-
-/* ====================== */
 /* 手势识别 */
-/* ====================== */
 
 function recognize(lm){
 
+    const thumb =
+    lm[4].y < lm[3].y;
+
     const index =
-        fingerUp(lm[8],lm[6]);
+    fingerUp(lm[8],lm[6]);
 
     const middle =
-        fingerUp(lm[12],lm[10]);
+    fingerUp(lm[12],lm[10]);
 
     const ring =
-        fingerUp(lm[16],lm[14]);
+    fingerUp(lm[16],lm[14]);
 
     const pinky =
-        fingerUp(lm[20],lm[18]);
+    fingerUp(lm[20],lm[18]);
 
-    const thumbUp =
-        lm[4].y < lm[3].y &&
-        lm[3].y < lm[2].y;
-
-    const thumbDown =
-        lm[4].y > lm[3].y &&
-        lm[3].y > lm[2].y;
-
-    const thumb =
-        thumbUp;
-
-    const thumbIndexNear =
-        distance(lm[4],lm[8]) < 0.06;
+    /* 点赞 */
 
     if(
-        thumbUp &&
+        thumb &&
         !index &&
         !middle &&
         !ring &&
@@ -786,73 +481,7 @@ function recognize(lm){
         return "点赞";
     }
 
-    if(
-        thumbDown &&
-        !index &&
-        !middle &&
-        !ring &&
-        !pinky
-    ){
-        return "取消点赞";
-    }
-
-    if(
-        index &&
-        !middle &&
-        !ring &&
-        !pinky &&
-        !thumb
-    ){
-        return "数字1";
-    }
-
-    if(
-        index &&
-        middle &&
-        !ring &&
-        !pinky
-    ){
-        return "数字2 / 剪刀";
-    }
-
-    if(
-        index &&
-        middle &&
-        ring &&
-        !pinky
-    ){
-        return "数字3";
-    }
-
-    if(
-        index &&
-        middle &&
-        ring &&
-        pinky &&
-        !thumb
-    ){
-        return "数字4";
-    }
-
-    if(
-        thumb &&
-        index &&
-        middle &&
-        ring &&
-        pinky
-    ){
-        return "数字5 / 张开手掌";
-    }
-
-    if(
-        thumb &&
-        pinky &&
-        !index &&
-        !middle &&
-        !ring
-    ){
-        return "数字6 / 打电话";
-    }
+    /* 握拳 */
 
     if(
         !thumb &&
@@ -864,79 +493,69 @@ function recognize(lm){
         return "握拳";
     }
 
+    /* 张开 */
+
     if(
-        thumbIndexNear &&
+        thumb &&
+        index &&
         middle &&
         ring &&
         pinky
     ){
-        return "OK";
+        return "张开";
     }
 
-    return "识别中...";
+    /* 左 */
+
+    if(
+        index &&
+        !middle &&
+        !ring &&
+        !pinky
+    ){
+
+        if(lm[8].x < 0.35){
+
+            return "左";
+        }
+
+        if(lm[8].x > 0.65){
+
+            return "右";
+        }
+    }
+
+    return "识别中";
 }
 
-/* ====================== */
 /* 绘制 */
-/* ====================== */
 
-function drawHand(points,ctx2,canvas2){
+function draw(points,ctx,w,h){
 
-    const lines = [
-
-        [0,1],[1,2],[2,3],[3,4],
-        [0,5],[5,6],[6,7],[7,8],
-        [0,9],[9,10],[10,11],[11,12],
-        [0,13],[13,14],[14,15],[15,16],
-        [0,17],[17,18],[18,19],[19,20]
-    ];
-
-    ctx2.strokeStyle =
-        "#163a63";
-
-    ctx2.lineWidth = 2;
-
-    for(const [a,b] of lines){
-
-        ctx2.beginPath();
-
-        ctx2.moveTo(
-            points[a].x * canvas2.width,
-            points[a].y * canvas2.height
-        );
-
-        ctx2.lineTo(
-            points[b].x * canvas2.width,
-            points[b].y * canvas2.height
-        );
-
-        ctx2.stroke();
-    }
+    ctx.clearRect(0,0,w,h);
 
     for(const p of points){
 
-        ctx2.beginPath();
+        ctx.beginPath();
 
-        ctx2.arc(
-            p.x * canvas2.width,
-            p.y * canvas2.height,
+        ctx.arc(
+            p.x*w,
+            p.y*h,
             4,
             0,
-            Math.PI * 2
+            Math.PI*2
         );
 
-        ctx2.fillStyle =
-            "#163a63";
+        ctx.fillStyle="#163a63";
 
-        ctx2.fill();
+        ctx.fill();
     }
 }
 
-/* ====================== */
-/* MediaPipe */
-/* ====================== */
+/* mediapipe */
 
-const hands = new Hands({
+const hands =
+new Hands({
 
     locateFile:file => {
 
@@ -946,7 +565,7 @@ const hands = new Hands({
 
 hands.setOptions({
 
-    maxNumHands:2,
+    maxNumHands:1,
 
     modelComplexity:1,
 
@@ -955,224 +574,136 @@ hands.setOptions({
     minTrackingConfidence:0.7
 });
 
-/* ====================== */
-/* 结果 */
-/* ====================== */
-
-hands.onResults(results => {
-
-    ctx.clearRect(
-        0,0,
-        canvas.width,
-        canvas.height
-    );
-
-    controlCtx.clearRect(
-        0,0,
-        controlCanvas.width,
-        controlCanvas.height
-    );
+hands.onResults(results=>{
 
     if(
         results.multiHandLandmarks &&
-        results.multiHandLandmarks.length > 0
+        results.multiHandLandmarks.length>0
     ){
 
-        let texts = [];
+        const lm =
+        results.multiHandLandmarks[0];
 
-        for(const lm of results.multiHandLandmarks){
+        draw(
+            lm,
+            ctx,
+            canvas.width,
+            canvas.height
+        );
 
-            drawHand(
-                lm,
-                ctx,
-                canvas
-            );
+        draw(
+            lm,
+            ctx2,
+            canvas2.width,
+            canvas2.height
+        );
 
-            drawHand(
-                lm,
-                controlCtx,
-                controlCanvas
-            );
+        const gesture =
+        recognize(lm);
 
-            const text =
-                recognize(lm);
+        /* 原识别页面 */
 
-            texts.push(text);
+        resultText.innerText =
+        gesture;
 
-            /* 操控模式 */
+        /* 操控页面 */
 
-            if(
-                currentMode === "control"
-            ){
+        if(gesture==="握拳"){
 
-                /* 握拳 */
+            controlText.style.fontSize =
+            "34px";
 
-                if(
-                    text.includes("握拳")
-                ){
-
-                    guideTitle.style.fontSize =
-                        "24px";
-                }
-
-                /* 张开 */
-
-                if(
-                    text.includes("张开手掌")
-                ){
-
-                    guideTitle.style.fontSize =
-                        "60px";
-                }
-
-                /* 点赞 */
-
-                if(
-                    text.includes("点赞")
-                ){
-
-                    likeEffect.classList.add(
-                        "show"
-                    );
-                }
-
-                /* 取消点赞 */
-
-                if(
-                    text.includes("取消点赞")
-                ){
-
-                    likeEffect.classList.remove(
-                        "show"
-                    );
-                }
-
-                /* 左右 */
-
-                const wristX =
-                    lm[0].x;
-
-                const wristY =
-                    lm[0].y;
-
-                guide.className =
-                    "guide";
-
-                if(wristX < 0.3){
-
-                    guide.classList.add(
-                        "move-left"
-                    );
-                }
-
-                if(wristX > 0.7){
-
-                    guide.classList.add(
-                        "move-right"
-                    );
-                }
-
-                if(wristY < 0.3){
-
-                    guide.classList.add(
-                        "move-up"
-                    );
-                }
-
-                if(wristY > 0.7){
-
-                    guide.classList.add(
-                        "move-down"
-                    );
-                }
-            }
+            controlText.innerText =
+            "文字缩小";
         }
 
-        resultText.innerText =
-            texts.join(" + ");
+        if(gesture==="张开"){
 
-    }else{
+            controlText.style.fontSize =
+            "82px";
 
-        resultText.innerText =
-            "未检测到手";
+            controlText.innerText =
+            "文字放大";
+        }
+
+        if(gesture==="左"){
+
+            controlText.style.transform =
+            "translate(-65%,-50%)";
+
+            controlText.innerText =
+            "向左滑动";
+        }
+
+        if(gesture==="右"){
+
+            controlText.style.transform =
+            "translate(-35%,-50%)";
+
+            controlText.innerText =
+            "向右滑动";
+        }
+
+        if(gesture==="点赞"){
+
+            like.classList.add("show");
+
+            controlText.innerText =
+            "已点赞";
+
+            setTimeout(()=>{
+
+                like.classList.remove("show");
+
+            },600);
+        }
+
     }
 });
 
-/* ====================== */
 /* 摄像头 */
-/* ====================== */
 
-async function startCamera(){
+async function start(){
 
-    try{
+    const stream =
+    await navigator.mediaDevices.getUserMedia({
 
-        loading.innerText =
-            "正在启动摄像头...";
+        video:true,
+        audio:false
+    });
 
-        const stream =
-            await navigator.mediaDevices.getUserMedia({
+    video.srcObject = stream;
 
-                video:{
-                    facingMode:"user",
-                    width:{ideal:640},
-                    height:{ideal:480}
-                },
+    video2.srcObject = stream;
 
-                audio:false
+    await video.play();
+
+    await video2.play();
+
+    resize();
+
+    const camera =
+    new Camera(video,{
+
+        onFrame:async()=>{
+
+            await hands.send({
+                image:video
             });
+        },
 
-        video.srcObject =
-            stream;
+        width:640,
+        height:480
+    });
 
-        controlVideo.srcObject =
-            stream;
-
-        await video.play();
-
-        await controlVideo.play();
-
-        resizeCanvas();
-
-        loading.style.display =
-            "none";
-
-        const camera =
-            new Camera(video,{
-
-                onFrame:async()=>{
-
-                    await hands.send({
-                        image:video
-                    });
-                },
-
-                width:640,
-                height:480
-            });
-
-        camera.start();
-
-    }catch(err){
-
-        console.error(err);
-
-        loading.innerText =
-            "摄像头启动失败";
-    }
+    camera.start();
 }
 
-/* 启动 */
-
-document
-.getElementById("startBtn")
-.onclick = ()=>{
-
-    startCamera();
-};
+start();
 
 window.addEventListener(
     "resize",
-    resizeCanvas
+    resize
 );
 
 </script>

@@ -299,18 +299,10 @@ body{
     width:100%;
     height:100%;
 
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    justify-content:center;
-
-    gap:30px;
+    position:relative;
 }
 
-/* 中央交互文字 */
+/* 中央文字 */
 
 .center-text{
 
@@ -329,68 +321,28 @@ body{
 
     transition:
     font-size 0.25s,
-    transform 0.1s,
     left 0.08s linear,
-    top 0.08s linear;
+    top 0.08s linear,
+    transform 0.25s;
 }
+
+/* 提示 */
 
 .tip{
 
     position:absolute;
 
-    bottom:180px;
+    bottom:120px;
+
+    width:100%;
+
+    text-align:center;
 
     font-size:15px;
 
     color:#7d8ea3;
 
-    text-align:center;
-
-    line-height:1.8;
-}
-
-.menu{
-
-    position:absolute;
-
-    bottom:40px;
-
-    display:flex;
-
-    gap:24px;
-}
-
-.menu-item{
-
-    width:140px;
-    height:140px;
-
-    border-radius:26px;
-
-    background:#f5f8fc;
-
-    border:1px solid #dbe5f0;
-
-    display:flex;
-
-    justify-content:center;
-    align-items:center;
-
-    font-size:20px;
-
-    transition:0.25s;
-}
-
-.menu-item.active{
-
-    transform:translateY(-8px);
-
-    background:#163a63;
-
-    color:white;
-
-    box-shadow:
-    0 14px 28px rgba(22,58,99,0.18);
+    line-height:1.9;
 }
 
 /* 光标 */
@@ -414,11 +366,11 @@ body{
     z-index:99999;
 
     transition:
-    left 0.05s linear,
-    top 0.05s linear;
+    left 0.04s linear,
+    top 0.04s linear;
 }
 
-/* 点赞特效 */
+/* 点赞动画 */
 
 .like{
 
@@ -467,24 +419,13 @@ body{
         font-size:42px;
     }
 
-    .menu{
-
-        gap:12px;
-    }
-
-    .menu-item{
-
-        width:92px;
-        height:92px;
-
-        font-size:14px;
-    }
-
     .tip{
 
         width:90%;
 
-        bottom:150px;
+        left:5%;
+
+        bottom:90px;
 
         font-size:13px;
     }
@@ -530,11 +471,11 @@ body{
             <div class="header">
 
                 <div class="title">
-                    手势识别系统（识别不出时请将手背面向镜头）
+                    手势识别系统（建议手背朝向镜头）
                 </div>
 
                 <div class="subtitle">
-                    数字 / OK / 摇滚 / 点赞等
+                    数字 / OK / 点赞 / 张手 / 握拳
                 </div>
 
             </div>
@@ -613,12 +554,12 @@ body{
 
         <div class="tip">
 
-            👉 移动文字<br>
+            👉 食指移动文字<br>
             ✊ 握拳缩小　🖐 张开放大<br>
             👍 点赞特效　☝ 食指方向控制
 
         </div>
-        
+
     </div>
 
 </div>
@@ -669,9 +610,6 @@ const controlText =
 const cursor =
     document.getElementById("cursor");
 
-const menuItems =
-    document.querySelectorAll(".menu-item");
-
 /* 页面切换 */
 
 recognizeBtn.onclick = ()=>{
@@ -717,7 +655,7 @@ function resizeCanvas(){
         controlVideo.videoHeight;
 }
 
-/* 手势工具 */
+/* 工具 */
 
 function fingerUp(tip,pip){
 
@@ -732,16 +670,11 @@ function distance(a,b){
     );
 }
 
-/* 手势识别 */
+/* ========================= */
+/* 改进版手势识别 */
+/* ========================= */
 
 function recognize(lm){
-
-    const thumbOpen =
-        distance(lm[4],lm[3]) > 0.05;
-
-    const thumbUp =
-        lm[4].y < lm[3].y &&
-        lm[3].y < lm[2].y;
 
     const index =
         fingerUp(lm[8],lm[6]);
@@ -755,30 +688,51 @@ function recognize(lm){
     const pinky =
         fingerUp(lm[20],lm[18]);
 
-    const thumbIndexNear =
-        distance(lm[4],lm[8]) < 0.06;
+    /* 拇指状态 */
+
+    const thumbOpen =
+        distance(lm[4],lm[3]) > 0.045;
+
+    const thumbUp =
+        lm[4].y < lm[3].y &&
+        lm[3].y < lm[2].y;
+
+    /* 拇指和掌心距离 */
+
+    const thumbPalmDistance =
+        distance(lm[4],lm[9]);
 
     /* 点赞 */
 
     if(
+
         thumbUp &&
+
+        thumbPalmDistance > 0.22 &&
+
         !index &&
         !middle &&
         !ring &&
         !pinky
+
     ){
+
         return "点赞";
     }
 
     /* 握拳 */
 
     if(
-        !thumbOpen &&
+
+        thumbPalmDistance < 0.16 &&
+
         !index &&
         !middle &&
         !ring &&
         !pinky
+
     ){
+
         return "握拳";
     }
 
@@ -794,6 +748,8 @@ function recognize(lm){
         return "数字5 / 张开手掌";
     }
 
+    /* 数字1 */
+
     if(
         index &&
         !middle &&
@@ -802,6 +758,8 @@ function recognize(lm){
     ){
         return "数字1";
     }
+
+    /* 数字2 */
 
     if(
         index &&
@@ -812,23 +770,15 @@ function recognize(lm){
         return "数字2 / 剪刀";
     }
 
+    /* OK */
+
     if(
-        thumbIndexNear &&
+        distance(lm[4],lm[8]) < 0.06 &&
         middle &&
         ring &&
         pinky
     ){
         return "OK";
-    }
-
-    if(
-        thumbOpen &&
-        pinky &&
-        !index &&
-        !middle &&
-        !ring
-    ){
-        return "数字6 / 打电话";
     }
 
     return "识别中...";
@@ -892,7 +842,7 @@ function drawHand(points,context,w,h){
     }
 }
 
-/* 点赞特效 */
+/* 点赞动画 */
 
 let likeLock = false;
 
@@ -996,7 +946,9 @@ hands.onResults(results => {
 
             texts.push(gesture);
 
+            /* ========================= */
             /* 操控模式 */
+            /* ========================= */
 
             if(
                 controlPage.style.display !== "none"
@@ -1018,7 +970,7 @@ hands.onResults(results => {
                 cursor.style.top =
                     y + "px";
 
-                /* 文字跟随手移动 */
+                /* 文字跟随 */
 
                 controlText.style.left =
                     x + "px";
@@ -1026,31 +978,7 @@ hands.onResults(results => {
                 controlText.style.top =
                     y + "px";
 
-                /* 菜单 hover */
-
-                menuItems.forEach(item=>{
-
-                    const rect =
-                        item.getBoundingClientRect();
-
-                    if(
-
-                        x > rect.left &&
-                        x < rect.right &&
-                        y > rect.top &&
-                        y < rect.bottom
-
-                    ){
-
-                        item.classList.add("active");
-
-                    }else{
-
-                        item.classList.remove("active");
-                    }
-                });
-
-                /* 握拳缩小 */
+                /* 握拳 */
 
                 if(
                     gesture === "握拳"
@@ -1063,9 +991,9 @@ hands.onResults(results => {
                         "36px";
                 }
 
-                /* 张开放大 */
+                /* 张手 */
 
-                if(
+                else if(
                     gesture ===
                     "数字5 / 张开手掌"
                 ){
@@ -1079,19 +1007,22 @@ hands.onResults(results => {
 
                 /* 点赞 */
 
-                if(
+                else if(
                     gesture === "点赞"
                 ){
 
                     controlText.innerText =
                         "已点赞";
 
+                    controlText.style.fontSize =
+                        "72px";
+
                     showLike();
                 }
 
                 /* 食指方向 */
 
-                if(
+                else if(
                     gesture === "数字1"
                 ){
 
@@ -1104,6 +1035,9 @@ hands.onResults(results => {
                     const dy =
                         tip.y - base.y;
 
+                    controlText.style.fontSize =
+                        "72px";
+
                     if(
                         Math.abs(dx) >
                         Math.abs(dy)
@@ -1113,7 +1047,6 @@ hands.onResults(results => {
 
                             controlText.innerText =
                                 "向左";
-
                         }else{
 
                             controlText.innerText =
@@ -1126,7 +1059,6 @@ hands.onResults(results => {
 
                             controlText.innerText =
                                 "向下";
-
                         }else{
 
                             controlText.innerText =

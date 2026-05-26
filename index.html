@@ -815,7 +815,7 @@ body{
                 </div>
 
                 <div class="subtitle">
-                    支持：0~6、点赞、OK、剪刀、握拳、张手
+                    支持：0~5、点赞、OK、剪刀、握拳、张手
                 </div>
 
             </div>
@@ -1405,6 +1405,8 @@ let clickedLock = false;
 
 let lastClickTime = 0;
 
+let leaveTimer = null;
+
 function hoverDetect(x,y){
 
     const allTargets = [
@@ -1443,6 +1445,8 @@ function hoverDetect(x,y){
 
     if(found){
 
+        clearTimeout(leaveTimer);
+
         found.classList.add(
             "hovering"
         );
@@ -1476,13 +1480,19 @@ function hoverDetect(x,y){
         
             clickedLock = true;
         }
-    }else{
+   }else{
 
-        hoverTarget = null;
-
-        hoverStart = 0;
-
-        clickedLock = false;
+        clearTimeout(leaveTimer);
+    
+        leaveTimer = setTimeout(()=>{
+    
+            hoverTarget = null;
+    
+            hoverStart = 0;
+    
+            clickedLock = false;
+    
+        },120);
     }
 }
 

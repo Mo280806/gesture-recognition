@@ -1477,67 +1477,65 @@ function detectSwipe(lm){
 
     const now = Date.now();
 
-    if(now - lastSwipeTime < 1200){
-
+    // 冷却时间（防连发）
+    if(now - lastSwipeTime < 900){
         return;
     }
 
-    swipeTrack.push({
+    const x = lm[8].x; // 用食指尖更稳定
+    const y = lm[8].y;
 
-        x: lm[0].x,
-        y: lm[0].y,
-        t: now
-    });
+    swipeTrack.push({ x, y, t: now });
 
-    if(swipeTrack.length > 10){
-
+    // 保留更多历史（提升稳定性）
+    if(swipeTrack.length > 12){
         swipeTrack.shift();
     }
 
-    if(swipeTrack.length < 6){
-
+    if(swipeTrack.length < 5){
         return;
     }
 
-    const first =
-    swipeTrack[0];
+    const first = swipeTrack[0];
+    const last = swipeTrack.at(-1);
 
-    const last =
-    swipeTrack[
-        swipeTrack.length-1
-    ];
+    const dx = last.x - first.x;
+    const dy = Math.abs(last.y - first.y);
+    const dt = last.t - first.t;
 
-    const dx =
-    last.x - first.x;
+    // ❗关键优化1：累计位移降低门槛
+    const absDx = Math.abs(dx);
 
-    const dy =
-    Math.abs(last.y - first.y);
+    // ❗关键优化2：速度判断（防慢移动误触）
+    const velocity = absDx / dt;
 
-    const dt =
-    last.t - first.t;
+    // ❗关键优化3：中间点方向一致性
+    let directionScore = 0;
 
-    const velocity =
-    Math.abs(dx) / dt;
+    for(let i=1;i<swipeTrack.length;i++){
+        const d1 = swipeTrack[i].x - swipeTrack[i-1].x;
+        directionScore += (dx > 0 ? d1 > 0 : d1 < 0) ? 1 : -1;
+    }
+
+    const consistency = directionScore / swipeTrack.length;
+
+    // =========================
+    // 🎯 新判定条件（重点）
+    // =========================
 
     if(
-
-        Math.abs(dx) > 0.34 &&
-        dy < 0.08 &&
-        velocity > 0.0028
-
+        absDx > 0.18 &&        // ✅ 更灵敏（原来0.34）
+        dy < 0.12 &&           // ✅ 放宽上下抖动
+        velocity > 0.0012 &&   // ✅ 防慢滑误触
+        consistency > 0.4      // ✅ 方向一致性
     ){
-
         if(dx > 0){
-
             nextPage();
-
         }else{
-
             prevPage();
         }
 
         swipeTrack = [];
-
         lastSwipeTime = now;
     }
 }

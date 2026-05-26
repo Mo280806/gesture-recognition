@@ -1233,7 +1233,7 @@ function distance(a,b){
 function recognize(lm){
 
     const thumb =
-        Math.abs(lm[4].x - lm[2].x) > 0.08;
+        lm[4].x < lm[3].x;
 
     const index =
         fingerUp(lm[8],lm[6]);
@@ -1407,6 +1407,10 @@ let lastClickTime = 0;
 
 let leaveTimer = null;
 
+let hoverStableX = 0;
+    
+let hoverStableY = 0;
+
 function hoverDetect(x,y){
 
     const allTargets = [
@@ -1457,6 +1461,10 @@ function hoverDetect(x,y){
 
         if(hoverTarget !== found){
 
+            hoverStableX = x;
+            
+            hoverStableY = y;
+
             hoverTarget = found;
 
             hoverStart = Date.now();
@@ -1464,14 +1472,16 @@ function hoverDetect(x,y){
             clickedLock = false;
         }
 
+       const moveDist = Math.hypot(
+            x - hoverStableX,
+            y - hoverStableY
+        );
+        
         if(
-
             !clickedLock &&
-        
+            moveDist < 25 &&
             Date.now() - hoverStart > 800 &&
-        
             Date.now() - lastClickTime > 1200
-        
         ){
         
             autoClick(found);

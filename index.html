@@ -1467,79 +1467,234 @@ function autoClick(el){
 }
 
 /* =========================
-   swipe（升级）
+   🚀 四方向挥手翻页系统
 ========================= */
 
 let swipeTrack = [];
+
+let swipeLocked = false;
+
 let lastSwipeTime = 0;
+
+/* 参数 */
+
+const SWIPE_TRACK_LENGTH = 8;
+
+/* 横向距离 */
+const SWIPE_X_DISTANCE =
+isMobile ? 0.14 : 0.11;
+
+/* 纵向距离 */
+const SWIPE_Y_DISTANCE =
+isMobile ? 0.16 : 0.13;
+
+/* 横向容差 */
+const SWIPE_Y_LIMIT = 0.09;
+
+/* 纵向容差 */
+const SWIPE_X_LIMIT = 0.09;
+
+/* 冷却 */
+const SWIPE_COOLDOWN = 850;
 
 function detectSwipe(lm){
 
     const now = Date.now();
 
-    // 冷却时间（防连发）
-    if(now - lastSwipeTime < 900){
+    if(
+        swipeLocked ||
+        now - lastSwipeTime < SWIPE_COOLDOWN
+    ){
         return;
     }
 
-    const x = lm[8].x; // 用食指尖更稳定
+    /* 食指坐标 */
+
+    const x = lm[8].x;
     const y = lm[8].y;
 
-    swipeTrack.push({ x, y, t: now });
+    /* 手势过滤 */
 
-    // 保留更多历史（提升稳定性）
-    if(swipeTrack.length > 12){
+    const indexUp =
+    lm[8].y < lm[6].y;
+
+    const middleUp =
+    lm[12].y < lm[10].y;
+
+    /* 至少伸出两指 */
+
+    const validHand =
+    indexUp && middleUp;
+
+    if(!validHand){
+
+        swipeTrack = [];
+
+        return;
+    }
+
+    /* 记录轨迹 */
+
+    swipeTrack.push({
+        x,
+        y,
+        time:now
+    });
+
+    if(
+        swipeTrack.length >
+        SWIPE_TRACK_LENGTH
+    ){
+
         swipeTrack.shift();
     }
 
-    if(swipeTrack.length < 5){
+    if(
+        swipeTrack.length <
+        SWIPE_TRACK_LENGTH
+    ){
         return;
     }
 
-    const first = swipeTrack[0];
-    const last = swipeTrack.at(-1);
+    /* 起点终点 */
 
-    const dx = last.x - first.x;
-    const dy = Math.abs(last.y - first.y);
-    const dt = last.t - first.t;
+    const first =
+    swipeTrack[0];
 
-    // ❗关键优化1：累计位移降低门槛
-    const absDx = Math.abs(dx);
+    const last =
+    swipeTrack[
+        swipeTrack.length - 1
+    ];
 
-    // ❗关键优化2：速度判断（防慢移动误触）
-    const velocity = absDx / dt;
+    const dx =
+    last.x - first.x;
 
-    // ❗关键优化3：中间点方向一致性
-    let directionScore = 0;
+    const dy =
+    last.y - first.y;
+
+    /* 稳定性检测 */
+
+    let stableX = true;
+    let stableY = true;
 
     for(let i=1;i<swipeTrack.length;i++){
-        const d1 = swipeTrack[i].x - swipeTrack[i-1].x;
-        directionScore += (dx > 0 ? d1 > 0 : d1 < 0) ? 1 : -1;
-    }
 
-    const consistency = directionScore / swipeTrack.length;
+        const mx =
+        Math.abs(
+            swipeTrack[i].x -
+            swipeTrack[i-1].x
+        );
 
-    // =========================
-    // 🎯 新判定条件（重点）
-    // =========================
+        const my =
+        Math.abs(
+            swipeTrack[i].y -
+            swipeTrack[i-1].y
+        );
 
-    if(
-        absDx > 0.18 &&        // ✅ 更灵敏（原来0.34）
-        dy < 0.12 &&           // ✅ 放宽上下抖动
-        velocity > 0.0012 &&   // ✅ 防慢滑误触
-        consistency > 0.4      // ✅ 方向一致性
-    ){
-        if(dx > 0){
-            nextPage();
-        }else{
-            prevPage();
+        /* 抖动过大 */
+
+        if(mx > 0.12){
+
+            stableY = false;
         }
 
-        swipeTrack = [];
+        if(my > 0.12){
+
+            stableX = false;
+        }
+    }
+
+    let triggered = false;
+
+    /* =========================
+       👉 左右挥动
+    ========================= */
+
+    if(
+
+        Math.abs(dx) >
+        SWIPE_X_DISTANCE &&
+
+        Math.abs(dy) <
+        SWIPE_Y_LIMIT &&
+
+        stableX
+
+    ){
+
+        triggered = true;
+
+        /* 👉 向右挥 = 下一页 */
+
+        if(dx > 0){
+
+            nextPage();
+
+        }else{
+
+            prevPage();
+        }
+    }
+
+    /* =========================
+       👆👇 上下挥动
+    ========================= */
+
+    else if(
+
+        Math.abs(dy) >
+        SWIPE_Y_DISTANCE &&
+
+        Math.abs(dx) <
+        SWIPE_X_LIMIT &&
+
+        stableY
+
+    ){
+
+        triggered = true;
+
+        /* 👇 向下挥 = 下一页 */
+
+        if(dy > 0){
+
+            nextPage();
+
+        }else{
+
+            prevPage();
+        }
+    }
+
+    /* =========================
+       触发反馈
+    ========================= */
+
+    if(triggered){
+
+        swipeLocked = true;
+
+        cursor.animate(
+        [
+            {transform:"scale(1)"},
+            {transform:"scale(1.9)"},
+            {transform:"scale(1)"}
+        ],
+        {
+            duration:260
+        });
+
         lastSwipeTime = now;
+
+        swipeTrack = [];
+
+        setTimeout(()=>{
+
+            swipeLocked = false;
+
+        },SWIPE_COOLDOWN);
     }
 }
-
 /* =========================
    MediaPipe
 ========================= */

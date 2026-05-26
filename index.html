@@ -3,7 +3,7 @@
 
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
 
 <title>手势交互系统</title>
 
@@ -11,646 +11,654 @@
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js"></script>
 
 <style>
+/* =========================
+   🎯 Ultra Minimal Gesture UI
+   高级极简设计系统 - 移动端优化版
+========================= */
 
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-
     font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "PingFang SC",
-    "Microsoft YaHei",
-    sans-serif;
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "PingFang SC",
+        "Helvetica Neue",
+        sans-serif;
 }
 
 body{
-
-    background:#edf3fa;
-
+    background:#f4f6fb;
+    color:#111827;
     overflow:hidden;
-
-    color:#163a63;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
 }
 
-/* 顶部 */
+/* =========================
+   🧭 顶部导航（极简悬浮胶囊）
+========================= */
 
 .top-bar{
-
     position:fixed;
-
     top:18px;
     left:50%;
-
     transform:translateX(-50%);
-
     display:flex;
-
-    gap:12px;
-
-    z-index:999999;
+    gap:8px;
+    padding:6px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.6);
+    backdrop-filter:blur(18px);
+    border:1px solid rgba(0,0,0,0.06);
+    z-index:9999;
 }
 
 .mode-btn{
-
     border:none;
-
-    padding:12px 22px;
-
-    border-radius:16px;
-
-    background:rgba(255,255,255,0.95);
-
-    color:#163a63;
-
-    font-size:14px;
-
+    background:transparent;
+    padding:8px 14px;
+    font-size:13px;
+    border-radius:999px;
+    color:#374151;
     cursor:pointer;
-
-    transition:0.2s;
-
-    backdrop-filter:blur(10px);
-
-    box-shadow:
-    0 6px 24px rgba(0,0,0,0.06);
+    transition:all .2s ease;
 }
 
 .mode-btn.active{
-
-    background:#163a63;
-
-    color:white;
+    background:#111827;
+    color:#fff;
 }
 
-/* 识别 */
+.mode-btn:hover{
+    opacity:.7;
+}
+
+/* =========================
+   📷 识别页（更轻）
+========================= */
 
 .recognize-page{
-
     width:100vw;
     height:100vh;
-
     display:flex;
-
     justify-content:center;
     align-items:center;
 }
 
 .container{
-
-    width:min(980px,94vw);
-
-    height:min(92vh,920px);
-
+    width:min(920px,92vw);
     display:flex;
-
     flex-direction:column;
-
-    gap:18px;
+    gap:14px;
 }
 
+/* 摄像头卡片 */
 .camera-card{
-
-    flex:1;
-
     position:relative;
-
+    height:min(68vh,680px);
+    border-radius:20px;
     overflow:hidden;
-
-    border-radius:28px;
-
-    background:#f5f8fc;
-
-    border:1px solid #dbe5f0;
-
-    box-shadow:
-    0 15px 40px rgba(22,58,99,0.08);
+    background:#0b0f17;
+    border:1px solid rgba(255,255,255,0.06);
 }
 
 #video,
 #canvas{
-
     position:absolute;
-
     width:100%;
     height:100%;
-
     object-fit:cover;
-
     transform:scaleX(-1);
 }
 
-#canvas{
-    pointer-events:none;
-}
-
+/* 标题浮层 */
 .header{
-
     position:absolute;
-
-    top:18px;
-    left:20px;
-
-    z-index:10;
-
-    background:rgba(255,255,255,0.86);
-
-    backdrop-filter:blur(10px);
-
-    padding:14px 18px;
-
-    border-radius:18px;
+    top:14px;
+    left:14px;
+    padding:10px 12px;
+    border-radius:12px;
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(12px);
+    color:#fff;
 }
 
 .title{
-
-    font-size:18px;
-
-    font-weight:700;
+    font-size:14px;
+    font-weight:600;
 }
 
 .subtitle{
-
-    margin-top:5px;
-
-    font-size:13px;
-
-    color:#71849b;
-
-    line-height:1.7;
+    font-size:11px;
+    opacity:.7;
+    margin-top:2px;
 }
 
+/* 启动按钮 */
 #startBtn{
-
     position:absolute;
-
-    top:20px;
-    right:20px;
-
+    top:14px;
+    right:14px;
     border:none;
-
-    background:#163a63;
-
-    color:white;
-
-    padding:12px 18px;
-
-    border-radius:14px;
-
-    font-size:14px;
-
-    cursor:pointer;
-
-    z-index:999;
+    padding:9px 12px;
+    border-radius:10px;
+    font-size:12px;
+    background:rgba(255,255,255,0.9);
+    color:#111827;
 }
 
 .loading{
-
     position:absolute;
-
     left:50%;
     top:50%;
-
     transform:translate(-50%,-50%);
-
-    background:white;
-
-    padding:14px 20px;
-
-    border-radius:16px;
-
-    border:1px solid #dbe5f0;
-
-    font-size:14px;
-
-    z-index:999;
+    font-size:12px;
+    color:rgba(255,255,255,0.8);
 }
 
 .result-card{
-
-    min-height:120px;
-
-    border-radius:24px;
-
-    background:white;
-
-    border:1px solid #dbe5f0;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    padding:18px;
-
-    box-shadow:
-    0 10px 25px rgba(22,58,99,0.06);
+    background:rgba(255,255,255,0.6);
+    backdrop-filter:blur(16px);
+    border:1px solid rgba(0,0,0,0.06);
+    border-radius:16px;
+    padding:16px;
+    text-align:center;
 }
 
 .name{
-
-    font-size:30px;
-
-    font-weight:700;
-
-    text-align:center;
-
-    line-height:1.8;
+    font-size:18px;
+    font-weight:600;
 }
 
-/* 阅读 */
+/* =========================
+   📖 阅读模式（移动端优化重点）
+========================= */
 
 .control-page{
-
     width:100vw;
     height:100vh;
-
     display:none;
-
     position:relative;
 }
 
+/* 浮动摄像头 - 移动端优化 */
 .floating-camera{
-
     position:fixed;
-
-    top:18px;
-    left:18px;
-
-    width:230px;
-    height:170px;
-
-    border-radius:22px;
-
+    top:14px;
+    left:14px;
+    width:48px;
+    height:48px;
+    border-radius:12px;
     overflow:hidden;
+    background:#000;
+    z-index:999;
+    transition:all .3s cubic-bezier(0.2,0.9,0.4,1.1);
+    box-shadow:0 4px 12px rgba(0,0,0,0.15);
+}
 
-    background:white;
-
-    border:1px solid #dbe5f0;
-
-    box-shadow:
-    0 10px 30px rgba(22,58,99,0.08);
-
-    z-index:99999;
+.floating-camera.expand{
+    width:120px;
+    height:90px;
+    border-radius:16px;
 }
 
 #controlVideo,
 #controlCanvas{
-
-    position:absolute;
-
     width:100%;
     height:100%;
-
     object-fit:cover;
-
     transform:scaleX(-1);
 }
 
-#controlCanvas{
-    pointer-events:none;
-}
-
+/* 阅读容器 - 移动端全屏适配 */
 .reader-container{
-
-    width:min(1000px,88vw);
-
-    height:min(84vh,880px);
-
-    background:white;
-
-    border-radius:34px;
-
-    overflow:hidden;
-
-    display:flex;
-
-    flex-direction:column;
-
     position:absolute;
-
-    left:50%;
-    top:50%;
-
-    transform:translate(-50%,-50%);
-
-    box-shadow:
-    0 20px 60px rgba(22,58,99,0.12);
-
-    border:1px solid #dbe5f0;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:#ffffff;
+    display:flex;
+    flex-direction:column;
+    z-index:1;
 }
 
+/* 阅读头部 */
 .reader-header{
-
-    height:72px;
-
+    padding:14px 18px;
+    border-bottom:1px solid rgba(0,0,0,0.05);
     display:flex;
-
-    align-items:center;
-
     justify-content:space-between;
-
-    padding:0 28px;
-
-    border-bottom:1px solid #e9eef5;
+    align-items:center;
+    background:inherit;
 }
 
 .reader-title{
-
-    font-size:22px;
-
-    font-weight:700;
+    font-size:14px;
+    font-weight:600;
 }
 
 .page-info{
-
-    font-size:14px;
-
-    color:#7a8ca2;
+    font-size:11px;
+    color:#6b7280;
 }
 
+/* 内容区 - 关键修复 */
 .reader-content{
-
     flex:1;
-
-    padding:42px;
-
+    padding:16px 20px;
     overflow:hidden;
+    position:relative;
 }
 
+/* 书页 - 移动端滚动优化 */
 .book-page{
-
-    width:100%;
     height:100%;
-
     overflow-y:auto;
-
-    font-size:24px;
-
-    line-height:2.2;
-
-    color:#1d2b3a;
-
-    transition:0.2s;
-
+    font-size:16px;
+    line-height:1.8;
+    color:#111827;
     user-select:none;
+    -webkit-overflow-scrolling:touch;
+    padding-right:4px;
 }
 
+/* 横排模式 - 移动端优化 */
 .horizontal-mode{
-
     column-count:2;
-
-    column-gap:60px;
+    column-gap:20px;
+    column-rule:1px solid rgba(0,0,0,0.05);
 }
+
+.horizontal-mode p{
+    break-inside:avoid;
+    margin-bottom:12px;
+}
+
+/* =========================
+   🎛 底部控制栏（移动端优化）
+========================= */
 
 .control-panel{
-
-    height:92px;
-
-    border-top:1px solid #e9eef5;
-
+    position:fixed;
+    bottom:20px;
+    left:50%;
+    transform:translateX(-50%);
     display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    gap:18px;
-
-    padding:10px;
+    gap:12px;
+    padding:10px 20px;
+    border-radius:40px;
+    background:rgba(255,255,255,0.85);
+    backdrop-filter:blur(24px);
+    border:1px solid rgba(0,0,0,0.06);
+    z-index:100;
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
 }
 
 .control-btn{
-
-    min-width:120px;
-
-    height:50px;
-
     border:none;
-
-    border-radius:16px;
-
-    background:#edf3fb;
-
-    color:#163a63;
-
-    font-size:15px;
-
+    background:transparent;
+    padding:8px 16px;
+    font-size:13px;
+    font-weight:500;
+    border-radius:30px;
+    color:#374151;
     cursor:pointer;
-
-    transition:
-    transform 0.08s,
-    background 0.08s,
-    color 0.08s;
+    transition:all .2s ease;
 }
 
 .control-btn.hovering{
-
-    background:#163a63;
-
-    color:white;
-
-    transform:scale(1.05);
+    background:#111827;
+    color:#fff;
 }
 
+/* =========================
+   📋 菜单浮层（移动端优化）
+========================= */
+
 .menu-panel{
-
-    position:absolute;
-
-    right:24px;
-    top:90px;
-
-    width:250px;
-
-    background:white;
-
-    border-radius:20px;
-
-    border:1px solid #dbe5f0;
-
-    box-shadow:
-    0 15px 35px rgba(22,58,99,0.12);
-
-    padding:16px;
-
+    position:fixed;
+    right:16px;
+    bottom:80px;
+    width:160px;
+    background:rgba(255,255,255,0.92);
+    backdrop-filter:blur(20px);
+    border:1px solid rgba(0,0,0,0.06);
+    border-radius:16px;
+    padding:8px;
     display:none;
-
-    z-index:99999;
+    z-index:200;
+    box-shadow:0 8px 24px rgba(0,0,0,0.12);
 }
 
 .menu-panel.show{
-
     display:block;
 }
 
 .menu-item{
-
-    padding:14px;
-
-    border-radius:14px;
-
-    margin-bottom:10px;
-
-    background:#f4f8fd;
-
-    transition:
-    transform 0.08s,
-    background 0.08s,
-    color 0.08s;
+    padding:12px 10px;
+    font-size:13px;
+    border-radius:10px;
+    color:#374151;
+    cursor:pointer;
+    transition:background .2s ease;
 }
 
 .menu-item.hovering{
-
-    background:#163a63;
-
-    color:white;
-
-    transform:scale(1.03);
+    background:rgba(0,0,0,0.08);
 }
 
-.night{
+/* =========================
+   🌙 夜间模式
+========================= */
 
-    background:#0e141b;
+.night{
+    background:#0a0d12;
 }
 
 .night .reader-container{
+    background:#0f141b;
+}
 
-    background:#1a2028;
+.night .reader-header{
+    border-bottom-color:rgba(255,255,255,0.06);
 }
 
 .night .book-page,
 .night .reader-title{
-
-    color:#eef4fb;
+    color:#e5e7eb;
 }
 
 .night .page-info{
-
-    color:#98a8bb;
+    color:#9ca3af;
 }
 
-/* 光标 */
+.night .control-panel{
+    background:rgba(30,35,45,0.9);
+    border-color:rgba(255,255,255,0.08);
+}
+
+.night .control-btn{
+    color:#d1d5db;
+}
+
+.night .control-btn.hovering{
+    background:#e5e7eb;
+    color:#111827;
+}
+
+.night .menu-panel{
+    background:rgba(30,35,45,0.95);
+    border-color:rgba(255,255,255,0.08);
+}
+
+.night .menu-item{
+    color:#d1d5db;
+}
+
+.night .menu-item.hovering{
+    background:rgba(255,255,255,0.1);
+}
+
+/* =========================
+   🎯 光标（移动端优化）
+========================= */
 
 .cursor{
-
     position:fixed;
-
-    width:24px;
-    height:24px;
-
+    width:14px;
+    height:14px;
     border-radius:50%;
-
-    background:#163a63;
-
+    background:#111827;
     pointer-events:none;
-
-    z-index:999999;
-
-    box-shadow:
-    0 0 18px rgba(22,58,99,0.35);
-
-    will-change:transform;
-
-    transform:
-        translate3d(0,0,0);
-
-    transition:
-        background 0.1s;
+    z-index:10000;
+    opacity:0.5;
+    transition:transform 0.05s linear;
+    box-shadow:0 0 0 2px rgba(255,255,255,0.3);
 }
 
-.cursor::after{
-
-    content:"";
-
-    position:absolute;
-
-    inset:-10px;
-
-    border-radius:50%;
-
-    border:3px solid rgba(22,58,99,0.15);
-
-    border-top-color:#163a63;
-
-    opacity:0;
-
-    transform:scale(0.8);
-
-    transition:0.15s;
+.cursor.hovering{
+    opacity:0.8;
+    transform:scale(1.2);
 }
 
-.cursor.hovering::after{
-
-    opacity:1;
-
-    animation:
-        hoverRing 0.8s linear forwards;
-}
-
-@keyframes hoverRing{
-
-    from{
-
-        transform:rotate(0deg);
-    }
-
-    to{
-
-        transform:rotate(360deg);
-    }
-}
-
-.cursor-trail{
-
-    position:fixed;
-
-    width:12px;
-    height:12px;
-
-    border-radius:50%;
-
-    background:rgba(22,58,99,0.18);
-
-    pointer-events:none;
-
-    z-index:999998;
-
-    will-change:transform;
-}
+/* =========================
+   手势状态提示（移动端优化）
+========================= */
 
 .gesture-status{
-
     position:fixed;
-
-    bottom:18px;
-
+    bottom:12px;
     left:50%;
-
     transform:translateX(-50%);
-
-    background:rgba(255,255,255,0.92);
-
-    backdrop-filter:blur(10px);
-
-    border-radius:18px;
-
-    border:1px solid #dbe5f0;
-
-    padding:14px 22px;
-
-    font-size:14px;
-
-    color:#61758c;
-
-    z-index:999999;
-
-    box-shadow:
-    0 10px 25px rgba(22,58,99,0.08);
-
+    font-size:10px;
+    color:#6b7280;
+    background:rgba(255,255,255,0.7);
+    backdrop-filter:blur(12px);
+    padding:6px 12px;
+    border-radius:20px;
     white-space:nowrap;
+    z-index:100;
+    pointer-events:none;
+    display:flex;
+    gap:12px;
 }
 
+.gesture-status span{
+    margin:0 4px;
+}
+
+.night .gesture-status{
+    background:rgba(0,0,0,0.5);
+    color:#9ca3af;
+}
+
+/* =========================
+   📱 移动端彻底优化（核心修复）
+========================= */
+
+@media (max-width:768px){
+
+    /* 顶部导航 */
+    .top-bar{
+        top:12px;
+        padding:4px 4px;
+        gap:4px;
+        z-index:10001;
+    }
+
+    .mode-btn{
+        padding:6px 12px;
+        font-size:12px;
+    }
+
+    /* 识别页 */
+    .container{
+        width:96vw;
+        gap:10px;
+    }
+
+    .camera-card{
+        height:min(60vh,500px);
+        border-radius:16px;
+    }
+
+    .header{
+        top:10px;
+        left:10px;
+        padding:6px 10px;
+    }
+
+    .title{
+        font-size:12px;
+    }
+
+    .subtitle{
+        font-size:9px;
+        display:none;
+    }
+
+    .result-card{
+        padding:12px;
+    }
+
+    .name{
+        font-size:14px;
+    }
+
+    /* 阅读页 - 关键优化 */
+    .floating-camera{
+        width:44px;
+        height:44px;
+        top:12px;
+        left:12px;
+        z-index:10001;
+    }
+
+    .floating-camera.expand{
+        width:100px;
+        height:75px;
+    }
+
+    .reader-header{
+        padding:12px 16px;
+    }
+
+    .reader-title{
+        font-size:13px;
+    }
+
+    .page-info{
+        font-size:10px;
+    }
+
+    .reader-content{
+        padding:12px 16px;
+    }
+
+    .book-page{
+        font-size:15px;
+        line-height:1.7;
+    }
+
+    .horizontal-mode{
+        column-gap:16px;
+    }
+
+    /* 控制栏 - 移动端增大触摸区域 */
+    .control-panel{
+        bottom:16px;
+        gap:8px;
+        padding:8px 16px;
+    }
+
+    .control-btn{
+        padding:8px 20px;
+        font-size:13px;
+    }
+
+    /* 菜单 - 移动端调整位置 */
+    .menu-panel{
+        right:12px;
+        bottom:70px;
+        width:150px;
+        padding:6px;
+    }
+
+    .menu-item{
+        padding:10px 10px;
+        font-size:12px;
+    }
+
+    /* 手势状态 - 移动端换行 */
+    .gesture-status{
+        bottom:8px;
+        font-size:9px;
+        padding:4px 10px;
+        white-space:normal;
+        flex-wrap:wrap;
+        justify-content:center;
+        width:90%;
+        border-radius:16px;
+        gap:8px;
+    }
+
+    /* 光标 - 移动端稍微加大 */
+    .cursor{
+        width:16px;
+        height:16px;
+        opacity:0.4;
+    }
+}
+
+/* 超小屏幕（iPhone SE等） */
+@media (max-width:380px){
+    .control-btn{
+        padding:6px 14px;
+        font-size:12px;
+    }
+
+    .gesture-status{
+        font-size:8px;
+        bottom:6px;
+    }
+
+    .reader-content{
+        padding:10px 12px;
+    }
+
+    .book-page{
+        font-size:14px;
+    }
+}
+
+/* 横屏模式优化 */
+@media (orientation:landscape) and (max-height:500px){
+    .floating-camera{
+        width:40px;
+        height:40px;
+    }
+
+    .floating-camera.expand{
+        width:90px;
+        height:68px;
+    }
+
+    .reader-header{
+        padding:8px 16px;
+    }
+
+    .reader-content{
+        padding:8px 16px;
+    }
+
+    .control-panel{
+        bottom:10px;
+        padding:6px 12px;
+    }
+
+    .gesture-status{
+        display:none;
+    }
+}
+
+/* 安全区域适配（全面屏） */
+@supports (padding: max(0px)) {
+    .control-panel {
+        bottom: max(20px, env(safe-area-inset-bottom));
+    }
+    
+    .gesture-status {
+        bottom: max(12px, env(safe-area-inset-bottom));
+    }
+    
+    .menu-panel {
+        bottom: max(80px, calc(env(safe-area-inset-bottom) + 70px));
+    }
+}
 </style>
 </head>
 
@@ -689,7 +697,7 @@ body{
                 </div>
 
                 <div class="subtitle">
-                    支持：0~6、点赞、OK、剪刀、握拳、张手
+                    支持：0~5、点赞、OK、剪刀、握拳、张手
                 </div>
 
             </div>
@@ -859,66 +867,76 @@ body{
     </div>
 
 </div>
-
 <script>
 
-/* DOM */
+/* =========================
+   DOM
+========================= */
 
-const video =
-    document.getElementById("video");
-
-const canvas =
-    document.getElementById("canvas");
-
-const ctx =
-    canvas.getContext("2d");
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
 const controlVideo =
-    document.getElementById("controlVideo");
+document.getElementById("controlVideo");
 
 const controlCanvas =
-    document.getElementById("controlCanvas");
+document.getElementById("controlCanvas");
 
 const controlCtx =
-    controlCanvas.getContext("2d");
+controlCanvas.getContext("2d");
 
 const nameDom =
-    document.getElementById("name");
+document.getElementById("name");
 
 const loading =
-    document.getElementById("loading");
+document.getElementById("loading");
 
 const recognizeBtn =
-    document.getElementById("recognizeBtn");
+document.getElementById("recognizeBtn");
 
 const controlBtn =
-    document.getElementById("controlBtn");
+document.getElementById("controlBtn");
 
 const recognizePage =
-    document.getElementById("recognizePage");
+document.getElementById("recognizePage");
 
 const controlPage =
-    document.getElementById("controlPage");
+document.getElementById("controlPage");
 
 const cursor =
-    document.getElementById("cursor");
+document.getElementById("cursor");
 
 const bookPage =
-    document.getElementById("bookPage");
+document.getElementById("bookPage");
 
 const pageInfo =
-    document.getElementById("pageInfo");
+document.getElementById("pageInfo");
 
 const menuPanel =
-    document.getElementById("menuPanel");
+document.getElementById("menuPanel");
 
 const buttons =
-    document.querySelectorAll(".control-btn");
+document.querySelectorAll(".control-btn");
 
 const menuItems =
-    document.querySelectorAll(".menu-item");
+document.querySelectorAll(".menu-item");
 
-/* 页面切换 */
+const floatingCamera =
+document.querySelector(".floating-camera");
+
+const isMobile =
+window.innerWidth < 768;
+
+/* =========================
+   页面切换
+========================= */
+
+floatingCamera.onclick = (e)=>{
+    e.stopPropagation();
+    floatingCamera.classList.toggle("expand");
+    setTimeout(updateHoverRects,300);
+};
 
 recognizeBtn.onclick = ()=>{
 
@@ -940,9 +958,13 @@ controlBtn.onclick = ()=>{
     recognizePage.style.display = "none";
 
     controlPage.style.display = "block";
+
+    setTimeout(updateHoverRects,120);
 };
 
-/* 小说 */
+/* =========================
+   小说内容
+========================= */
 
 const pages = [
 
@@ -978,15 +1000,17 @@ let currentPage = 0;
 function renderPage(){
 
     bookPage.innerText =
-        pages[currentPage];
+    pages[currentPage];
 
     pageInfo.innerText =
-        `第 ${currentPage+1} 页 / 共 ${pages.length} 页`;
+    `第 ${currentPage+1} 页 / 共 ${pages.length} 页`;
 }
 
 renderPage();
 
-/* 页面功能 */
+/* =========================
+   阅读功能
+========================= */
 
 function nextPage(){
 
@@ -1011,6 +1035,8 @@ function prevPage(){
 function toggleMenu(){
 
     menuPanel.classList.toggle("show");
+
+    setTimeout(updateHoverRects,120);
 }
 
 function toggleNight(){
@@ -1020,65 +1046,73 @@ function toggleNight(){
 
 let fontSize = 24;
 
-function fontIncrease(){
-
-    fontSize += 2;
+function applyFont(){
 
     bookPage.style.fontSize =
-        fontSize + "px";
+    fontSize + "px";
+}
+
+function fontIncrease(){
+
+    fontSize =
+    Math.min(fontSize + 2,42);
+
+    applyFont();
 }
 
 function fontDecrease(){
 
-    fontSize -= 2;
+    fontSize =
+    Math.max(fontSize - 2,16);
 
-    if(fontSize < 16){
-
-        fontSize = 16;
-    }
-
-    bookPage.style.fontSize =
-        fontSize + "px";
+    applyFont();
 }
 
 function switchHorizontal(){
 
-    bookPage.classList.add(
-        "horizontal-mode"
-    );
+    bookPage.classList.add("horizontal-mode");
 }
 
 function switchVertical(){
 
-    bookPage.classList.remove(
-        "horizontal-mode"
-    );
+    bookPage.classList.remove("horizontal-mode");
 }
 
-/* resize */
+/* =========================
+   resize
+========================= */
 
 function resizeCanvas(){
 
     if(video.videoWidth){
 
         canvas.width =
-            video.videoWidth;
+        video.videoWidth;
 
         canvas.height =
-            video.videoHeight;
+        video.videoHeight;
     }
 
     if(controlVideo.videoWidth){
 
         controlCanvas.width =
-            controlVideo.videoWidth;
+        controlVideo.videoWidth;
 
         controlCanvas.height =
-            controlVideo.videoHeight;
+        controlVideo.videoHeight;
     }
+
+    updateHoverRects();
 }
 
-/* 工具 */
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+/* =========================
+   工具
+========================= */
 
 function fingerUp(tip,pip){
 
@@ -1093,66 +1127,98 @@ function distance(a,b){
     );
 }
 
-/* 手势识别 */
+function thumbUp(lm, handedness){
 
-function recognize(lm){
+    if(handedness === "Right"){
+
+        return lm[4].x < lm[3].x;
+
+    }else{
+
+        return lm[4].x > lm[3].x;
+    }
+}
+
+/* =========================
+   手势稳定器（升级）
+========================= */
+
+const gestureBuffer = [];
+
+function stableGesture(newGesture){
+
+    gestureBuffer.push(newGesture);
+
+    if(gestureBuffer.length > 10){
+
+        gestureBuffer.shift();
+    }
+
+    const counter = {};
+
+    gestureBuffer.forEach(g=>{
+
+        counter[g] = (counter[g]||0)+1;
+    });
+
+    let best = "";
+    let max = 0;
+
+    for(const k in counter){
+
+        if(counter[k] > max){
+
+            max = counter[k];
+            best = k;
+        }
+    }
+
+    return max >= 6
+    ? best
+    : "识别中...";
+}
+
+/* =========================
+   手势识别
+========================= */
+
+function recognize(lm, handedness){
 
     const thumb =
-        Math.abs(lm[4].x - lm[2].x) > 0.08;
+    thumbUp(lm, handedness);
 
     const index =
-        fingerUp(lm[8],lm[6]);
+    fingerUp(lm[8],lm[6]);
 
     const middle =
-        fingerUp(lm[12],lm[10]);
+    fingerUp(lm[12],lm[10]);
 
     const ring =
-        fingerUp(lm[16],lm[14]);
+    fingerUp(lm[16],lm[14]);
 
     const pinky =
-        fingerUp(lm[20],lm[18]);
+    fingerUp(lm[20],lm[18]);
 
     const total =
 
-        (thumb ? 1 : 0) +
-        (index ? 1 : 0) +
-        (middle ? 1 : 0) +
-        (ring ? 1 : 0) +
-        (pinky ? 1 : 0);
+    (thumb?1:0)+
+    (index?1:0)+
+    (middle?1:0)+
+    (ring?1:0)+
+    (pinky?1:0);
 
     const ok =
-        distance(lm[4],lm[8]) < 0.05 &&
-        middle &&
-        ring &&
-        pinky;
+    distance(lm[4],lm[8]) < 0.045 &&
+    middle &&
+    ring &&
+    pinky;
 
-    const fist =
+    if(ok) return "OK";
 
-        !index &&
-        !middle &&
-        !ring &&
-        !pinky;
+    if(index && middle && !ring && !pinky){
 
-    /* OK */
-
-    if(ok){
-
-        return "OK";
+        return "✌ 剪刀";
     }
-
-    /* 剪刀 */
-
-    if(
-        index &&
-        middle &&
-        !ring &&
-        !pinky
-    ){
-
-        return "✌ 剪刀 / 数字2";
-    }
-
-    /* 点赞 */
 
     if(
         thumb &&
@@ -1165,42 +1231,35 @@ function recognize(lm){
         return "👍 点赞";
     }
 
-    /* 握拳 */
+    if(total === 0){
 
-    if(fist){
-
-        return "✊ 握拳 / 数字0";
+        return "✊ 握拳";
     }
-
-    /* 张手 */
 
     if(total === 5){
 
-        return "🖐 张手 / 数字5";
+        return "🖐 张手";
     }
 
     return `数字 ${total}`;
 }
-/* 绘制 */
+
+/* =========================
+   绘制
+========================= */
 
 function drawHand(points,context,w,h){
 
     const lines = [
 
         [0,1],[1,2],[2,3],[3,4],
-
         [0,5],[5,6],[6,7],[7,8],
-
         [0,9],[9,10],[10,11],[11,12],
-
         [0,13],[13,14],[14,15],[15,16],
-
         [0,17],[17,18],[18,19],[19,20]
     ];
 
-    context.strokeStyle =
-        "#163a63";
-
+    context.strokeStyle = "#163a63";
     context.lineWidth = 2;
 
     for(const [a,b] of lines){
@@ -1221,292 +1280,355 @@ function drawHand(points,context,w,h){
     }
 }
 
-/* 光标平滑 */
+/* =========================
+   光标系统（升级）
+========================= */
 
-let cursorTargetX = 0;
-let cursorTargetY = 0;
+let cursorX =
+window.innerWidth / 2;
 
-let cursorX = 0;
-let cursorY = 0;
+let cursorY =
+window.innerHeight / 2;
+
+let targetX = cursorX;
+let targetY = cursorY;
 
 function animateCursor(){
 
+    const smooth =
+    isMobile ? 0.22 : 0.16;
+
     cursorX +=
-        (cursorTargetX - cursorX)
-        * 0.15;
+    (targetX - cursorX) * smooth;
 
     cursorY +=
-        (cursorTargetY - cursorY)
-        * 0.15;
-
-    if(
-        Math.abs(cursorTargetX - cursorX) < 0.1
-    ){
-        cursorX = cursorTargetX;
-    }
-
-    if(
-        Math.abs(cursorTargetY - cursorY) < 0.1
-    ){
-        cursorY = cursorTargetY;
-    }
+    (targetY - cursorY) * smooth;
 
     cursor.style.transform =
-        `translate3d(${cursorX}px,${cursorY}px,0)`;
+    `translate3d(
+        ${cursorX - 12}px,
+        ${cursorY - 12}px,
+        0
+    )`;
 
     requestAnimationFrame(
         animateCursor
     );
 }
+
 animateCursor();
 
-/* hover */
+/* =========================
+   hover
+========================= */
 
-let hoverTarget = null;
+let hoverRects = [];
 
-let hoverStart = 0;
+function updateHoverRects(){
 
-let clickedLock = false;
-
-function hoverDetect(x,y){
-
-    const allTargets = [
+    hoverRects = [
 
         ...buttons,
         ...menuItems
-    ];
+
+    ].map(el=>({
+
+        el,
+        rect:
+        el.getBoundingClientRect()
+    }));
+}
+
+updateHoverRects();
+
+let hoverTarget = null;
+let hoverStart = 0;
+let hoverLocked = false;
+
+function hoverDetect(x,y){
 
     let found = null;
 
-    allTargets.forEach(el=>{
+    const padding =
+    isMobile ? 34 : 18;
 
-        const rect =
-            el.getBoundingClientRect();
+    for(const item of hoverRects){
 
-        el.classList.remove(
-            "hovering"
-        );
+        const r = item.rect;
 
         if(
 
-            x >= rect.left &&
-            x <= rect.right &&
-            y >= rect.top &&
-            y <= rect.bottom
+            x >= r.left - padding &&
+            x <= r.right + padding &&
+            y >= r.top - padding &&
+            y <= r.bottom + padding
 
         ){
 
-            found = el;
+            found = item.el;
+            break;
         }
-    });
+    }
 
-    cursor.classList.remove(
-        "hovering"
-    );
+    if(found !== hoverTarget){
+
+        if(hoverTarget){
+
+            hoverTarget.classList.remove(
+                "hovering"
+            );
+        }
+
+        hoverTarget = found;
+
+        hoverStart = Date.now();
+    }
 
     if(found){
 
-        found.classList.add(
-            "hovering"
-        );
+        found.classList.add("hovering");
 
-        cursor.classList.add(
-            "hovering"
-        );
-
-        if(hoverTarget !== found){
-
-            hoverTarget = found;
-
-            hoverStart = Date.now();
-
-            clickedLock = false;
-        }
+        cursor.classList.add("hovering");
 
         if(
 
-            !clickedLock &&
-
-            Date.now() - hoverStart > 800
+            !hoverLocked &&
+            Date.now() - hoverStart >
+            (isMobile ? 1300 : 850)
 
         ){
 
+            hoverLocked = true;
+
             autoClick(found);
 
-            clickedLock = true;
+            setTimeout(()=>{
+
+                hoverLocked = false;
+
+            },1200);
         }
 
     }else{
 
-        hoverTarget = null;
-
-        hoverStart = 0;
-
-        clickedLock = false;
+        cursor.classList.remove(
+            "hovering"
+        );
     }
 }
 
-/* 自动点击 */
+/* =========================
+   自动点击
+========================= */
 
 function autoClick(el){
 
-    if(el.dataset.action){
+    cursor.animate(
+    [
+        {transform:"scale(1)"},
+        {transform:"scale(1.45)"},
+        {transform:"scale(1)"}
+    ],
+    {
+        duration:220
+    });
 
-        const action =
-            el.dataset.action;
+    const action =
+    el.dataset.action;
 
-        if(action === "next"){
+    const menu =
+    el.dataset.menu;
 
-            nextPage();
-        }
+    if(action){
 
-        if(action === "prev"){
+        if(action==="next") nextPage();
 
-            prevPage();
-        }
+        if(action==="prev") prevPage();
 
-        if(action === "menu"){
-
-            toggleMenu();
-        }
+        if(action==="menu") toggleMenu();
     }
 
-    if(el.dataset.menu){
+    if(menu){
 
-        const menu =
-            el.dataset.menu;
+        if(menu==="night") toggleNight();
 
-        if(menu === "night"){
+        if(menu==="big") fontIncrease();
 
-            toggleNight();
-        }
+        if(menu==="small") fontDecrease();
 
-        if(menu === "big"){
+        if(menu==="horizontal")
+        switchHorizontal();
 
-            fontIncrease();
-        }
-
-        if(menu === "small"){
-
-            fontDecrease();
-        }
-
-        if(menu === "horizontal"){
-
-            switchHorizontal();
-        }
-
-        if(menu === "vertical"){
-
-            switchVertical();
-        }
+        if(menu==="vertical")
+        switchVertical();
     }
+
+    updateHoverRects();
 }
 
-/* 挥手翻页 */
+/* =========================
+   swipe（升级）
+========================= */
 
 let swipeTrack = [];
-
 let lastSwipeTime = 0;
 
 function detectSwipe(lm){
 
     const now = Date.now();
 
-    if(now - lastSwipeTime < 800){
-
+    // 冷却时间（防连发）
+    if(now - lastSwipeTime < 900){
         return;
     }
 
-    swipeTrack.push({
+    const x = lm[8].x; // 用食指尖更稳定
+    const y = lm[8].y;
 
-        x:lm[0].x
-    });
+    swipeTrack.push({ x, y, t: now });
 
-    if(swipeTrack.length > 8){
-
+    // 保留更多历史（提升稳定性）
+    if(swipeTrack.length > 12){
         swipeTrack.shift();
     }
 
     if(swipeTrack.length < 5){
-
         return;
     }
 
-    const dx =
+    const first = swipeTrack[0];
+    const last = swipeTrack.at(-1);
 
-        swipeTrack[
-            swipeTrack.length - 1
-        ].x -
+    const dx = last.x - first.x;
+    const dy = Math.abs(last.y - first.y);
+    const dt = last.t - first.t;
 
-        swipeTrack[0].x;
+    // ❗关键优化1：累计位移降低门槛
+    const absDx = Math.abs(dx);
 
-    if(Math.abs(dx) > 0.18){
+    // ❗关键优化2：速度判断（防慢移动误触）
+    const velocity = absDx / dt;
 
+    // ❗关键优化3：中间点方向一致性
+    let directionScore = 0;
+
+    for(let i=1;i<swipeTrack.length;i++){
+        const d1 = swipeTrack[i].x - swipeTrack[i-1].x;
+        directionScore += (dx > 0 ? d1 > 0 : d1 < 0) ? 1 : -1;
+    }
+
+    const consistency = directionScore / swipeTrack.length;
+
+    // =========================
+    // 🎯 新判定条件（重点）
+    // =========================
+
+    if(
+        absDx > 0.18 &&        // ✅ 更灵敏（原来0.34）
+        dy < 0.12 &&           // ✅ 放宽上下抖动
+        velocity > 0.0012 &&   // ✅ 防慢滑误触
+        consistency > 0.4      // ✅ 方向一致性
+    ){
         if(dx > 0){
-
             nextPage();
-
         }else{
-
             prevPage();
         }
 
-        lastSwipeTime = now;
-
         swipeTrack = [];
+        lastSwipeTime = now;
     }
 }
 
-/* MediaPipe */
+/* =========================
+   MediaPipe
+========================= */
 
 const hands = new Hands({
 
-    locateFile:file => {
+    locateFile:file =>
 
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/${file}`;
-    }
+    `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
 });
 
 hands.setOptions({
 
     maxNumHands:2,
 
-    modelComplexity:0,
+    modelComplexity:
+    isMobile ? 0 : 1,
 
-    minDetectionConfidence:0.82,
+    minDetectionConfidence:0.72,
 
-    minTrackingConfidence:0.82
+    minTrackingConfidence:0.72
 });
 
-/* results */
+/* =========================
+   双手缩放
+========================= */
 
-hands.onResults(results => {
+let lastZoomDistance = 0;
+let zoomCooldown = 0;
+
+/* =========================
+   主识别
+========================= */
+
+hands.onResults(results=>{
 
     ctx.clearRect(
-        0,
-        0,
+        0,0,
         canvas.width,
         canvas.height
     );
 
     controlCtx.clearRect(
-        0,
-        0,
+        0,0,
         controlCanvas.width,
         controlCanvas.height
     );
 
     if(
 
-        results.multiHandLandmarks &&
-        results.multiHandLandmarks.length > 0
+        !results.multiHandLandmarks ||
+        results.multiHandLandmarks.length===0
 
     ){
 
-        let resultTexts = [];
+        nameDom.innerText =
+        "未检测到手势";
 
-        results.multiHandLandmarks.forEach((lm,index)=>{
+        cursor.style.opacity = 0;
+
+        gestureBuffer.length = 0;
+
+        hoverTarget = null;
+
+        return;
+    }
+
+    cursor.style.opacity = 1;
+
+    const texts = [];
+
+    results.multiHandLandmarks.forEach((lm,index)=>{
+
+        const handedness =
+        results.multiHandedness?.[index]
+        ?.label || "Right";
+
+        const gesture =
+        stableGesture(
+            recognize(lm, handedness)
+        );
+
+        texts.push(
+            `手${index+1}：${gesture}`
+        );
+
+        if(
+            recognizePage.style.display !== "none"
+        ){
 
             drawHand(
                 lm,
@@ -1514,6 +1636,11 @@ hands.onResults(results => {
                 canvas.width,
                 canvas.height
             );
+        }
+
+        if(
+            controlPage.style.display !== "none"
+        ){
 
             drawHand(
                 lm,
@@ -1521,86 +1648,94 @@ hands.onResults(results => {
                 controlCanvas.width,
                 controlCanvas.height
             );
+        }
 
-            const gesture =
-                recognize(lm);
+        if(index===0){
 
-            resultTexts.push(
-                `手${index+1}：${gesture}`
-            );
+            targetX =
+            (1-lm[8].x)
+            * window.innerWidth;
 
-            if(index === 0){
+            targetY =
+            lm[8].y
+            * window.innerHeight;
 
-                cursorTargetX =
-                    (1 - lm[8].x)
-                    * window.innerWidth;
+            if(
+                controlPage.style.display !== "none"
+            ){
 
-                cursorTargetY =
-                    lm[8].y
-                    * window.innerHeight;
+                hoverDetect(
+                    targetX,
+                    targetY
+                );
 
-                if(
-                    controlPage.style.display !== "none"
-                ){
-
-                    hoverDetect(
-                        cursorX,
-                        cursorY
-                    );
-
-                    detectSwipe(lm);
-                }
+                detectSwipe(lm);
             }
-        });
+        }
+    });
 
-/* 双手缩放 */
+    /* 双手缩放 */
 
-if(
-    results.multiHandLandmarks.length === 2
-){
+    if(
+        results.multiHandLandmarks.length===2
+    ){
 
-    const hand1 =
+        const h1 =
         results.multiHandLandmarks[0];
 
-    const hand2 =
+        const h2 =
         results.multiHandLandmarks[1];
 
-    const d =
-        distance(
-            hand1[8],
-            hand2[8]
-        );
+        const d =
+        distance(h1[8],h2[8]);
 
-    const targetSize =
-        Math.max(
-            16,
-            Math.min(
-                42,
-                d * 120
-            )
-        );
+        if(!lastZoomDistance){
 
-    fontSize +=
-        (targetSize - fontSize)
-        * 0.15;
+            lastZoomDistance = d;
+        }
 
-    bookPage.style.fontSize =
-        fontSize + "px";
-}
+        const delta =
+        d - lastZoomDistance;
 
-nameDom.innerText =
-    resultTexts.join("\n");
+        if(
 
-}else{
+            Math.abs(delta) > 0.008 &&
+            Date.now() - zoomCooldown > 120
+
+        ){
+
+            if(delta > 0){
+
+                fontIncrease();
+
+            }else{
+
+                fontDecrease();
+            }
+
+            zoomCooldown = Date.now();
+        }
+
+        lastZoomDistance =
+
+        lastZoomDistance * 0.7 +
+        d * 0.3;
+
+    }else{
+
+        lastZoomDistance = 0;
+    }
 
     nameDom.innerText =
-        "未检测到手势";
-}
-
+    texts.join("\n");
 });
+
+/* =========================
+   启动摄像头
+========================= */
+
 let cameraStarted = false;
-    
-/* 启动 */
+let processing = false;
 
 async function startCamera(){
 
@@ -1610,73 +1745,88 @@ async function startCamera(){
     }
 
     cameraStarted = true;
+
+    loading.innerText =
+    "摄像头启动中...";
+
     try{
 
         const stream =
-            await navigator.mediaDevices.getUserMedia({
+        await navigator.mediaDevices.getUserMedia({
 
-                video:{
-                    facingMode:"user",
-                    width:{ideal:960},
-                    height:{ideal:720}
+            video:{
+
+                facingMode:"user",
+
+                width:{
+                    ideal:
+                    isMobile ? 640 : 1280
                 },
 
-                audio:false
-            });
+                height:{
+                    ideal:
+                    isMobile ? 480 : 720
+                },
+
+                frameRate:{
+                    ideal:
+                    isMobile ? 24 : 30
+                }
+            },
+
+            audio:false
+        });
 
         video.srcObject = stream;
 
-        controlVideo.srcObject = stream;
+        controlVideo.srcObject =
+        stream;
 
         await video.play();
 
-        await controlVideo.play();
-
         resizeCanvas();
 
-        const camera =
-            new Camera(video,{
+        async function loop(){
 
-                onFrame:async()=>{
+            if(processing){
 
-                    await hands.send({
-                        image:video
-                    });
-                },
+                requestAnimationFrame(loop);
 
-                width:960,
-                height:720
+                return;
+            }
+
+            processing = true;
+
+            await hands.send({
+
+                image:video
             });
 
-        camera.start();
+            processing = false;
+
+            requestAnimationFrame(loop);
+        }
+
+        loop();
 
         loading.style.display =
-            "none";
+        "none";
 
     }catch(err){
-
-        cameraStarted = false;
 
         console.error(err);
 
         loading.innerText =
-            "摄像头启动失败";
+        "摄像头启动失败";
+
+        cameraStarted = false;
     }
 }
 
 document
 .getElementById("startBtn")
-.onclick = ()=>{
-
-    startCamera();
-};
-
-window.addEventListener(
-    "resize",
-    resizeCanvas
-);
+.onclick = startCamera;
 
 </script>
-
 </body>
 </html>

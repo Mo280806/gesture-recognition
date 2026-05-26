@@ -1091,6 +1091,36 @@ function prevPage(){
     }
 }
 
+/* =========================
+   📖 平滑滚动
+========================= */
+
+function smoothScrollDown(){
+
+    const amount =
+    window.innerHeight * 0.75;
+
+    bookPage.scrollBy({
+
+        top: amount,
+
+        behavior:"smooth"
+    });
+}
+
+function smoothScrollUp(){
+
+    const amount =
+    window.innerHeight * 0.75;
+
+    bookPage.scrollBy({
+
+        top: -amount,
+
+        behavior:"smooth"
+    });
+}
+   
 function toggleMenu(){
 
     menuPanel.classList.toggle("show");
@@ -1713,16 +1743,16 @@ function detectSwipe(lm){
 
         triggered = true;
 
-        /* 👇 向下挥 = 下一页 */
+       /* 👇 向下挥 = 页面下滑 */
 
-        if(dy > 0){
-
-            nextPage();
-
-        }else{
-
-            prevPage();
-        }
+      if(dy > 0){
+      
+          smoothScrollDown();
+      
+      }else{
+      
+          smoothScrollUp();
+      }
     }
 
     /* =========================

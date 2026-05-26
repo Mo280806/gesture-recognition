@@ -5,7 +5,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>AI 手势阅读系统</title>
+<title>AI手势交互阅读系统</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/hands.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js"></script>
@@ -51,7 +51,7 @@ body{
 
     gap:12px;
 
-    z-index:99999;
+    z-index:999999;
 }
 
 .mode-btn{
@@ -84,10 +84,10 @@ body{
 }
 
 /* ========================= */
-/* 阅读界面 */
+/* 手势识别页面 */
 /* ========================= */
 
-.reader-page{
+.recognize-page{
 
     width:100vw;
     height:100vh;
@@ -96,38 +96,37 @@ body{
 
     justify-content:center;
     align-items:center;
-
-    position:relative;
 }
 
-/* ========================= */
-/* 悬浮摄像头 */
-/* ========================= */
+.container{
 
-.floating-camera{
+    width:min(920px,94vw);
 
-    position:fixed;
+    height:min(92vh,920px);
 
-    top:20px;
-    left:20px;
+    display:flex;
 
-    width:240px;
-    height:180px;
+    flex-direction:column;
 
-    border-radius:22px;
+    gap:18px;
+}
+
+.camera-card{
+
+    flex:1;
+
+    position:relative;
 
     overflow:hidden;
 
-    background:#fff;
+    border-radius:24px;
 
-    border:1px solid #d8e3f1;
+    background:#f5f8fc;
+
+    border:1px solid #dbe5f0;
 
     box-shadow:
-    0 14px 35px rgba(22,58,99,0.12);
-
-    z-index:9999;
-
-    backdrop-filter:blur(12px);
+    0 10px 30px rgba(22,58,99,0.08);
 }
 
 #video,
@@ -147,15 +146,170 @@ body{
     pointer-events:none;
 }
 
+.header{
+
+    position:absolute;
+
+    top:18px;
+    left:20px;
+
+    z-index:10;
+}
+
+.title{
+
+    font-size:18px;
+
+    font-weight:600;
+}
+
+.subtitle{
+
+    margin-top:4px;
+
+    font-size:13px;
+
+    color:#6f8298;
+}
+
+#startBtn{
+
+    position:absolute;
+
+    top:18px;
+    right:18px;
+
+    z-index:999;
+
+    border:none;
+
+    background:#163a63;
+
+    color:white;
+
+    padding:10px 16px;
+
+    border-radius:12px;
+
+    font-size:13px;
+
+    cursor:pointer;
+}
+
+.loading{
+
+    position:absolute;
+
+    top:50%;
+    left:50%;
+
+    transform:translate(-50%,-50%);
+
+    background:rgba(255,255,255,0.96);
+
+    border:1px solid #dce6f2;
+
+    padding:14px 20px;
+
+    border-radius:14px;
+
+    font-size:13px;
+
+    z-index:999;
+}
+
+.result-card{
+
+    height:130px;
+
+    border-radius:22px;
+
+    background:#f8fafc;
+
+    border:1px solid #dbe5f0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+}
+
+.name{
+
+    font-size:28px;
+
+    font-weight:600;
+}
+
 /* ========================= */
+/* 手势操控页面 */
+/* ========================= */
+
+.control-page{
+
+    width:100vw;
+    height:100vh;
+
+    display:none;
+
+    position:relative;
+}
+
+/* 摄像头悬浮 */
+
+.floating-camera{
+
+    position:fixed;
+
+    top:20px;
+    left:20px;
+
+    width:240px;
+    height:180px;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    background:#ffffff;
+
+    border:1px solid #dbe5f0;
+
+    box-shadow:
+    0 10px 30px rgba(22,58,99,0.08);
+
+    z-index:99999;
+}
+
+#controlVideo,
+#controlCanvas{
+
+    position:absolute;
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    transform:scaleX(-1);
+}
+
+#controlCanvas{
+    pointer-events:none;
+}
+
 /* 阅读器 */
-/* ========================= */
 
 .reader-container{
 
     width:min(980px,86vw);
 
-    height:min(78vh,820px);
+    height:min(82vh,860px);
 
     background:white;
 
@@ -172,7 +326,12 @@ body{
 
     flex-direction:column;
 
-    position:relative;
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
 }
 
 .reader-header{
@@ -188,8 +347,6 @@ body{
     justify-content:space-between;
 
     padding:0 30px;
-
-    flex-shrink:0;
 }
 
 .reader-title{
@@ -205,10 +362,6 @@ body{
 
     color:#7c8ea3;
 }
-
-/* ========================= */
-/* 小说区域 */
-/* ========================= */
 
 .reader-content{
 
@@ -226,6 +379,8 @@ body{
     width:100%;
     height:100%;
 
+    overflow-y:auto;
+
     line-height:2.2;
 
     font-size:24px;
@@ -234,12 +389,8 @@ body{
 
     transition:0.25s;
 
-    overflow-y:auto;
-
     user-select:none;
 }
-
-/* 左右阅读 */
 
 .horizontal-mode{
 
@@ -252,39 +403,30 @@ body{
 
 .night{
 
-    background:#10151d;
+    background:#0f141b;
 }
 
 .night .reader-container{
 
     background:#1a2029;
-
-    border-color:#2d3644;
 }
 
-.night .reader-header{
+.night .book-page,
+.night .reader-title{
 
-    border-color:#2d3644;
-}
-
-.night .reader-title,
-.night .book-page{
-
-    color:#edf3fb;
+    color:#f0f4fa;
 }
 
 .night .page-info{
 
-    color:#94a4ba;
+    color:#9aa9bc;
 }
 
-/* ========================= */
-/* 底部按钮 */
-/* ========================= */
+/* 控制栏 */
 
 .control-panel{
 
-    height:92px;
+    height:90px;
 
     border-top:1px solid #e6edf5;
 
@@ -296,16 +438,14 @@ body{
 
     gap:18px;
 
-    flex-wrap:wrap;
-
-    padding:12px;
+    padding:10px;
 }
 
 .control-btn{
 
-    min-width:110px;
+    min-width:120px;
 
-    height:48px;
+    height:50px;
 
     border:none;
 
@@ -320,8 +460,6 @@ body{
     cursor:pointer;
 
     transition:0.2s;
-
-    position:relative;
 }
 
 .control-btn.hovering{
@@ -333,9 +471,65 @@ body{
     transform:scale(1.08);
 }
 
-/* ========================= */
+/* 菜单 */
+
+.menu-panel{
+
+    position:absolute;
+
+    right:20px;
+    top:86px;
+
+    width:250px;
+
+    background:white;
+
+    border-radius:20px;
+
+    border:1px solid #dbe5f0;
+
+    box-shadow:
+    0 15px 35px rgba(22,58,99,0.12);
+
+    padding:16px;
+
+    display:none;
+
+    z-index:999999;
+}
+
+.menu-panel.show{
+
+    display:block;
+}
+
+.menu-item{
+
+    width:100%;
+
+    margin-bottom:10px;
+
+    padding:14px;
+
+    border-radius:14px;
+
+    background:#f4f8fd;
+
+    cursor:pointer;
+
+    transition:0.2s;
+}
+
+.menu-item.hovering{
+
+    background:#163a63;
+
+    color:white;
+
+    transform:scale(1.04);
+}
+
 /* 光标 */
-/* ========================= */
 
 .cursor{
 
@@ -349,32 +543,30 @@ body{
     background:#163a63;
 
     box-shadow:
-    0 0 24px rgba(22,58,99,0.4);
+    0 0 20px rgba(22,58,99,0.4);
 
     pointer-events:none;
 
-    z-index:999999;
+    z-index:9999999;
 
     transition:
-    left 0.05s linear,
-    top 0.05s linear;
+    left 0.04s linear,
+    top 0.04s linear;
 }
 
-/* ========================= */
-/* 手势状态 */
-/* ========================= */
+/* 状态栏 */
 
 .gesture-status{
 
     position:fixed;
 
-    bottom:24px;
+    bottom:20px;
 
     left:50%;
 
     transform:translateX(-50%);
 
-    background:rgba(255,255,255,0.9);
+    background:rgba(255,255,255,0.92);
 
     backdrop-filter:blur(10px);
 
@@ -388,77 +580,18 @@ body{
 
     color:#5f748d;
 
-    z-index:99999;
-
-    box-shadow:
-    0 10px 25px rgba(22,58,99,0.08);
+    z-index:999999;
 }
 
 .gesture-text{
 
-    font-size:16px;
+    margin-top:4px;
 
-    color:#163a63;
+    font-size:16px;
 
     font-weight:700;
 
-    margin-top:4px;
-}
-
-/* ========================= */
-/* 菜单 */
-/* ========================= */
-
-.menu-panel{
-
-    position:absolute;
-
-    right:20px;
-    top:86px;
-
-    width:240px;
-
-    background:white;
-
-    border-radius:20px;
-
-    border:1px solid #dbe5f0;
-
-    box-shadow:
-    0 15px 35px rgba(22,58,99,0.12);
-
-    padding:18px;
-
-    display:none;
-
-    z-index:999;
-}
-
-.menu-panel.show{
-
-    display:block;
-}
-
-.menu-item{
-
-    padding:14px;
-
-    border-radius:14px;
-
-    cursor:pointer;
-
-    transition:0.2s;
-
-    margin-bottom:8px;
-
-    background:#f4f8fd;
-}
-
-.menu-item:hover{
-
-    background:#163a63;
-
-    color:white;
+    color:#163a63;
 }
 
 @media(max-width:768px){
@@ -469,21 +602,14 @@ body{
         height:120px;
     }
 
-    .reader-container{
-
-        width:92vw;
-        height:82vh;
-    }
-
     .book-page{
 
         font-size:18px;
     }
 
-    .control-btn{
+    .reader-container{
 
-        min-width:90px;
-        font-size:13px;
+        width:92vw;
     }
 }
 
@@ -492,45 +618,120 @@ body{
 
 <body>
 
-<!-- 顶部 -->
+<!-- 顶部切换 -->
 
 <div class="top-bar">
 
-    <button class="mode-btn active">
-        AI 手势阅读系统
+    <button
+        class="mode-btn active"
+        id="recognizeBtn">
+
+        手势识别
+    </button>
+
+    <button
+        class="mode-btn"
+        id="controlBtn">
+
+        手势阅读
     </button>
 
 </div>
 
-<!-- 摄像头 -->
-
-<div class="floating-camera">
-
-    <video
-        id="video"
-        autoplay
-        muted
-        playsinline>
-    </video>
-
-    <canvas id="canvas"></canvas>
-
-</div>
-
-<!-- 光标 -->
+<!-- ========================= -->
+<!-- 手势识别页面 -->
+<!-- ========================= -->
 
 <div
-    class="cursor"
-    id="cursor">
+    class="recognize-page"
+    id="recognizePage">
+
+    <div class="container">
+
+        <div class="camera-card">
+
+            <div class="header">
+
+                <div class="title">
+                    手势识别系统
+                </div>
+
+                <div class="subtitle">
+                    数字 / OK / 点赞 / 张手 / 握拳
+                </div>
+
+            </div>
+
+            <video
+                id="video"
+                autoplay
+                muted
+                playsinline>
+            </video>
+
+            <canvas id="canvas"></canvas>
+
+            <button id="startBtn">
+                启动识别
+            </button>
+
+            <div
+                class="loading"
+                id="loading">
+
+                点击右上角启动摄像头
+            </div>
+
+        </div>
+
+        <div class="result-card">
+
+            <div
+                class="name"
+                id="name">
+
+                等待识别
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
-<!-- 阅读页面 -->
+<!-- ========================= -->
+<!-- 手势操控页面 -->
+<!-- ========================= -->
 
-<div class="reader-page">
+<div
+    class="control-page"
+    id="controlPage">
+
+    <!-- 悬浮摄像头 -->
+
+    <div class="floating-camera">
+
+        <video
+            id="controlVideo"
+            autoplay
+            muted
+            playsinline>
+        </video>
+
+        <canvas id="controlCanvas"></canvas>
+
+    </div>
+
+    <!-- 光标 -->
+
+    <div
+        class="cursor"
+        id="cursor">
+    </div>
+
+    <!-- 阅读器 -->
 
     <div class="reader-container">
-
-        <!-- 头部 -->
 
         <div class="reader-header">
 
@@ -542,12 +743,10 @@ body{
                 class="page-info"
                 id="pageInfo">
 
-                第 1 页 / 共 3 页
+                第1页 / 共3页
             </div>
 
         </div>
-
-        <!-- 内容 -->
 
         <div class="reader-content">
 
@@ -564,35 +763,35 @@ body{
 
                 <div
                     class="menu-item"
-                    onclick="toggleNight()">
+                    data-menu="night">
 
                     🌙 日间 / 夜间
                 </div>
 
                 <div
                     class="menu-item"
-                    onclick="fontIncrease()">
+                    data-menu="big">
 
                     ➕ 字体放大
                 </div>
 
                 <div
                     class="menu-item"
-                    onclick="fontDecrease()">
+                    data-menu="small">
 
                     ➖ 字体缩小
                 </div>
 
                 <div
                     class="menu-item"
-                    onclick="switchVertical()">
+                    data-menu="vertical">
 
                     ↕ 上下阅读
                 </div>
 
                 <div
                     class="menu-item"
-                    onclick="switchHorizontal()">
+                    data-menu="horizontal">
 
                     ↔ 左右阅读
                 </div>
@@ -600,8 +799,6 @@ body{
             </div>
 
         </div>
-
-        <!-- 按钮 -->
 
         <div class="control-panel">
 
@@ -630,19 +827,19 @@ body{
 
     </div>
 
-</div>
+    <!-- 手势状态 -->
 
-<!-- 手势状态 -->
+    <div class="gesture-status">
 
-<div class="gesture-status">
+        当前手势
 
-    当前识别手势
+        <div
+            class="gesture-text"
+            id="gestureText">
 
-    <div
-        class="gesture-text"
-        id="gestureText">
+            等待识别
+        </div>
 
-        等待识别
     </div>
 
 </div>
@@ -662,6 +859,33 @@ const canvas =
 const ctx =
     canvas.getContext("2d");
 
+const controlVideo =
+    document.getElementById("controlVideo");
+
+const controlCanvas =
+    document.getElementById("controlCanvas");
+
+const controlCtx =
+    controlCanvas.getContext("2d");
+
+const nameDom =
+    document.getElementById("name");
+
+const loading =
+    document.getElementById("loading");
+
+const recognizeBtn =
+    document.getElementById("recognizeBtn");
+
+const controlBtn =
+    document.getElementById("controlBtn");
+
+const recognizePage =
+    document.getElementById("recognizePage");
+
+const controlPage =
+    document.getElementById("controlPage");
+
 const cursor =
     document.getElementById("cursor");
 
@@ -680,21 +904,54 @@ const menuPanel =
 const buttons =
     document.querySelectorAll(".control-btn");
 
+const menuItems =
+    document.querySelectorAll(".menu-item");
+
 /* ========================= */
-/* 小说内容 */
+/* 页面切换 */
+/* ========================= */
+
+recognizeBtn.onclick = ()=>{
+
+    recognizeBtn.classList.add("active");
+
+    controlBtn.classList.remove("active");
+
+    recognizePage.style.display =
+        "flex";
+
+    controlPage.style.display =
+        "none";
+};
+
+controlBtn.onclick = ()=>{
+
+    controlBtn.classList.add("active");
+
+    recognizeBtn.classList.remove("active");
+
+    recognizePage.style.display =
+        "none";
+
+    controlPage.style.display =
+        "block";
+};
+
+/* ========================= */
+/* 小说 */
 /* ========================= */
 
 const pages = [
 
 `深夜的列车穿过无人的山谷。
 
-林澈坐在靠窗的位置，看着远处缓慢后退的灯火。车厢里很安静，只能听见铁轨轻轻震动的声音。
+林澈坐在靠窗的位置，看着远处缓慢后退的灯火。
+
+车厢里很安静，只能听见铁轨轻轻震动的声音。
 
 忽然，广播响起：
 
-“终点站即将到达，请旅客提前整理随身物品。”
-
-他低头，看见口袋中的那张车票正在微微发光。`,
+“终点站即将到达，请旅客提前整理随身物品。”`,
 
 `列车停下时，外面却并不是城市。
 
@@ -702,11 +959,7 @@ const pages = [
 
 湖面像镜子一样平静，而湖中央漂浮着一座白色钟塔。
 
-林澈缓缓走下列车。
-
-远处传来低沉钟声。
-
-他突然意识到，这里并不是现实世界。`,
+林澈缓缓走下列车。`,
 
 `钟塔的大门缓缓开启。
 
@@ -714,11 +967,7 @@ const pages = [
 
 一个声音在黑暗中轻轻响起：
 
-“欢迎来到时间尽头。”
-
-林澈抬起头。
-
-夜空中的星辰，正在缓慢旋转。`
+“欢迎来到时间尽头。”`
 ];
 
 let currentPage = 0;
@@ -729,7 +978,7 @@ function renderPage(){
         pages[currentPage];
 
     pageInfo.innerText =
-        `第 ${currentPage + 1} 页 / 共 ${pages.length} 页`;
+        `第 ${currentPage+1} 页 / 共 ${pages.length} 页`;
 }
 
 renderPage();
@@ -806,7 +1055,7 @@ function switchVertical(){
 }
 
 /* ========================= */
-/* Canvas */
+/* resize */
 /* ========================= */
 
 function resizeCanvas(){
@@ -816,6 +1065,12 @@ function resizeCanvas(){
 
     canvas.height =
         video.videoHeight;
+
+    controlCanvas.width =
+        controlVideo.videoWidth;
+
+    controlCanvas.height =
+        controlVideo.videoHeight;
 }
 
 /* ========================= */
@@ -860,7 +1115,19 @@ function recognize(lm){
     const thumbPalmDistance =
         distance(lm[4],lm[9]);
 
-    /* 握拳 */
+    if(
+
+        thumbUp &&
+
+        !index &&
+        !middle &&
+        !ring &&
+        !pinky
+
+    ){
+
+        return "点赞";
+    }
 
     if(
 
@@ -876,8 +1143,6 @@ function recognize(lm){
         return "握拳";
     }
 
-    /* 张手 */
-
     if(
 
         index &&
@@ -890,24 +1155,6 @@ function recognize(lm){
         return "张开手掌";
     }
 
-    /* 点赞 */
-
-    if(
-
-        thumbUp &&
-
-        !index &&
-        !middle &&
-        !ring &&
-        !pinky
-
-    ){
-
-        return "点赞";
-    }
-
-    /* 食指 */
-
     if(
 
         index &&
@@ -917,17 +1164,17 @@ function recognize(lm){
 
     ){
 
-        return "食指";
+        return "数字1";
     }
 
     return "识别中";
 }
 
 /* ========================= */
-/* 绘制骨架 */
+/* 绘制 */
 /* ========================= */
 
-function drawHand(points,w,h){
+function drawHand(points,context,w,h){
 
     const lines = [
 
@@ -942,26 +1189,26 @@ function drawHand(points,w,h){
         [0,17],[17,18],[18,19],[19,20]
     ];
 
-    ctx.strokeStyle =
+    context.strokeStyle =
         "#163a63";
 
-    ctx.lineWidth = 2;
+    context.lineWidth = 2;
 
     for(const [a,b] of lines){
 
-        ctx.beginPath();
+        context.beginPath();
 
-        ctx.moveTo(
+        context.moveTo(
             points[a].x * w,
             points[a].y * h
         );
 
-        ctx.lineTo(
+        context.lineTo(
             points[b].x * w,
             points[b].y * h
         );
 
-        ctx.stroke();
+        context.stroke();
     }
 }
 
@@ -973,14 +1220,20 @@ let hoverTarget = null;
 
 let hoverStart = 0;
 
-function hoverClick(x,y){
+function hoverDetect(x,y){
+
+    const allTargets = [
+
+        ...buttons,
+        ...menuItems
+    ];
 
     let found = null;
 
-    buttons.forEach(btn=>{
+    allTargets.forEach(el=>{
 
         const rect =
-            btn.getBoundingClientRect();
+            el.getBoundingClientRect();
 
         if(
 
@@ -991,10 +1244,10 @@ function hoverClick(x,y){
 
         ){
 
-            found = btn;
+            found = el;
         }
 
-        btn.classList.remove(
+        el.classList.remove(
             "hovering"
         );
     });
@@ -1012,18 +1265,18 @@ function hoverClick(x,y){
             hoverStart = Date.now();
         }
 
+        /* 1秒点击 */
+
         if(
 
-            Date.now() - hoverStart > 2000
+            Date.now() - hoverStart > 1000
 
         ){
 
-            triggerButton(
-                found.dataset.action
-            );
+            autoClick(found);
 
             hoverStart =
-                Date.now();
+                Date.now() + 999999;
         }
 
     }else{
@@ -1033,24 +1286,65 @@ function hoverClick(x,y){
 }
 
 /* ========================= */
-/* 按钮动作 */
+/* 自动点击 */
 /* ========================= */
 
-function triggerButton(action){
+function autoClick(el){
 
-    if(action === "next"){
+    /* 主按钮 */
 
-        nextPage();
+    if(el.dataset.action){
+
+        const action =
+            el.dataset.action;
+
+        if(action === "next"){
+
+            nextPage();
+        }
+
+        if(action === "prev"){
+
+            prevPage();
+        }
+
+        if(action === "menu"){
+
+            toggleMenu();
+        }
     }
 
-    if(action === "prev"){
+    /* 菜单按钮 */
 
-        prevPage();
-    }
+    if(el.dataset.menu){
 
-    if(action === "menu"){
+        const menu =
+            el.dataset.menu;
 
-        toggleMenu();
+        if(menu === "night"){
+
+            toggleNight();
+        }
+
+        if(menu === "big"){
+
+            fontIncrease();
+        }
+
+        if(menu === "small"){
+
+            fontDecrease();
+        }
+
+        if(menu === "horizontal"){
+
+            switchHorizontal();
+        }
+
+        if(menu === "vertical"){
+
+            switchVertical();
+        }
     }
 }
 
@@ -1078,15 +1372,11 @@ function detectSwipe(lm){
 
         const dy = y - lastY;
 
-        if(
+        if(now - lastSwipeTime > 1200){
 
-            now - lastSwipeTime > 1000
+            /* 左右翻页 */
 
-        ){
-
-            /* 左右 */
-
-            if(Math.abs(dx) > 0.18){
+            if(Math.abs(dx) > 0.20){
 
                 if(dx > 0){
 
@@ -1100,9 +1390,9 @@ function detectSwipe(lm){
                 lastSwipeTime = now;
             }
 
-            /* 上下 */
+            /* 上下翻页 */
 
-            if(Math.abs(dy) > 0.18){
+            if(Math.abs(dy) > 0.20){
 
                 if(dy > 0){
 
@@ -1159,6 +1449,13 @@ hands.onResults(results => {
         canvas.height
     );
 
+    controlCtx.clearRect(
+        0,
+        0,
+        controlCanvas.width,
+        controlCanvas.height
+    );
+
     if(
 
         results.multiHandLandmarks &&
@@ -1171,41 +1468,58 @@ hands.onResults(results => {
 
         drawHand(
             lm,
+            ctx,
             canvas.width,
             canvas.height
+        );
+
+        drawHand(
+            lm,
+            controlCtx,
+            controlCanvas.width,
+            controlCanvas.height
         );
 
         const gesture =
             recognize(lm);
 
+        nameDom.innerText =
+            gesture;
+
         gestureText.innerText =
             gesture;
 
-        /* 光标 */
+        /* 控制页面 */
 
-        const x =
-            (1 - lm[8].x)
-            * window.innerWidth;
+        if(
 
-        const y =
-            lm[8].y
-            * window.innerHeight;
+            controlPage.style.display !== "none"
 
-        cursor.style.left =
-            x + "px";
+        ){
 
-        cursor.style.top =
-            y + "px";
+            const x =
+                (1 - lm[8].x)
+                * window.innerWidth;
 
-        /* Hover 点击 */
+            const y =
+                lm[8].y
+                * window.innerHeight;
 
-        hoverClick(x,y);
+            cursor.style.left =
+                x + "px";
 
-        /* 挥手翻页 */
+            cursor.style.top =
+                y + "px";
 
-        detectSwipe(lm);
+            hoverDetect(x,y);
+
+            detectSwipe(lm);
+        }
 
     }else{
+
+        nameDom.innerText =
+            "未检测到手";
 
         gestureText.innerText =
             "未检测到手";
@@ -1234,7 +1548,11 @@ async function startCamera(){
 
         video.srcObject = stream;
 
+        controlVideo.srcObject = stream;
+
         await video.play();
+
+        await controlVideo.play();
 
         resizeCanvas();
 
@@ -1254,15 +1572,26 @@ async function startCamera(){
 
         camera.start();
 
+        loading.style.display =
+            "none";
+
     }catch(err){
 
         console.error(err);
 
-        alert("摄像头启动失败");
+        loading.innerText =
+            "摄像头启动失败";
     }
 }
 
-startCamera();
+/* 启动按钮 */
+
+document
+.getElementById("startBtn")
+.onclick = ()=>{
+
+    startCamera();
+};
 
 window.addEventListener(
     "resize",

@@ -27,7 +27,12 @@
 
 body{
 
-    background:#eef3f9;
+    background:
+    linear-gradient(
+        135deg,
+        #eef3f9 0%,
+        #f8fbff 100%
+    );
 
     overflow:hidden;
 
@@ -42,7 +47,7 @@ body{
 
     position:fixed;
 
-    top:20px;
+    top:18px;
     left:50%;
 
     transform:translateX(-50%);
@@ -58,22 +63,31 @@ body{
 
     border:none;
 
-    padding:12px 22px;
+    padding:12px 24px;
 
-    border-radius:14px;
+    border-radius:16px;
 
-    background:#ffffff;
+    background:rgba(255,255,255,0.92);
+
+    backdrop-filter:blur(12px);
 
     color:#163a63;
 
     font-size:14px;
+
+    font-weight:600;
 
     cursor:pointer;
 
     transition:0.25s;
 
     box-shadow:
-    0 4px 18px rgba(0,0,0,0.06);
+    0 8px 24px rgba(22,58,99,0.08);
+}
+
+.mode-btn:hover{
+
+    transform:translateY(-2px);
 }
 
 .mode-btn.active{
@@ -96,13 +110,15 @@ body{
 
     justify-content:center;
     align-items:center;
+
+    padding-top:80px;
 }
 
 .container{
 
-    width:min(920px,94vw);
+    width:min(980px,94vw);
 
-    height:min(92vh,920px);
+    height:min(90vh,920px);
 
     display:flex;
 
@@ -119,14 +135,14 @@ body{
 
     overflow:hidden;
 
-    border-radius:24px;
+    border-radius:28px;
 
     background:#f5f8fc;
 
-    border:1px solid #dbe5f0;
+    border:1px solid rgba(219,229,240,0.8);
 
     box-shadow:
-    0 10px 30px rgba(22,58,99,0.08);
+    0 20px 60px rgba(22,58,99,0.08);
 }
 
 #video,
@@ -150,34 +166,45 @@ body{
 
     position:absolute;
 
-    top:18px;
-    left:20px;
+    top:20px;
+    left:22px;
 
     z-index:10;
+
+    background:
+    rgba(255,255,255,0.78);
+
+    backdrop-filter:blur(10px);
+
+    padding:14px 18px;
+
+    border-radius:18px;
 }
 
 .title{
 
-    font-size:18px;
+    font-size:20px;
 
-    font-weight:600;
+    font-weight:700;
 }
 
 .subtitle{
 
-    margin-top:4px;
+    margin-top:6px;
 
     font-size:13px;
 
     color:#6f8298;
+
+    line-height:1.7;
 }
 
 #startBtn{
 
     position:absolute;
 
-    top:18px;
-    right:18px;
+    top:20px;
+    right:20px;
 
     z-index:999;
 
@@ -187,13 +214,18 @@ body{
 
     color:white;
 
-    padding:10px 16px;
+    padding:12px 18px;
 
-    border-radius:12px;
+    border-radius:14px;
 
-    font-size:13px;
+    font-size:14px;
+
+    font-weight:600;
 
     cursor:pointer;
+
+    box-shadow:
+    0 10px 24px rgba(22,58,99,0.22);
 }
 
 .loading{
@@ -209,41 +241,57 @@ body{
 
     border:1px solid #dce6f2;
 
-    padding:14px 20px;
+    padding:16px 22px;
 
-    border-radius:14px;
+    border-radius:16px;
 
-    font-size:13px;
+    font-size:14px;
 
     z-index:999;
 }
 
 .result-card{
 
-    height:130px;
+    min-height:140px;
 
-    border-radius:22px;
+    border-radius:24px;
 
-    background:#f8fafc;
+    background:rgba(255,255,255,0.9);
 
     border:1px solid #dbe5f0;
 
     display:flex;
 
+    flex-direction:column;
+
     align-items:center;
 
     justify-content:center;
+
+    gap:10px;
+
+    box-shadow:
+    0 12px 30px rgba(22,58,99,0.06);
+}
+
+.result-title{
+
+    font-size:14px;
+
+    color:#7b8da3;
 }
 
 .name{
 
-    font-size:28px;
+    font-size:34px;
 
-    font-weight:600;
+    font-weight:700;
+
+    color:#163a63;
 }
 
 /* ========================= */
-/* 手势阅读页面 */
+/* 阅读页面 */
 /* ========================= */
 
 .control-page{
@@ -254,6 +302,9 @@ body{
     display:none;
 
     position:relative;
+
+    padding:
+    100px 20px 110px;
 }
 
 /* 摄像头 */
@@ -262,22 +313,22 @@ body{
 
     position:fixed;
 
-    top:20px;
-    left:20px;
+    top:18px;
+    left:18px;
 
     width:240px;
     height:180px;
 
-    border-radius:20px;
+    border-radius:24px;
 
     overflow:hidden;
 
     background:#fff;
 
-    border:1px solid #dbe5f0;
+    border:1px solid rgba(219,229,240,0.9);
 
     box-shadow:
-    0 10px 30px rgba(22,58,99,0.08);
+    0 18px 40px rgba(22,58,99,0.12);
 
     z-index:99999;
 }
@@ -303,38 +354,35 @@ body{
 
 .reader-container{
 
-    width:min(980px,86vw);
+    width:min(980px,100%);
 
-    height:min(82vh,860px);
+    height:calc(100vh - 210px);
 
-    background:white;
+    margin:auto;
 
-    border-radius:32px;
+    background:rgba(255,255,255,0.96);
+
+    backdrop-filter:blur(10px);
+
+    border-radius:34px;
 
     box-shadow:
-    0 20px 60px rgba(22,58,99,0.12);
+    0 25px 70px rgba(22,58,99,0.10);
 
-    border:1px solid #dbe5f0;
+    border:1px solid rgba(219,229,240,0.8);
 
     overflow:hidden;
 
     display:flex;
 
     flex-direction:column;
-
-    position:absolute;
-
-    left:50%;
-    top:50%;
-
-    transform:translate(-50%,-50%);
 }
 
 .reader-header{
 
-    height:72px;
+    min-height:78px;
 
-    border-bottom:1px solid #e6edf5;
+    border-bottom:1px solid #e8eef6;
 
     display:flex;
 
@@ -343,11 +391,13 @@ body{
     justify-content:space-between;
 
     padding:0 30px;
+
+    gap:12px;
 }
 
 .reader-title{
 
-    font-size:22px;
+    font-size:24px;
 
     font-weight:700;
 }
@@ -386,6 +436,8 @@ body{
     transition:0.25s;
 
     user-select:none;
+
+    padding-right:10px;
 }
 
 .horizontal-mode{
@@ -395,11 +447,16 @@ body{
     column-gap:60px;
 }
 
-/* 夜间模式 */
+/* 夜间 */
 
 .night{
 
-    background:#0f141b;
+    background:
+    linear-gradient(
+        135deg,
+        #0f141b,
+        #151c24
+    );
 }
 
 .night .reader-container{
@@ -418,11 +475,33 @@ body{
     color:#9aa9bc;
 }
 
+.night .control-panel{
+
+    border-top:1px solid #2a3544;
+}
+
+.night .reader-header{
+
+    border-bottom:1px solid #2a3544;
+}
+
+.night .menu-panel{
+
+    background:#1f2834;
+}
+
+.night .menu-item{
+
+    background:#263140;
+
+    color:#f0f4fa;
+}
+
 /* 控制栏 */
 
 .control-panel{
 
-    height:90px;
+    min-height:92px;
 
     border-top:1px solid #e6edf5;
 
@@ -434,18 +513,20 @@ body{
 
     gap:18px;
 
-    padding:10px;
+    padding:16px;
+
+    flex-wrap:wrap;
 }
 
 .control-btn{
 
     min-width:120px;
 
-    height:50px;
+    height:52px;
 
     border:none;
 
-    border-radius:16px;
+    border-radius:18px;
 
     background:#edf3fb;
 
@@ -453,9 +534,9 @@ body{
 
     font-size:15px;
 
-    cursor:pointer;
+    font-weight:600;
 
-    transition:0.2s;
+    transition:0.25s;
 }
 
 .control-btn.hovering{
@@ -474,18 +555,18 @@ body{
     position:absolute;
 
     right:20px;
-    top:86px;
+    top:20px;
 
     width:250px;
 
     background:white;
 
-    border-radius:20px;
+    border-radius:24px;
 
     border:1px solid #dbe5f0;
 
     box-shadow:
-    0 15px 35px rgba(22,58,99,0.12);
+    0 20px 45px rgba(22,58,99,0.12);
 
     padding:16px;
 
@@ -505,13 +586,20 @@ body{
 
     margin-bottom:10px;
 
-    padding:14px;
+    padding:15px 16px;
 
-    border-radius:14px;
+    border-radius:16px;
 
     background:#f4f8fd;
 
-    transition:0.2s;
+    transition:0.25s;
+
+    font-size:14px;
+}
+
+.menu-item:last-child{
+
+    margin-bottom:0;
 }
 
 .menu-item.hovering{
@@ -537,7 +625,7 @@ body{
     background:#163a63;
 
     box-shadow:
-    0 0 20px rgba(22,58,99,0.4);
+    0 0 24px rgba(22,58,99,0.45);
 
     pointer-events:none;
 
@@ -554,7 +642,7 @@ body{
 
     position:fixed;
 
-    bottom:20px;
+    bottom:18px;
 
     left:50%;
 
@@ -562,13 +650,13 @@ body{
 
     background:rgba(255,255,255,0.92);
 
-    backdrop-filter:blur(10px);
+    backdrop-filter:blur(12px);
 
-    border:1px solid #dbe5f0;
+    border:1px solid rgba(219,229,240,0.9);
 
-    border-radius:18px;
+    border-radius:22px;
 
-    padding:14px 24px;
+    padding:16px 24px;
 
     font-size:14px;
 
@@ -577,36 +665,122 @@ body{
     z-index:999999;
 
     box-shadow:
-    0 10px 25px rgba(22,58,99,0.08);
+    0 10px 28px rgba(22,58,99,0.08);
 
-    white-space:nowrap;
+    text-align:center;
+
+    line-height:1.8;
+
+    max-width:92vw;
 }
+
+/* 手机 */
 
 @media(max-width:768px){
 
+    .top-bar{
+
+        top:12px;
+    }
+
+    .mode-btn{
+
+        padding:10px 16px;
+
+        font-size:13px;
+    }
+
+    .recognize-page{
+
+        padding-top:72px;
+    }
+
+    .container{
+
+        width:94vw;
+        height:92vh;
+    }
+
     .floating-camera{
 
-        width:160px;
-        height:120px;
+        width:135px;
+        height:102px;
+
+        top:12px;
+        left:12px;
+
+        border-radius:18px;
+    }
+
+    .reader-container{
+
+        height:calc(100vh - 220px);
+
+        border-radius:26px;
+    }
+
+    .reader-header{
+
+        padding:16px 18px;
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        justify-content:center;
+    }
+
+    .reader-title{
+
+        font-size:20px;
+    }
+
+    .reader-content{
+
+        padding:24px 20px;
     }
 
     .book-page{
 
         font-size:18px;
+
+        line-height:2;
     }
 
-    .reader-container{
+    .horizontal-mode{
 
-        width:92vw;
+        column-count:1;
+    }
+
+    .control-panel{
+
+        gap:12px;
+    }
+
+    .control-btn{
+
+        min-width:90px;
+
+        height:46px;
+
+        font-size:14px;
     }
 
     .gesture-status{
 
-        width:90vw;
+        font-size:12px;
 
-        white-space:normal;
+        padding:12px 16px;
+    }
 
-        text-align:center;
+    .name{
+
+        font-size:26px;
+    }
+
+    .header{
+
+        max-width:70%;
     }
 }
 
@@ -614,8 +788,6 @@ body{
 </head>
 
 <body>
-
-<!-- 顶部切换 -->
 
 <div class="top-bar">
 
@@ -635,9 +807,7 @@ body{
 
 </div>
 
-<!-- ========================= -->
-<!-- 手势识别页面 -->
-<!-- ========================= -->
+<!-- 手势识别 -->
 
 <div
     class="recognize-page"
@@ -650,11 +820,11 @@ body{
             <div class="header">
 
                 <div class="title">
-                    手势识别系统
+                    AI 手势识别系统
                 </div>
 
                 <div class="subtitle">
-                    数字 / 点赞 / 张手 / 握拳
+                    支持：数字0-6、点赞、OK、剪刀手、握拳、张手
                 </div>
 
             </div>
@@ -683,6 +853,10 @@ body{
 
         <div class="result-card">
 
+            <div class="result-title">
+                当前识别结果
+            </div>
+
             <div
                 class="name"
                 id="name">
@@ -696,9 +870,7 @@ body{
 
 </div>
 
-<!-- ========================= -->
-<!-- 手势阅读页面 -->
-<!-- ========================= -->
+<!-- 阅读页面 -->
 
 <div
     class="control-page"
@@ -819,8 +991,8 @@ body{
     <div class="gesture-status">
 
         👉 食指移动光标　
-        👆 悬停1秒自动点击　
-        ✋ 张开手掌左右挥动翻页　
+        ⏳ 悬停1秒自动点击　
+        ✋ 张开手掌挥动翻页　
         📖 支持夜间 / 字体 / 阅读方向切换
 
     </div>
@@ -1062,6 +1234,9 @@ function distance(a,b){
 
 function recognize(lm){
 
+    const thumb =
+        lm[4].x < lm[3].x;
+
     const index =
         fingerUp(lm[8],lm[6]);
 
@@ -1074,41 +1249,23 @@ function recognize(lm){
     const pinky =
         fingerUp(lm[20],lm[18]);
 
-    const thumbUp =
-        lm[4].y < lm[3].y &&
-        lm[3].y < lm[2].y;
+    const total =
+        [thumb,index,middle,ring,pinky]
+        .filter(Boolean).length;
 
-    const thumbPalmDistance =
-        distance(lm[4],lm[9]);
+    /* 0 */
 
     if(
-        thumbUp &&
         !index &&
         !middle &&
         !ring &&
-        !pinky
+        !pinky &&
+        distance(lm[4],lm[9]) < 0.16
     ){
-        return "点赞";
+        return "数字0 / 握拳";
     }
 
-    if(
-        thumbPalmDistance < 0.16 &&
-        !index &&
-        !middle &&
-        !ring &&
-        !pinky
-    ){
-        return "握拳";
-    }
-
-    if(
-        index &&
-        middle &&
-        ring &&
-        pinky
-    ){
-        return "张开手掌";
-    }
+    /* 1 */
 
     if(
         index &&
@@ -1119,7 +1276,100 @@ function recognize(lm){
         return "数字1";
     }
 
-    return "识别中";
+    /* 2 */
+
+    if(
+        index &&
+        middle &&
+        !ring &&
+        !pinky
+    ){
+        return "数字2 / 剪刀手";
+    }
+
+    /* 3 */
+
+    if(
+        thumb &&
+        index &&
+        middle &&
+        !ring &&
+        !pinky
+    ){
+        return "数字3";
+    }
+
+    /* 4 */
+
+    if(
+        !thumb &&
+        index &&
+        middle &&
+        ring &&
+        pinky
+    ){
+        return "数字4";
+    }
+
+    /* 5 */
+
+    if(
+        thumb &&
+        index &&
+        middle &&
+        ring &&
+        pinky
+    ){
+        return "数字5 / 张开手掌";
+    }
+
+    /* 6 */
+
+    if(
+        thumb &&
+        !index &&
+        !middle &&
+        !ring &&
+        pinky
+    ){
+        return "数字6";
+    }
+
+    /* 点赞 */
+
+    if(
+        lm[4].y < lm[3].y &&
+        !index &&
+        !middle &&
+        !ring &&
+        !pinky
+    ){
+        return "点赞 👍";
+    }
+
+    /* OK */
+
+    if(
+        distance(lm[4],lm[8]) < 0.05 &&
+        middle &&
+        ring &&
+        pinky
+    ){
+        return "OK 👌";
+    }
+
+    /* ROCK */
+
+    if(
+        index &&
+        !middle &&
+        !ring &&
+        pinky
+    ){
+        return "摇滚 🤘";
+    }
+
+    return `检测中（${total}指）`;
 }
 
 /* 绘制 */
@@ -1159,6 +1409,24 @@ function drawHand(points,context,w,h){
         );
 
         context.stroke();
+    }
+
+    for(const p of points){
+
+        context.beginPath();
+
+        context.arc(
+            p.x * w,
+            p.y * h,
+            4,
+            0,
+            Math.PI * 2
+        );
+
+        context.fillStyle =
+            "#163a63";
+
+        context.fill();
     }
 }
 
@@ -1296,31 +1564,25 @@ function detectSwipe(lm){
     const gesture =
         recognize(lm);
 
-    /* 必须张开手掌 */
-
-    if(gesture !== "张开手掌"){
+    if(
+        !gesture.includes("张开手掌")
+    ){
 
         swipeTrack = [];
 
         return;
     }
 
-    /* 冷却 */
-
     if(now - lastSwipeTime < 1200){
 
         return;
     }
-
-    /* 记录轨迹 */
 
     swipeTrack.push({
 
         x:lm[0].x,
         y:lm[0].y
     });
-
-    /* 保留最近12帧 */
 
     if(swipeTrack.length > 12){
 
@@ -1346,8 +1608,6 @@ function detectSwipe(lm){
     const dy =
         last.y - first.y;
 
-    /* 左右翻页 */
-
     if(Math.abs(dx) > 0.18){
 
         if(dx > 0){
@@ -1365,8 +1625,6 @@ function detectSwipe(lm){
 
         return;
     }
-
-    /* 上下翻页 */
 
     if(Math.abs(dy) > 0.18){
 
@@ -1537,8 +1795,6 @@ async function startCamera(){
             "摄像头启动失败";
     }
 }
-
-/* 启动按钮 */
 
 document
 .getElementById("startBtn")

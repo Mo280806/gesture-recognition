@@ -3,7 +3,7 @@
 
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
 
 <title>手势交互系统</title>
 
@@ -13,7 +13,7 @@
 <style>
 /* =========================
    🎯 Ultra Minimal Gesture UI
-   高级极简设计系统
+   高级极简设计系统 - 移动端优化版
 ========================= */
 
 *{
@@ -95,7 +95,7 @@ body{
     gap:14px;
 }
 
-/* 摄像头卡片（去厚重阴影） */
+/* 摄像头卡片 */
 .camera-card{
     position:relative;
     height:min(68vh,680px);
@@ -105,7 +105,6 @@ body{
     border:1px solid rgba(255,255,255,0.06);
 }
 
-/* video */
 #video,
 #canvas{
     position:absolute;
@@ -115,7 +114,7 @@ body{
     transform:scaleX(-1);
 }
 
-/* 标题浮层（更轻） */
+/* 标题浮层 */
 .header{
     position:absolute;
     top:14px;
@@ -151,7 +150,6 @@ body{
     color:#111827;
 }
 
-/* loading */
 .loading{
     position:absolute;
     left:50%;
@@ -161,7 +159,6 @@ body{
     color:rgba(255,255,255,0.8);
 }
 
-/* 结果卡 */
 .result-card{
     background:rgba(255,255,255,0.6);
     backdrop-filter:blur(16px);
@@ -177,32 +174,34 @@ body{
 }
 
 /* =========================
-   📖 阅读模式（重点优化）
+   📖 阅读模式（移动端优化重点）
 ========================= */
 
 .control-page{
     width:100vw;
     height:100vh;
     display:none;
+    position:relative;
 }
 
-/* 浮动摄像头（更轻更不挡） */
+/* 浮动摄像头 - 移动端优化 */
 .floating-camera{
     position:fixed;
     top:14px;
     left:14px;
-    width:52px;
-    height:52px;
-    border-radius:14px;
+    width:48px;
+    height:48px;
+    border-radius:12px;
     overflow:hidden;
     background:#000;
     z-index:999;
-    transition:.25s ease;
+    transition:all .3s cubic-bezier(0.2,0.9,0.4,1.1);
+    box-shadow:0 4px 12px rgba(0,0,0,0.15);
 }
 
 .floating-camera.expand{
-    width:160px;
-    height:110px;
+    width:120px;
+    height:90px;
     border-radius:16px;
 }
 
@@ -214,29 +213,27 @@ body{
     transform:scaleX(-1);
 }
 
-/* 阅读容器（极简纸感） */
+/* 阅读容器 - 移动端全屏适配 */
 .reader-container{
     position:absolute;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    width:min(860px,92vw);
-    height:min(82vh,820px);
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
     background:#ffffff;
-    border-radius:18px;
-    border:1px solid rgba(0,0,0,0.06);
-    box-shadow:0 10px 30px rgba(0,0,0,0.06);
     display:flex;
     flex-direction:column;
+    z-index:1;
 }
 
-/* header */
+/* 阅读头部 */
 .reader-header{
     padding:14px 18px;
     border-bottom:1px solid rgba(0,0,0,0.05);
     display:flex;
     justify-content:space-between;
     align-items:center;
+    background:inherit;
 }
 
 .reader-title{
@@ -249,14 +246,15 @@ body{
     color:#6b7280;
 }
 
-/* 内容区 */
+/* 内容区 - 关键修复 */
 .reader-content{
     flex:1;
-    padding:20px;
+    padding:16px 20px;
     overflow:hidden;
+    position:relative;
 }
 
-/* 书页 */
+/* 书页 - 移动端滚动优化 */
 .book-page{
     height:100%;
     overflow-y:auto;
@@ -264,39 +262,52 @@ body{
     line-height:1.8;
     color:#111827;
     user-select:none;
+    -webkit-overflow-scrolling:touch;
+    padding-right:4px;
 }
 
-/* 横排模式 */
+/* 横排模式 - 移动端优化 */
 .horizontal-mode{
     column-count:2;
-    column-gap:32px;
+    column-gap:20px;
+    column-rule:1px solid rgba(0,0,0,0.05);
+}
+
+.horizontal-mode p{
+    break-inside:avoid;
+    margin-bottom:12px;
 }
 
 /* =========================
-   🎛 底部控制栏（极简浮层）
+   🎛 底部控制栏（移动端优化）
 ========================= */
 
 .control-panel{
     position:fixed;
-    bottom:12px;
+    bottom:20px;
     left:50%;
     transform:translateX(-50%);
     display:flex;
-    gap:8px;
-    padding:8px;
-    border-radius:999px;
-    background:rgba(255,255,255,0.7);
-    backdrop-filter:blur(18px);
+    gap:12px;
+    padding:10px 20px;
+    border-radius:40px;
+    background:rgba(255,255,255,0.85);
+    backdrop-filter:blur(24px);
     border:1px solid rgba(0,0,0,0.06);
+    z-index:100;
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
 }
 
 .control-btn{
     border:none;
     background:transparent;
-    padding:8px 12px;
-    font-size:12px;
-    border-radius:999px;
+    padding:8px 16px;
+    font-size:13px;
+    font-weight:500;
+    border-radius:30px;
     color:#374151;
+    cursor:pointer;
+    transition:all .2s ease;
 }
 
 .control-btn.hovering{
@@ -305,20 +316,22 @@ body{
 }
 
 /* =========================
-   📋 菜单（浮层卡片化）
+   📋 菜单浮层（移动端优化）
 ========================= */
 
 .menu-panel{
-    position:absolute;
-    right:14px;
-    top:70px;
-    width:180px;
-    background:rgba(255,255,255,0.85);
-    backdrop-filter:blur(18px);
+    position:fixed;
+    right:16px;
+    bottom:80px;
+    width:160px;
+    background:rgba(255,255,255,0.92);
+    backdrop-filter:blur(20px);
     border:1px solid rgba(0,0,0,0.06);
-    border-radius:14px;
+    border-radius:16px;
     padding:8px;
     display:none;
+    z-index:200;
+    box-shadow:0 8px 24px rgba(0,0,0,0.12);
 }
 
 .menu-panel.show{
@@ -326,18 +339,20 @@ body{
 }
 
 .menu-item{
-    padding:10px;
-    font-size:12px;
+    padding:12px 10px;
+    font-size:13px;
     border-radius:10px;
     color:#374151;
+    cursor:pointer;
+    transition:background .2s ease;
 }
 
 .menu-item.hovering{
-    background:rgba(0,0,0,0.05);
+    background:rgba(0,0,0,0.08);
 }
 
 /* =========================
-   🌙 夜间模式（高级黑）
+   🌙 夜间模式
 ========================= */
 
 .night{
@@ -346,7 +361,10 @@ body{
 
 .night .reader-container{
     background:#0f141b;
-    border-color:rgba(255,255,255,0.06);
+}
+
+.night .reader-header{
+    border-bottom-color:rgba(255,255,255,0.06);
 }
 
 .night .book-page,
@@ -358,56 +376,287 @@ body{
     color:#9ca3af;
 }
 
+.night .control-panel{
+    background:rgba(30,35,45,0.9);
+    border-color:rgba(255,255,255,0.08);
+}
+
+.night .control-btn{
+    color:#d1d5db;
+}
+
+.night .control-btn.hovering{
+    background:#e5e7eb;
+    color:#111827;
+}
+
+.night .menu-panel{
+    background:rgba(30,35,45,0.95);
+    border-color:rgba(255,255,255,0.08);
+}
+
+.night .menu-item{
+    color:#d1d5db;
+}
+
+.night .menu-item.hovering{
+    background:rgba(255,255,255,0.1);
+}
+
 /* =========================
-   🎯 光标（极轻）
+   🎯 光标（移动端优化）
 ========================= */
 
 .cursor{
     position:fixed;
-    width:12px;
-    height:12px;
+    width:14px;
+    height:14px;
     border-radius:50%;
     background:#111827;
     pointer-events:none;
-    z-index:9999;
-    opacity:.6;
+    z-index:10000;
+    opacity:0.5;
+    transition:transform 0.05s linear;
+    box-shadow:0 0 0 2px rgba(255,255,255,0.3);
+}
+
+.cursor.hovering{
+    opacity:0.8;
+    transform:scale(1.2);
 }
 
 /* =========================
-   📱 移动端彻底优化
+   手势状态提示（移动端优化）
+========================= */
+
+.gesture-status{
+    position:fixed;
+    bottom:12px;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:10px;
+    color:#6b7280;
+    background:rgba(255,255,255,0.7);
+    backdrop-filter:blur(12px);
+    padding:6px 12px;
+    border-radius:20px;
+    white-space:nowrap;
+    z-index:100;
+    pointer-events:none;
+    display:flex;
+    gap:12px;
+}
+
+.gesture-status span{
+    margin:0 4px;
+}
+
+.night .gesture-status{
+    background:rgba(0,0,0,0.5);
+    color:#9ca3af;
+}
+
+/* =========================
+   📱 移动端彻底优化（核心修复）
 ========================= */
 
 @media (max-width:768px){
 
-    .reader-container{
-        width:100vw;
-        height:100vh;
-        border-radius:0;
+    /* 顶部导航 */
+    .top-bar{
+        top:12px;
+        padding:4px 4px;
+        gap:4px;
+        z-index:10001;
+    }
+
+    .mode-btn{
+        padding:6px 12px;
+        font-size:12px;
+    }
+
+    /* 识别页 */
+    .container{
+        width:96vw;
+        gap:10px;
+    }
+
+    .camera-card{
+        height:min(60vh,500px);
+        border-radius:16px;
+    }
+
+    .header{
+        top:10px;
+        left:10px;
+        padding:6px 10px;
+    }
+
+    .title{
+        font-size:12px;
+    }
+
+    .subtitle{
+        font-size:9px;
+        display:none;
+    }
+
+    .result-card{
+        padding:12px;
+    }
+
+    .name{
+        font-size:14px;
+    }
+
+    /* 阅读页 - 关键优化 */
+    .floating-camera{
+        width:44px;
+        height:44px;
+        top:12px;
+        left:12px;
+        z-index:10001;
+    }
+
+    .floating-camera.expand{
+        width:100px;
+        height:75px;
+    }
+
+    .reader-header{
+        padding:12px 16px;
+    }
+
+    .reader-title{
+        font-size:13px;
+    }
+
+    .page-info{
+        font-size:10px;
+    }
+
+    .reader-content{
+        padding:12px 16px;
+    }
+
+    .book-page{
+        font-size:15px;
+        line-height:1.7;
+    }
+
+    .horizontal-mode{
+        column-gap:16px;
+    }
+
+    /* 控制栏 - 移动端增大触摸区域 */
+    .control-panel{
+        bottom:16px;
+        gap:8px;
+        padding:8px 16px;
+    }
+
+    .control-btn{
+        padding:8px 20px;
+        font-size:13px;
+    }
+
+    /* 菜单 - 移动端调整位置 */
+    .menu-panel{
+        right:12px;
+        bottom:70px;
+        width:150px;
+        padding:6px;
+    }
+
+    .menu-item{
+        padding:10px 10px;
+        font-size:12px;
+    }
+
+    /* 手势状态 - 移动端换行 */
+    .gesture-status{
+        bottom:8px;
+        font-size:9px;
+        padding:4px 10px;
+        white-space:normal;
+        flex-wrap:wrap;
+        justify-content:center;
+        width:90%;
+        border-radius:16px;
+        gap:8px;
+    }
+
+    /* 光标 - 移动端稍微加大 */
+    .cursor{
+        width:16px;
+        height:16px;
+        opacity:0.4;
+    }
+}
+
+/* 超小屏幕（iPhone SE等） */
+@media (max-width:380px){
+    .control-btn{
+        padding:6px 14px;
+        font-size:12px;
+    }
+
+    .gesture-status{
+        font-size:8px;
+        bottom:6px;
+    }
+
+    .reader-content{
+        padding:10px 12px;
     }
 
     .book-page{
         font-size:14px;
-        line-height:1.7;
+    }
+}
+
+/* 横屏模式优化 */
+@media (orientation:landscape) and (max-height:500px){
+    .floating-camera{
+        width:40px;
+        height:40px;
+    }
+
+    .floating-camera.expand{
+        width:90px;
+        height:68px;
+    }
+
+    .reader-header{
+        padding:8px 16px;
+    }
+
+    .reader-content{
+        padding:8px 16px;
     }
 
     .control-panel{
         bottom:10px;
-        padding:6px;
+        padding:6px 12px;
     }
 
-    .control-btn{
-        font-size:11px;
-        padding:6px 10px;
+    .gesture-status{
+        display:none;
     }
+}
 
-    .floating-camera{
-        width:46px;
-        height:46px;
+/* 安全区域适配（全面屏） */
+@supports (padding: max(0px)) {
+    .control-panel {
+        bottom: max(20px, env(safe-area-inset-bottom));
     }
-
-    .menu-panel{
-        right:8px;
-        width:160px;
+    
+    .gesture-status {
+        bottom: max(12px, env(safe-area-inset-bottom));
+    }
+    
+    .menu-panel {
+        bottom: max(80px, calc(env(safe-area-inset-bottom) + 70px));
     }
 }
 </style>
@@ -683,10 +932,9 @@ window.innerWidth < 768;
    页面切换
 ========================= */
 
-floatingCamera.onclick = ()=>{
-
+floatingCamera.onclick = (e)=>{
+    e.stopPropagation();
     floatingCamera.classList.toggle("expand");
-
     setTimeout(updateHoverRects,300);
 };
 

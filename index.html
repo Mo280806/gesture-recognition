@@ -1050,6 +1050,8 @@ const floatingCamera =
 const isMobile =
     window.innerWidth < 768;
 
+/* 摄像头展开 */
+
 floatingCamera.onclick = ()=>{
 
     floatingCamera.classList.toggle(
@@ -1368,10 +1370,13 @@ let cursorTargetY = 0;
 let cursorX = 0;
 let cursorY = 0;
 
+let smoothX = 0;
+let smoothY = 0;
+
 function animateCursor(){
 
     const smooth =
-        isMobile ? 0.38 : 0.15;
+        isMobile ? 0.42 : 0.18;
 
     cursorX +=
         (cursorTargetX - cursorX)
@@ -1382,13 +1387,13 @@ function animateCursor(){
         * smooth;
 
     if(
-        Math.abs(cursorTargetX - cursorX) < 0.1
+        Math.abs(cursorTargetX - cursorX) < 0.3
     ){
         cursorX = cursorTargetX;
     }
 
     if(
-        Math.abs(cursorTargetY - cursorY) < 0.1
+        Math.abs(cursorTargetY - cursorY) < 0.3
     ){
         cursorY = cursorTargetY;
     }
@@ -1403,7 +1408,7 @@ function animateCursor(){
 
 animateCursor();
 
-/* hover 优化 */
+/* hover */
 
 let hoverTarget = null;
 
@@ -1448,7 +1453,8 @@ function hoverDetect(x,y){
 
     let found = null;
 
-    const padding = 22;
+    const padding =
+        isMobile ? 34 : 22;
 
     for(const item of hoverRects){
 
@@ -1471,18 +1477,18 @@ function hoverDetect(x,y){
         }
     }
 
-    if(lastHoverEl !== found){
+    if(found !== lastHoverEl){
 
         clearTimeout(hoverLeaveTimer);
 
+        if(lastHoverEl){
+
+            lastHoverEl.classList.remove(
+                "hovering"
+            );
+        }
+
         if(found){
-
-            if(lastHoverEl){
-
-                lastHoverEl.classList.remove(
-                    "hovering"
-                );
-            }
 
             found.classList.add(
                 "hovering"
@@ -1492,27 +1498,14 @@ function hoverDetect(x,y){
                 "hovering"
             );
 
-            lastHoverEl = found;
-
         }else{
 
-            hoverLeaveTimer = setTimeout(()=>{
-
-                if(lastHoverEl){
-
-                    lastHoverEl.classList.remove(
-                        "hovering"
-                    );
-                }
-
-                cursor.classList.remove(
-                    "hovering"
-                );
-
-                lastHoverEl = null;
-
-            },120);
+            cursor.classList.remove(
+                "hovering"
+            );
         }
+
+        lastHoverEl = found;
     }
 
     if(found){
@@ -1533,22 +1526,36 @@ function hoverDetect(x,y){
         }
 
         const moveDist = Math.hypot(
+
             x - hoverStableX,
+
             y - hoverStableY
         );
 
+        const stableTime =
+            Date.now() - hoverStart;
+
         if(
+
             !clickedLock &&
-            moveDist < 25 &&
-            Date.now() - hoverStart > 800 &&
-            Date.now() - lastClickTime > 1200
+
+            moveDist < (isMobile ? 42 : 25) &&
+
+            stableTime > (isMobile ? 950 : 800) &&
+
+            Date.now() - lastClickTime > 1400
+
         ){
 
             autoClick(found);
 
+            clickedLock = true;
+
             lastClickTime = Date.now();
 
-            clickedLock = true;
+            hoverTarget = null;
+
+            hoverStart = 0;
         }
 
     }else{
@@ -1563,7 +1570,7 @@ function hoverDetect(x,y){
 
             clickedLock = false;
 
-        },120);
+        },180);
     }
 }
 
@@ -1707,29 +1714,19 @@ hands.setOptions({
 
 hands.onResults(results => {
 
-    if(
-        recognizePage.style.display !== "none"
-    ){
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
 
-        ctx.clearRect(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-    }
-
-    if(
-        controlPage.style.display !== "none"
-    ){
-
-        controlCtx.clearRect(
-            0,
-            0,
-            controlCanvas.width,
-            controlCanvas.height
-        );
-    }
+    controlCtx.clearRect(
+        0,
+        0,
+        controlCanvas.width,
+        controlCanvas.height
+    );
 
     if(
 
@@ -1742,29 +1739,19 @@ hands.onResults(results => {
 
         results.multiHandLandmarks.forEach((lm,index)=>{
 
-            if(
-                recognizePage.style.display !== "none"
-            ){
+            drawHand(
+                lm,
+                ctx,
+                canvas.width,
+                canvas.height
+            );
 
-                drawHand(
-                    lm,
-                    ctx,
-                    canvas.width,
-                    canvas.height
-                );
-            }
-
-            if(
-                controlPage.style.display !== "none"
-            ){
-
-                drawHand(
-                    lm,
-                    controlCtx,
-                    controlCanvas.width,
-                    controlCanvas.height
-                );
-            }
+            drawHand(
+                lm,
+                controlCtx,
+                controlCanvas.width,
+                controlCanvas.height
+            );
 
             const gesture =
                 recognize(lm);
@@ -1776,27 +1763,40 @@ hands.onResults(results => {
             if(index === 0){
 
                 const mobileBoost =
-                    isMobile ? 1.28 : 1;
+                    isMobile ? 1.65 : 1.12;
+
+                smoothX +=
+                    (
+                        lm[8].x - smoothX
+                    ) * 0.35;
+
+                smoothY +=
+                    (
+                        lm[8].y - smoothY
+                    ) * 0.35;
 
                 const centerX = 0.5;
-
                 const centerY = 0.5;
 
                 const nx =
-                    (lm[8].x - centerX)
+
+                    (smoothX - centerX)
                     * mobileBoost
                     + centerX;
 
                 const ny =
-                    (lm[8].y - centerY)
+
+                    (smoothY - centerY)
                     * mobileBoost
                     + centerY;
 
                 cursorTargetX =
+
                     (1 - nx)
                     * window.innerWidth;
 
                 cursorTargetY =
+
                     ny
                     * window.innerHeight;
 
@@ -1808,7 +1808,8 @@ hands.onResults(results => {
                         performance.now();
 
                     if(
-                        now - lastHoverCheck > 33
+                        now - lastHoverCheck >
+                        (isMobile ? 55 : 33)
                     ){
 
                         hoverDetect(
@@ -1892,11 +1893,11 @@ async function startCamera(){
                     facingMode:"user",
 
                     width:{
-                        ideal:isMobile ? 640 : 960
+                        ideal:isMobile ? 1280 : 960
                     },
 
                     height:{
-                        ideal:isMobile ? 480 : 720
+                        ideal:isMobile ? 720 : 720
                     }
                 },
 
@@ -1924,10 +1925,10 @@ async function startCamera(){
                 },
 
                 width:
-                    isMobile ? 640 : 960,
+                    isMobile ? 1280 : 960,
 
                 height:
-                    isMobile ? 480 : 720
+                    isMobile ? 720 : 720
             });
 
         camera.start();

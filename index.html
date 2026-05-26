@@ -1403,6 +1403,8 @@ let hoverStart = 0;
 
 let clickedLock = false;
 
+let lastClickTime = 0;
+
 function hoverDetect(x,y){
 
     const allTargets = [
@@ -1461,16 +1463,19 @@ function hoverDetect(x,y){
         if(
 
             !clickedLock &&
-
-            Date.now() - hoverStart > 800
-
+        
+            Date.now() - hoverStart > 800 &&
+        
+            Date.now() - lastClickTime > 1200
+        
         ){
-
+        
             autoClick(found);
-
+        
+            lastClickTime = Date.now();
+        
             clickedLock = true;
         }
-
     }else{
 
         hoverTarget = null;

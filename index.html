@@ -877,56 +877,29 @@ const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-const controlVideo =
-document.getElementById("controlVideo");
+const controlVideo = document.getElementById("controlVideo");
+const controlCanvas = document.getElementById("controlCanvas");
+const controlCtx = controlCanvas.getContext("2d");
 
-const controlCanvas =
-document.getElementById("controlCanvas");
+const nameDom = document.getElementById("name");
+const loading = document.getElementById("loading");
+const startBtn = document.getElementById("startBtn");
 
-const controlCtx =
-controlCanvas.getContext("2d");
+const recognizeBtn = document.getElementById("recognizeBtn");
+const controlBtn = document.getElementById("controlBtn");
+const recognizePage = document.getElementById("recognizePage");
+const controlPage = document.getElementById("controlPage");
 
-const nameDom =
-document.getElementById("name");
+const cursor = document.getElementById("cursor");
+const bookPage = document.getElementById("bookPage");
+const pageInfo = document.getElementById("pageInfo");
+const menuPanel = document.getElementById("menuPanel");
 
-const loading =
-document.getElementById("loading");
+const buttons = document.querySelectorAll(".control-btn");
+const menuItems = document.querySelectorAll(".menu-item");
+const floatingCamera = document.querySelector(".floating-camera");
 
-const recognizeBtn =
-document.getElementById("recognizeBtn");
-
-const controlBtn =
-document.getElementById("controlBtn");
-
-const recognizePage =
-document.getElementById("recognizePage");
-
-const controlPage =
-document.getElementById("controlPage");
-
-const cursor =
-document.getElementById("cursor");
-
-const bookPage =
-document.getElementById("bookPage");
-
-const pageInfo =
-document.getElementById("pageInfo");
-
-const menuPanel =
-document.getElementById("menuPanel");
-
-const buttons =
-document.querySelectorAll(".control-btn");
-
-const menuItems =
-document.querySelectorAll(".menu-item");
-
-const floatingCamera =
-document.querySelector(".floating-camera");
-
-const isMobile =
-window.innerWidth < 768;
+const isMobile = window.innerWidth < 768;
 
 /* =========================
    页面切换
@@ -939,26 +912,17 @@ floatingCamera.onclick = (e)=>{
 };
 
 recognizeBtn.onclick = ()=>{
-
     recognizeBtn.classList.add("active");
-
     controlBtn.classList.remove("active");
-
     recognizePage.style.display = "flex";
-
     controlPage.style.display = "none";
 };
 
 controlBtn.onclick = ()=>{
-
     controlBtn.classList.add("active");
-
     recognizeBtn.classList.remove("active");
-
     recognizePage.style.display = "none";
-
     controlPage.style.display = "block";
-
     setTimeout(updateHoverRects,120);
 };
 
@@ -967,14 +931,12 @@ controlBtn.onclick = ()=>{
 ========================= */
 
 const pages = [
-
 `楼下的打印店有一只猫。
 
 不知道是什么品种，我认不得，也没问过店主，只是在打印的间或用手抚摸祂。
 
 猫总是趴在台式电脑的键盘上，严丝合缝，不留一个按键，于是来打印的人一度不得不放弃使用这台电脑，宠溺的笑着，坐在旁边的电脑前，边操作，边看祂。
 `,
-
 `猫很乖。似乎停留在一家人来人往的打印店只是稀疏平常的事，不管来的人是谁，放到身上头上的手是谁的，祂也只是窝起脚，蜷在那个属于祂的键盘上，咪着眼，柔软的身子随着呼吸轻轻的起伏。
 
 猫很自由。这只是祂休憩的落脚点，猫要挠着门，在大清早出门遛弯，和别猫社交，嬉闹，要巡视自己的地盘，然后定时回来和人一起共餐，或睡觉，或出门，直到人快关门的时候回来。猫不会让自己被关在门外。
@@ -982,7 +944,6 @@ const pages = [
 猫不受拘束。一段时间猫第一次尝猫条，猫间美味！索性一到饭点就缠着人，半眼不瞅碗里的猫粮。祂蹭正在打印的店主，蹭正在找东西的店主，蹭给人切照片的店主。抱下去就再跳上来，推开身子还有脑袋。猫就是要等到人抛下所有来喂祂，才善罢甘休。但猫并不会理解什么叫善罢甘休，猫只是要吃猫条，至于人在做什么，不重要。
 
 猫有猫权。今日去买撰写文稿需要的固定格式的纸，我在货架这边比对着手机，苦苦寻找，店主在那边工作。来打印的人目标大部分都是猫，所以进店第一句变成，“猫呐？”`,
-
 `店主边忙边回，出去玩啦，这几日要定点喂驱虫药，吃完饭就跑咯，不肯在家呆。一般都在哪呢？这个楼后面那条路前面，咱不知道上哪，这块祂都熟。
 
 我找的眼花。版式都差不多，可又都差一点，我又实在怕找错，过后还要再下来跑一趟，于是埋头又探头。
@@ -997,74 +958,15 @@ const pages = [
 
 我出了门，猫早出了门。
 
-我想起了曾经路过我生活的猫。`，
-
-`高三的时候住校，一个周末回家时，椅子底下多只猫窝。吃饭时，回来一只猫。那是别人送的，暂且这样说吧，毕竟到最后，我也不知到底是想不想养了。
-
-猫在家里只讨一半喜，因为总有怕猫的和讨厌猫的，如果爸爸觉得带一只猫回来能让我少些压力，那他就完全没有在意不喜欢猫的妹妹和不想处理额外家务的妈妈。
-
-但我不是爸爸，我不知道他怎么想的，我只是一味的自责，一边容许猫在家里受言语攻击，一边花很多时间和祂一起蹲着。
-
-爸爸的朋友送的，于是猫黏着爸爸，在他晚上出门遛弯时，躲在离他几米远的灌木里，以人为圆心自由活动，从不乱跑。`.
-
-`我经常给猫买小玩具小零食，所以猫黏着我，在我回来时蹭我的裤脚，趴在我的试卷上，窝在我床边。
-
-猫不吃猫粮，猫吃和人一样的饭，我在家的时候替祂抗争，猫有很多什么元素不能吃，但我没有话语权，我也没有存在感。
-
-但是猫很快乐，猫享受和人一样平等的对待，猫逍遥自在。
-
-刚到家的猫昼伏夜出，天不亮就喵喵大叫让人开门，上午回来吃了就睡，睡到傍晚，自顾自的溜达出去，晚上怎么叫也不回来，关门之后又在院子里大叫开门，进了屋又开始跑酷。
-
-我和祂连续相处最长的日子大概是两天，赶上了放什么假。
-
-我一直自责，猫一直快乐。
-
-然后猫出车祸了。`.
-   
-`一个周末回家时，我知道的。买的小玩具还在快递站没拿回来，虽然猫不玩，但给面子的舔舔我的手指，我喜欢这样。
-
-妹妹过生日的时候，来的孩子太多，中午一贯睡觉的猫吓了出去，慌不择路的钻到了飞驰的车底。
-
-这毕竟是猫的操作失误，散养本身也不对，所以猫只是被丢进垃圾桶。
-
-我只是剩下几张照片和一个视频。
-
-以及两个月里加起来不超过一周的回忆。`,
-
-`我总是去打印店，我总是坐在猫旁边，因为祂们很像，看起来就像我的猫自由又健康。
-
-我不知道家里有没有人记得祂，但是我经常想祂窝在我枕边的样子。
-
-只被允许呆在客厅的猫飞快跳上我的床，安静的用热热的身子贴着我的手，然后被家人的大叫吵的离开。
-
-那是我最后一次见祂，第二天返校时猫还没有回家，再回家时猫已经离我很远。`,
-   
-`我好像本来要说猫的自由，要说，就是有猫会喜欢外面，喜欢穿梭在世界的缝隙里，喜欢一切规则以外的东西。
-
-我好像要说，大部分人连猫都不如，吃到不喜欢的东西不会拼尽全力的逃走，找不到规定的东西不会理所当然的接受差不多的，被指责了会沮丧的玩不开心，想死的时候都要担心被说自私。
-
-我想说这个世界上有很多猫。享受自由，享受安逸，享受流浪，享受供养，享受奔跑，享受打滚，享受阳光和草，或者猫窝和拥抱。
-
-而这个世界上有很多人，也许比猫多得多的多。`,
-   
-`我应该要说一些命题，一些观点，长篇大论，长枪大炮。
-
-但现在是凌晨一点四十，我已经熬了一周，我已经很久没有放松的写东西了。
-
-我现在只是想我的猫。`
+我想起了曾经路过我生活的猫。`
 ];
 
 let currentPage = 0;
 
 function renderPage(){
-
-    bookPage.innerText =
-    pages[currentPage];
-
-    pageInfo.innerText =
-    `第 ${currentPage+1} 页 / 共 ${pages.length} 页`;
+    bookPage.innerText = pages[currentPage];
+    pageInfo.innerText = `第 ${currentPage+1} 页 / 共 ${pages.length} 页`;
 }
-
 renderPage();
 
 /* =========================
@@ -1072,169 +974,82 @@ renderPage();
 ========================= */
 
 function nextPage(){
-
     if(currentPage < pages.length - 1){
-
         currentPage++;
-
         renderPage();
     }
 }
 
 function prevPage(){
-
     if(currentPage > 0){
-
         currentPage--;
-
         renderPage();
     }
 }
 
 function toggleMenu(){
-
     menuPanel.classList.toggle("show");
-
     setTimeout(updateHoverRects,120);
 }
 
 function toggleNight(){
-
     document.body.classList.toggle("night");
 }
 
-let fontSize = 24;
-
+let fontSize = 16;
 function applyFont(){
-
-    bookPage.style.fontSize =
-    fontSize + "px";
+    bookPage.style.fontSize = fontSize + "px";
 }
 
 function fontIncrease(){
-
-    fontSize =
-    Math.min(fontSize + 2,42);
-
+    fontSize = Math.min(fontSize + 2, 32);
     applyFont();
 }
 
 function fontDecrease(){
-
-    fontSize =
-    Math.max(fontSize - 2,16);
-
+    fontSize = Math.max(fontSize - 2, 12);
     applyFont();
 }
 
 function switchHorizontal(){
-
     bookPage.classList.add("horizontal-mode");
 }
 
 function switchVertical(){
-
     bookPage.classList.remove("horizontal-mode");
 }
 
 /* =========================
-   resize
-========================= */
-
-function resizeCanvas(){
-
-    if(video.videoWidth){
-
-        canvas.width =
-        video.videoWidth;
-
-        canvas.height =
-        video.videoHeight;
-    }
-
-    if(controlVideo.videoWidth){
-
-        controlCanvas.width =
-        controlVideo.videoWidth;
-
-        controlCanvas.height =
-        controlVideo.videoHeight;
-    }
-
-    updateHoverRects();
-}
-
-window.addEventListener(
-    "resize",
-    resizeCanvas
-);
-
-/* =========================
-   工具
+   工具函数
 ========================= */
 
 function fingerUp(tip,pip){
-
     return tip.y < pip.y;
 }
 
 function distance(a,b){
-
-    return Math.hypot(
-        a.x - b.x,
-        a.y - b.y
-    );
+    return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
 function thumbUp(lm, handedness){
-
-    if(handedness === "Right"){
-
-        return lm[4].x < lm[3].x;
-
-    }else{
-
-        return lm[4].x > lm[3].x;
-    }
+    return handedness === "Right" ? lm[4].x < lm[3].x : lm[4].x > lm[3].x;
 }
 
 /* =========================
-   手势稳定器（升级）
+   手势稳定器
 ========================= */
 
 const gestureBuffer = [];
-
 function stableGesture(newGesture){
-
     gestureBuffer.push(newGesture);
-
-    if(gestureBuffer.length > 10){
-
-        gestureBuffer.shift();
-    }
-
+    if(gestureBuffer.length > 8) gestureBuffer.shift();
     const counter = {};
-
-    gestureBuffer.forEach(g=>{
-
-        counter[g] = (counter[g]||0)+1;
-    });
-
-    let best = "";
-    let max = 0;
-
+    gestureBuffer.forEach(g=>counter[g]=(counter[g]||0)+1);
+    let best = "", max=0;
     for(const k in counter){
-
-        if(counter[k] > max){
-
-            max = counter[k];
-            best = k;
-        }
+        if(counter[k]>max){max=counter[k];best=k;}
     }
-
-    return max >= 6
-    ? best
-    : "识别中...";
+    return max>=5 ? best : "识别中...";
 }
 
 /* =========================
@@ -1242,650 +1057,218 @@ function stableGesture(newGesture){
 ========================= */
 
 function recognize(lm, handedness){
-
-    const thumb =
-    thumbUp(lm, handedness);
-
-    const index =
-    fingerUp(lm[8],lm[6]);
-
-    const middle =
-    fingerUp(lm[12],lm[10]);
-
-    const ring =
-    fingerUp(lm[16],lm[14]);
-
-    const pinky =
-    fingerUp(lm[20],lm[18]);
-
-    const total =
-
-    (thumb?1:0)+
-    (index?1:0)+
-    (middle?1:0)+
-    (ring?1:0)+
-    (pinky?1:0);
-
-    const ok =
-    distance(lm[4],lm[8]) < 0.045 &&
-    middle &&
-    ring &&
-    pinky;
-
+    const thumb = thumbUp(lm, handedness);
+    const index = fingerUp(lm[8],lm[6]);
+    const middle = fingerUp(lm[12],lm[10]);
+    const ring = fingerUp(lm[16],lm[14]);
+    const pinky = fingerUp(lm[20],lm[18]);
+    const total = (thumb?1:0)+(index?1:0)+(middle?1:0)+(ring?1:0)+(pinky?1:0);
+    const ok = distance(lm[4],lm[8])<0.05 && middle && ring && pinky;
     if(ok) return "OK";
-
-    if(index && middle && !ring && !pinky){
-
-        return "✌ 剪刀";
-    }
-
-    if(
-        thumb &&
-        !index &&
-        !middle &&
-        !ring &&
-        !pinky
-    ){
-
-        return "👍 点赞";
-    }
-
-    if(total === 0){
-
-        return "✊ 握拳";
-    }
-
-    if(total === 5){
-
-        return "🖐 张手";
-    }
-
+    if(index && middle && !ring && !pinky) return "✌ 剪刀";
+    if(thumb && !index && !middle && !ring && !pinky) return "👍 点赞";
+    if(total === 0) return "✊ 握拳";
+    if(total === 5) return "🖐 张手";
     return `数字 ${total}`;
 }
 
 /* =========================
-   绘制
+   绘制手部
 ========================= */
 
 function drawHand(points,context,w,h){
-
     const lines = [
-
         [0,1],[1,2],[2,3],[3,4],
         [0,5],[5,6],[6,7],[7,8],
         [0,9],[9,10],[10,11],[11,12],
         [0,13],[13,14],[14,15],[15,16],
         [0,17],[17,18],[18,19],[19,20]
     ];
-
-    context.strokeStyle = "#163a63";
-    context.lineWidth = 2;
-
+    context.strokeStyle = "#ffffff";
+    context.lineWidth = 3;
     for(const [a,b] of lines){
-
         context.beginPath();
-
-        context.moveTo(
-            points[a].x * w,
-            points[a].y * h
-        );
-
-        context.lineTo(
-            points[b].x * w,
-            points[b].y * h
-        );
-
+        context.moveTo(points[a].x*w, points[a].y*h);
+        context.lineTo(points[b].x*w, points[b].y*h);
         context.stroke();
     }
 }
 
 /* =========================
-   光标系统（升级）
+   光标控制
 ========================= */
 
-let cursorX =
-window.innerWidth / 2;
-
-let cursorY =
-window.innerHeight / 2;
-
-let targetX = cursorX;
-let targetY = cursorY;
+let cursorX = window.innerWidth/2, cursorY = window.innerHeight/2;
+let targetX = cursorX, targetY = cursorY;
 
 function animateCursor(){
-
-    const smooth =
-    isMobile ? 0.22 : 0.16;
-
-    cursorX +=
-    (targetX - cursorX) * smooth;
-
-    cursorY +=
-    (targetY - cursorY) * smooth;
-
-    cursor.style.transform =
-    `translate3d(
-        ${cursorX - 12}px,
-        ${cursorY - 12}px,
-        0
-    )`;
-
-    requestAnimationFrame(
-        animateCursor
-    );
+    cursorX += (targetX - cursorX) * 0.2;
+    cursorY += (targetY - cursorY) * 0.2;
+    cursor.style.transform = `translate(${cursorX-7}px, ${cursorY-7}px)`;
+    requestAnimationFrame(animateCursor);
 }
-
 animateCursor();
 
 /* =========================
-   hover
+   悬停检测
 ========================= */
 
 let hoverRects = [];
-
 function updateHoverRects(){
-
-    hoverRects = [
-
-        ...buttons,
-        ...menuItems
-
-    ].map(el=>({
-
-        el,
-        rect:
-        el.getBoundingClientRect()
-    }));
+    hoverRects = [...buttons, ...menuItems].map(el=>({el, rect:el.getBoundingClientRect()}));
 }
-
 updateHoverRects();
 
-let hoverTarget = null;
-let hoverStart = 0;
-let hoverLocked = false;
+let hoverTarget = null, hoverStart = 0, hoverLocked = false;
 
 function hoverDetect(x,y){
-
     let found = null;
-
-    const padding =
-    isMobile ? 34 : 18;
-
+    const pad = 25;
     for(const item of hoverRects){
-
         const r = item.rect;
-
-        if(
-
-            x >= r.left - padding &&
-            x <= r.right + padding &&
-            y >= r.top - padding &&
-            y <= r.bottom + padding
-
-        ){
-
-            found = item.el;
-            break;
+        if(x>=r.left-pad && x<=r.right+pad && y>=r.top-pad && y<=r.bottom+pad){
+            found = item.el; break;
         }
     }
-
-    if(found !== hoverTarget){
-
-        if(hoverTarget){
-
-            hoverTarget.classList.remove(
-                "hovering"
-            );
-        }
-
+    if(found!==hoverTarget){
+        if(hoverTarget) hoverTarget.classList.remove("hovering");
         hoverTarget = found;
-
         hoverStart = Date.now();
     }
-
     if(found){
-
         found.classList.add("hovering");
-
         cursor.classList.add("hovering");
-
-        if(
-
-            !hoverLocked &&
-            Date.now() - hoverStart >
-            (isMobile ? 1300 : 850)
-
-        ){
-
+        if(!hoverLocked && Date.now()-hoverStart > 900){
             hoverLocked = true;
-
             autoClick(found);
-
-            setTimeout(()=>{
-
-                hoverLocked = false;
-
-            },1200);
+            setTimeout(()=>hoverLocked=false, 1000);
         }
-
     }else{
-
-        cursor.classList.remove(
-            "hovering"
-        );
+        cursor.classList.remove("hovering");
     }
 }
 
-/* =========================
-   自动点击
-========================= */
-
 function autoClick(el){
-
-    cursor.animate(
-    [
-        {transform:"scale(1)"},
-        {transform:"scale(1.45)"},
-        {transform:"scale(1)"}
-    ],
-    {
-        duration:220
-    });
-
-    const action =
-    el.dataset.action;
-
-    const menu =
-    el.dataset.menu;
-
-    if(action){
-
-        if(action==="next") nextPage();
-
-        if(action==="prev") prevPage();
-
-        if(action==="menu") toggleMenu();
-    }
-
-    if(menu){
-
-        if(menu==="night") toggleNight();
-
-        if(menu==="big") fontIncrease();
-
-        if(menu==="small") fontDecrease();
-
-        if(menu==="horizontal")
-        switchHorizontal();
-
-        if(menu==="vertical")
-        switchVertical();
-    }
-
+    const action = el.dataset.action;
+    const menu = el.dataset.menu;
+    if(action==="next")nextPage();
+    if(action==="prev")prevPage();
+    if(action==="menu")toggleMenu();
+    if(menu==="night")toggleNight();
+    if(menu==="big")fontIncrease();
+    if(menu==="small")fontDecrease();
+    if(menu==="horizontal")switchHorizontal();
+    if(menu==="vertical")switchVertical();
     updateHoverRects();
 }
 
 /* =========================
-   swipe（升级）
+   翻页手势
 ========================= */
 
-let swipeTrack = [];
-let lastSwipeTime = 0;
-
+let swipeTrack = [], lastSwipe = 0;
 function detectSwipe(lm){
-
     const now = Date.now();
-
-    // 冷却时间（防连发）
-    if(now - lastSwipeTime < 900){
-        return;
-    }
-
-    const x = lm[8].x; // 用食指尖更稳定
-    const y = lm[8].y;
-
-    swipeTrack.push({ x, y, t: now });
-
-    // 保留更多历史（提升稳定性）
-    if(swipeTrack.length > 12){
-        swipeTrack.shift();
-    }
-
-    if(swipeTrack.length < 5){
-        return;
-    }
-
-    const first = swipeTrack[0];
-    const last = swipeTrack.at(-1);
-
-    const dx = last.x - first.x;
-    const dy = Math.abs(last.y - first.y);
-    const dt = last.t - first.t;
-
-    // ❗关键优化1：累计位移降低门槛
-    const absDx = Math.abs(dx);
-
-    // ❗关键优化2：速度判断（防慢移动误触）
-    const velocity = absDx / dt;
-
-    // ❗关键优化3：中间点方向一致性
-    let directionScore = 0;
-
-    for(let i=1;i<swipeTrack.length;i++){
-        const d1 = swipeTrack[i].x - swipeTrack[i-1].x;
-        directionScore += (dx > 0 ? d1 > 0 : d1 < 0) ? 1 : -1;
-    }
-
-    const consistency = directionScore / swipeTrack.length;
-
-    // =========================
-    // 🎯 新判定条件（重点）
-    // =========================
-
-    if(
-        absDx > 0.18 &&        // ✅ 更灵敏（原来0.34）
-        dy < 0.12 &&           // ✅ 放宽上下抖动
-        velocity > 0.0012 &&   // ✅ 防慢滑误触
-        consistency > 0.4      // ✅ 方向一致性
-    ){
-        if(dx > 0){
-            nextPage();
-        }else{
-            prevPage();
-        }
-
-        swipeTrack = [];
-        lastSwipeTime = now;
+    if(now-lastSwipe<800) return;
+    const x = lm[8].x;
+    swipeTrack.push(x);
+    if(swipeTrack.length>8) swipeTrack.shift();
+    if(swipeTrack.length<5) return;
+    const dx = swipeTrack.at(-1) - swipeTrack[0];
+    if(Math.abs(dx)>0.2){
+        dx>0 ? nextPage() : prevPage();
+        swipeTrack=[]; lastSwipe=now;
     }
 }
 
 /* =========================
-   MediaPipe
+   MediaPipe 初始化（修复版）
 ========================= */
 
 const hands = new Hands({
-
-    locateFile:file =>
-
-    `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+    locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
 });
 
 hands.setOptions({
-
-    maxNumHands:2,
-
-    modelComplexity:
-    isMobile ? 0 : 1,
-
-    minDetectionConfidence:0.72,
-
-    minTrackingConfidence:0.72
+    maxNumHands: 2,
+    modelComplexity: 0,
+    minDetectionConfidence: 0.6,
+    minTrackingConfidence: 0.6
 });
 
-/* =========================
-   双手缩放
-========================= */
+hands.onResults(results => {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    controlCtx.clearRect(0,0,controlCanvas.width,controlCanvas.height);
 
-let lastZoomDistance = 0;
-let zoomCooldown = 0;
-
-/* =========================
-   主识别
-========================= */
-
-hands.onResults(results=>{
-
-    ctx.clearRect(
-        0,0,
-        canvas.width,
-        canvas.height
-    );
-
-    controlCtx.clearRect(
-        0,0,
-        controlCanvas.width,
-        controlCanvas.height
-    );
-
-    if(
-
-        !results.multiHandLandmarks ||
-        results.multiHandLandmarks.length===0
-
-    ){
-
-        nameDom.innerText =
-        "未检测到手势";
-
+    if(!results.multiHandLandmarks || results.multiHandLandmarks.length===0){
+        nameDom.innerText = "未检测到手";
         cursor.style.opacity = 0;
-
-        gestureBuffer.length = 0;
-
-        hoverTarget = null;
-
         return;
     }
 
     cursor.style.opacity = 1;
+    const lm = results.multiHandLandmarks[0];
+    const gesture = stableGesture(recognize(lm, results.multiHandedness[0].label));
+    nameDom.innerText = gesture;
 
-    const texts = [];
+    drawHand(lm, ctx, canvas.width, canvas.height);
+    drawHand(lm, controlCtx, controlCanvas.width, controlCanvas.height);
 
-    results.multiHandLandmarks.forEach((lm,index)=>{
+    targetX = (1-lm[8].x) * window.innerWidth;
+    targetY = lm[8].y * window.innerHeight;
 
-        const handedness =
-        results.multiHandedness?.[index]
-        ?.label || "Right";
-
-        const gesture =
-        stableGesture(
-            recognize(lm, handedness)
-        );
-
-        texts.push(
-            `手${index+1}：${gesture}`
-        );
-
-        if(
-            recognizePage.style.display !== "none"
-        ){
-
-            drawHand(
-                lm,
-                ctx,
-                canvas.width,
-                canvas.height
-            );
-        }
-
-        if(
-            controlPage.style.display !== "none"
-        ){
-
-            drawHand(
-                lm,
-                controlCtx,
-                controlCanvas.width,
-                controlCanvas.height
-            );
-        }
-
-        if(index===0){
-
-            targetX =
-            (1-lm[8].x)
-            * window.innerWidth;
-
-            targetY =
-            lm[8].y
-            * window.innerHeight;
-
-            if(
-                controlPage.style.display !== "none"
-            ){
-
-                hoverDetect(
-                    targetX,
-                    targetY
-                );
-
-                detectSwipe(lm);
-            }
-        }
-    });
-
-    /* 双手缩放 */
-
-    if(
-        results.multiHandLandmarks.length===2
-    ){
-
-        const h1 =
-        results.multiHandLandmarks[0];
-
-        const h2 =
-        results.multiHandLandmarks[1];
-
-        const d =
-        distance(h1[8],h2[8]);
-
-        if(!lastZoomDistance){
-
-            lastZoomDistance = d;
-        }
-
-        const delta =
-        d - lastZoomDistance;
-
-        if(
-
-            Math.abs(delta) > 0.008 &&
-            Date.now() - zoomCooldown > 120
-
-        ){
-
-            if(delta > 0){
-
-                fontIncrease();
-
-            }else{
-
-                fontDecrease();
-            }
-
-            zoomCooldown = Date.now();
-        }
-
-        lastZoomDistance =
-
-        lastZoomDistance * 0.7 +
-        d * 0.3;
-
-    }else{
-
-        lastZoomDistance = 0;
+    if(controlPage.style.display!=="none"){
+        hoverDetect(targetX, targetY);
+        detectSwipe(lm);
     }
-
-    nameDom.innerText =
-    texts.join("\n");
 });
 
 /* =========================
-   启动摄像头
+   摄像头启动（官方标准写法）
 ========================= */
 
-let cameraStarted = false;
-let processing = false;
+let camera = null;
+function startCamera() {
+    if(camera) return;
+  
+    startBtn.disabled = true;
+    startBtn.innerText = "启动中...";
+    loading.innerText = "正在开启摄像头...";
 
-async function startCamera(){
-
-    if(cameraStarted){
-
-        return;
-    }
-
-    cameraStarted = true;
-
-    loading.innerText =
-    "摄像头启动中...";
-
-    try{
-
-        const stream =
-        await navigator.mediaDevices.getUserMedia({
-
-            video:{
-
-                facingMode:"user",
-
-                width:{
-                    ideal:
-                    isMobile ? 640 : 1280
-                },
-
-                height:{
-                    ideal:
-                    isMobile ? 480 : 720
-                },
-
-                frameRate:{
-                    ideal:
-                    isMobile ? 24 : 30
-                }
-            },
-
-            audio:false
+    camera = new Camera(video, {
+        onFrame: async () => {
+            await hands.send({image: video});
+        },
+        width: isMobile ? 480 : 640,
+        height: isMobile ? 360 : 480
+    });
+  
+    camera.start()
+        .then(()=>{
+            loading.style.display = "none";
+            startBtn.style.display = "none";
+            controlVideo.srcObject = video.srcObject;
+            resizeCanvas();
+        })
+        .catch(err=>{
+            console.error(err);
+            loading.innerText = "摄像头启动失败：请允许权限";
+            startBtn.disabled = false;
+            startBtn.innerText = "重试启动";
         });
+}
 
-        video.srcObject = stream;
-
-        controlVideo.srcObject =
-        stream;
-
-        await video.play();
-
-        resizeCanvas();
-
-        async function loop(){
-
-            if(processing){
-
-                requestAnimationFrame(loop);
-
-                return;
-            }
-
-            processing = true;
-
-            await hands.send({
-
-                image:video
-            });
-
-            processing = false;
-
-            requestAnimationFrame(loop);
-        }
-
-        loop();
-
-        loading.style.display =
-        "none";
-
-    }catch(err){
-
-        console.error(err);
-
-        loading.innerText =
-        "摄像头启动失败";
-
-        cameraStarted = false;
+function resizeCanvas() {
+    if(video.videoWidth){
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        controlCanvas.width = video.videoWidth;
+        controlCanvas.height = video.videoHeight;
     }
 }
 
-document
-.getElementById("startBtn")
-.onclick = startCamera;
-
+startBtn.onclick = startCamera;
+window.addEventListener("resize", resizeCanvas);
 </script>
 </body>
 </html>

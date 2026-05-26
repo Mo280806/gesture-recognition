@@ -777,6 +777,110 @@ body{
     }
 }
 
+/* =========================
+   📱 移动端专项优化（核心修复）
+========================= */
+
+@media (max-width:768px){
+
+    /* ===== 阅读字体优化 ===== */
+    .book-page{
+        font-size:16px !important;
+        line-height:1.8 !important;
+        padding-bottom:120px; /* 防止被底部控制栏遮住 */
+        user-select:text;
+    }
+
+    .reader-content{
+        padding:18px 16px 140px; /* 关键：给底部留空间 */
+        overflow-y:auto;        /* 修复无法阅读/被裁切 */
+    }
+
+    /* ===== 底部控制栏优化 ===== */
+    .control-panel{
+        height:64px;
+        padding-bottom: calc(10px + env(safe-area-inset-bottom));
+        gap:8px;
+    }
+
+    .control-btn{
+        min-width:78px;
+        height:40px;
+        font-size:13px;
+        border-radius:12px;
+    }
+
+    /* ===== 手势提示不再隐藏 ===== */
+    .gesture-status{
+        display:block !important;
+        bottom:86px; /* 上移避免被 control-panel 遮住 */
+        font-size:12px;
+        padding:10px 14px;
+        max-width:92vw;
+        text-align:center;
+        white-space:normal;
+    }
+
+    /* ===== 右上菜单优化 ===== */
+    .menu-panel{
+        right:10px;
+        top:80px;
+        width:200px;
+    }
+
+    /* ===== 浮动摄像头避免遮挡 ===== */
+    .floating-camera{
+        width:54px;
+        height:54px;
+    }
+
+    .floating-camera.expand{
+        width:160px;
+        height:120px;
+    }
+
+    /* ===== 光标在手机上弱化 ===== */
+    .cursor{
+        width:18px;
+        height:18px;
+        opacity:0.85;
+    }
+
+    /* ===== 顶部按钮优化 ===== */
+    .top-bar{
+        gap:8px;
+    }
+
+    .mode-btn{
+        padding:8px 12px;
+        font-size:12px;
+        border-radius:12px;
+    }
+}
+
+/* =========================
+   🧠 额外阅读体验优化（全端）
+========================= */
+
+/* 防止底部遮挡阅读内容（关键补丁） */
+.reader-container{
+    padding-bottom:80px;
+}
+
+/* 确保书页可滚动（避免“看不到底部文字”问题） */
+.book-page{
+    overflow-y:auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* 防止hover误触（手机长按问题） */
+@media (hover:none){
+    .control-btn.hovering,
+    .menu-item.hovering{
+        transform:none !important;
+    }
+}
+
 </style>
 </head>
 

@@ -5,7 +5,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>AI双手势交互阅读系统</title>
+<title>手势交互系统</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/hands.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js"></script>
@@ -34,9 +34,7 @@ body{
     color:#163a63;
 }
 
-/* ========================= */
-/* 顶部切换 */
-/* ========================= */
+/* 顶部 */
 
 .top-bar{
 
@@ -85,9 +83,7 @@ body{
     color:white;
 }
 
-/* ========================= */
-/* 手势识别 */
-/* ========================= */
+/* 识别 */
 
 .recognize-page{
 
@@ -263,9 +259,7 @@ body{
     line-height:1.8;
 }
 
-/* ========================= */
-/* 阅读界面 */
-/* ========================= */
+/* 阅读 */
 
 .control-page{
 
@@ -460,8 +454,6 @@ body{
     transform:scale(1.05);
 }
 
-/* 菜单 */
-
 .menu-panel{
 
     position:absolute;
@@ -517,8 +509,6 @@ body{
     transform:scale(1.03);
 }
 
-/* 夜间 */
-
 .night{
 
     background:#0e141b;
@@ -560,10 +550,74 @@ body{
     box-shadow:
     0 0 18px rgba(22,58,99,0.35);
 
-    transition:none;
+    will-change:transform;
+
+    transform:
+        translate3d(0,0,0);
+
+    transition:
+        background 0.1s;
 }
 
-/* 说明 */
+.cursor::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:-10px;
+
+    border-radius:50%;
+
+    border:3px solid rgba(22,58,99,0.15);
+
+    border-top-color:#163a63;
+
+    opacity:0;
+
+    transform:scale(0.8);
+
+    transition:0.15s;
+}
+
+.cursor.hovering::after{
+
+    opacity:1;
+
+    animation:
+        hoverRing 0.8s linear forwards;
+}
+
+@keyframes hoverRing{
+
+    from{
+
+        transform:rotate(0deg);
+    }
+
+    to{
+
+        transform:rotate(360deg);
+    }
+}
+
+.cursor-trail{
+
+    position:fixed;
+
+    width:12px;
+    height:12px;
+
+    border-radius:50%;
+
+    background:rgba(22,58,99,0.18);
+
+    pointer-events:none;
+
+    z-index:999998;
+
+    will-change:transform;
+}
 
 .gesture-status{
 
@@ -597,71 +651,6 @@ body{
     white-space:nowrap;
 }
 
-@media(max-width:768px){
-
-    .floating-camera{
-
-        width:150px;
-        height:112px;
-    }
-
-    .reader-container{
-
-        width:94vw;
-
-        height:86vh;
-    }
-
-    .reader-content{
-
-        padding:24px;
-    }
-
-    .book-page{
-
-        font-size:18px;
-
-        line-height:2;
-    }
-
-    .control-panel{
-
-        gap:10px;
-
-        flex-wrap:wrap;
-
-        height:auto;
-
-        padding:14px;
-    }
-
-    .control-btn{
-
-        min-width:90px;
-
-        font-size:13px;
-    }
-
-    .gesture-status{
-
-        width:92vw;
-
-        text-align:center;
-
-        white-space:normal;
-    }
-
-    .header{
-
-        max-width:72%;
-    }
-
-    .name{
-
-        font-size:22px;
-    }
-}
-
 </style>
 </head>
 
@@ -685,8 +674,6 @@ body{
 
 </div>
 
-<!-- 识别页面 -->
-
 <div
     class="recognize-page"
     id="recognizePage">
@@ -698,12 +685,11 @@ body{
             <div class="header">
 
                 <div class="title">
-                    AI 双手势识别系统
+                    手势识别系统
                 </div>
 
                 <div class="subtitle">
-                    支持：0~6、点赞、OK、剪刀、握拳、张手<br>
-                    已优化双手检测与稳定性
+                    支持：0~6、点赞、OK、剪刀、握拳、张手
                 </div>
 
             </div>
@@ -868,7 +854,7 @@ body{
         👉 食指控制光标　
         👆 悬停0.8秒点击　
         ✋ 挥手翻页　
-        👍 OK / 数字 / 双手识别
+        🤲 双手缩放字体
 
     </div>
 
@@ -1073,17 +1059,23 @@ function switchVertical(){
 
 function resizeCanvas(){
 
-    canvas.width =
-        video.videoWidth;
+    if(video.videoWidth){
 
-    canvas.height =
-        video.videoHeight;
+        canvas.width =
+            video.videoWidth;
 
-    controlCanvas.width =
-        controlVideo.videoWidth;
+        canvas.height =
+            video.videoHeight;
+    }
 
-    controlCanvas.height =
-        controlVideo.videoHeight;
+    if(controlVideo.videoWidth){
+
+        controlCanvas.width =
+            controlVideo.videoWidth;
+
+        controlCanvas.height =
+            controlVideo.videoHeight;
+    }
 }
 
 /* 工具 */
@@ -1101,12 +1093,12 @@ function distance(a,b){
     );
 }
 
-/* 手势识别增强 */
+/* 手势识别 */
 
 function recognize(lm){
 
     const thumb =
-        lm[4].x < lm[3].x;
+        Math.abs(lm[4].x - lm[2].x) > 0.08;
 
     const index =
         fingerUp(lm[8],lm[6]);
@@ -1129,7 +1121,10 @@ function recognize(lm){
         (pinky ? 1 : 0);
 
     const ok =
-        distance(lm[4],lm[8]) < 0.05;
+        distance(lm[4],lm[8]) < 0.05 &&
+        middle &&
+        ring &&
+        pinky;
 
     const fist =
 
@@ -1138,12 +1133,14 @@ function recognize(lm){
         !ring &&
         !pinky;
 
-    /* 特殊 */
+    /* OK */
 
     if(ok){
 
         return "OK";
     }
+
+    /* 剪刀 */
 
     if(
         index &&
@@ -1152,62 +1149,38 @@ function recognize(lm){
         !pinky
     ){
 
-        return "✌ 剪刀";
+        return "✌ 剪刀 / 数字2";
     }
+
+    /* 点赞 */
 
     if(
         thumb &&
-        fist
+        !index &&
+        !middle &&
+        !ring &&
+        !pinky
     ){
 
         return "👍 点赞";
     }
 
+    /* 握拳 */
+
     if(fist){
 
-        return "✊ 握拳";
+        return "✊ 握拳 / 数字0";
     }
 
-    /* 数字 */
-
-    if(total === 0){
-
-        return "数字 0";
-    }
-
-    if(total === 1){
-
-        return "数字 1";
-    }
-
-    if(total === 2){
-
-        return "数字 2";
-    }
-
-    if(total === 3){
-
-        return "数字 3";
-    }
-
-    if(total === 4){
-
-        return "数字 4";
-    }
+    /* 张手 */
 
     if(total === 5){
 
-        return "数字 5";
+        return "🖐 张手 / 数字5";
     }
 
-    if(total === 6){
-
-        return "数字 6";
-    }
-
-    return "识别中";
+    return `数字 ${total}`;
 }
-
 /* 绘制 */
 
 function drawHand(points,context,w,h){
@@ -1248,7 +1221,46 @@ function drawHand(points,context,w,h){
     }
 }
 
-/* Hover优化 */
+/* 光标平滑 */
+
+let cursorTargetX = 0;
+let cursorTargetY = 0;
+
+let cursorX = 0;
+let cursorY = 0;
+
+function animateCursor(){
+
+    cursorX +=
+        (cursorTargetX - cursorX)
+        * 0.15;
+
+    cursorY +=
+        (cursorTargetY - cursorY)
+        * 0.15;
+
+    if(
+        Math.abs(cursorTargetX - cursorX) < 0.1
+    ){
+        cursorX = cursorTargetX;
+    }
+
+    if(
+        Math.abs(cursorTargetY - cursorY) < 0.1
+    ){
+        cursorY = cursorTargetY;
+    }
+
+    cursor.style.transform =
+        `translate3d(${cursorX}px,${cursorY}px,0)`;
+
+    requestAnimationFrame(
+        animateCursor
+    );
+}
+animateCursor();
+
+/* hover */
 
 let hoverTarget = null;
 
@@ -1271,6 +1283,10 @@ function hoverDetect(x,y){
         const rect =
             el.getBoundingClientRect();
 
+        el.classList.remove(
+            "hovering"
+        );
+
         if(
 
             x >= rect.left &&
@@ -1282,13 +1298,21 @@ function hoverDetect(x,y){
 
             found = el;
         }
-
-        el.classList.remove("hovering");
     });
+
+    cursor.classList.remove(
+        "hovering"
+    );
 
     if(found){
 
-        found.classList.add("hovering");
+        found.classList.add(
+            "hovering"
+        );
+
+        cursor.classList.add(
+            "hovering"
+        );
 
         if(hoverTarget !== found){
 
@@ -1315,6 +1339,8 @@ function hoverDetect(x,y){
     }else{
 
         hoverTarget = null;
+
+        hoverStart = 0;
 
         clickedLock = false;
     }
@@ -1387,59 +1413,37 @@ function detectSwipe(lm){
 
     const now = Date.now();
 
-    if(now - lastSwipeTime < 900){
+    if(now - lastSwipeTime < 800){
 
         return;
     }
 
     swipeTrack.push({
 
-        x:lm[0].x,
-        y:lm[0].y
+        x:lm[0].x
     });
 
-    if(swipeTrack.length > 10){
+    if(swipeTrack.length > 8){
 
         swipeTrack.shift();
     }
 
-    if(swipeTrack.length < 6){
+    if(swipeTrack.length < 5){
 
         return;
     }
 
-    const first = swipeTrack[0];
+    const dx =
 
-    const last =
         swipeTrack[
             swipeTrack.length - 1
-        ];
+        ].x -
 
-    const dx =
-        last.x - first.x;
+        swipeTrack[0].x;
 
-    const dy =
-        last.y - first.y;
-
-    if(Math.abs(dx) > 0.16){
+    if(Math.abs(dx) > 0.18){
 
         if(dx > 0){
-
-            nextPage();
-
-        }else{
-
-            prevPage();
-        }
-
-        lastSwipeTime = now;
-
-        swipeTrack = [];
-    }
-
-    if(Math.abs(dy) > 0.16){
-
-        if(dy > 0){
 
             nextPage();
 
@@ -1468,11 +1472,11 @@ hands.setOptions({
 
     maxNumHands:2,
 
-    modelComplexity:1,
+    modelComplexity:0,
 
-    minDetectionConfidence:0.65,
+    minDetectionConfidence:0.82,
 
-    minTrackingConfidence:0.65
+    minTrackingConfidence:0.82
 });
 
 /* results */
@@ -1525,50 +1529,87 @@ hands.onResults(results => {
                 `手${index+1}：${gesture}`
             );
 
-            /* 第一只手控制 */
-
             if(index === 0){
 
-                const x =
+                cursorTargetX =
                     (1 - lm[8].x)
                     * window.innerWidth;
 
-                const y =
+                cursorTargetY =
                     lm[8].y
                     * window.innerHeight;
-
-                cursor.style.left =
-                    x + "px";
-
-                cursor.style.top =
-                    y + "px";
 
                 if(
                     controlPage.style.display !== "none"
                 ){
 
-                    hoverDetect(x,y);
+                    hoverDetect(
+                        cursorX,
+                        cursorY
+                    );
 
                     detectSwipe(lm);
                 }
             }
-
         });
 
-        nameDom.innerText =
-            resultTexts.join("\n");
+/* 双手缩放 */
 
-    }else{
+if(
+    results.multiHandLandmarks.length === 2
+){
 
-        nameDom.innerText =
-            "未检测到手势";
-    }
+    const hand1 =
+        results.multiHandLandmarks[0];
+
+    const hand2 =
+        results.multiHandLandmarks[1];
+
+    const d =
+        distance(
+            hand1[8],
+            hand2[8]
+        );
+
+    const targetSize =
+        Math.max(
+            16,
+            Math.min(
+                42,
+                d * 120
+            )
+        );
+
+    fontSize +=
+        (targetSize - fontSize)
+        * 0.15;
+
+    bookPage.style.fontSize =
+        fontSize + "px";
+}
+
+nameDom.innerText =
+    resultTexts.join("\n");
+
+}else{
+
+    nameDom.innerText =
+        "未检测到手势";
+}
+
 });
-
+let cameraStarted = false;
+    
 /* 启动 */
 
 async function startCamera(){
 
+    if(cameraStarted){
+
+        return;
+    }
+
+    cameraStarted = true;
     try{
 
         const stream =
@@ -1613,6 +1654,8 @@ async function startCamera(){
             "none";
 
     }catch(err){
+
+        cameraStarted = false;
 
         console.error(err);
 

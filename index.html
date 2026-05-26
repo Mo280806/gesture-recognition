@@ -230,13 +230,9 @@ body{
 
     display:flex;
 
-    flex-direction:column;
-
     align-items:center;
 
     justify-content:center;
-
-    gap:8px;
 }
 
 .name{
@@ -247,7 +243,7 @@ body{
 }
 
 /* ========================= */
-/* 手势操控页面 */
+/* 手势阅读页面 */
 /* ========================= */
 
 .control-page{
@@ -260,7 +256,7 @@ body{
     position:relative;
 }
 
-/* 摄像头悬浮 */
+/* 摄像头 */
 
 .floating-camera{
 
@@ -276,7 +272,7 @@ body{
 
     overflow:hidden;
 
-    background:#ffffff;
+    background:#fff;
 
     border:1px solid #dbe5f0;
 
@@ -515,8 +511,6 @@ body{
 
     background:#f4f8fd;
 
-    cursor:pointer;
-
     transition:0.2s;
 }
 
@@ -554,7 +548,7 @@ body{
     top 0.04s linear;
 }
 
-/* 状态栏 */
+/* 底部说明 */
 
 .gesture-status{
 
@@ -574,24 +568,18 @@ body{
 
     border-radius:18px;
 
-    padding:12px 22px;
+    padding:14px 24px;
 
     font-size:14px;
 
     color:#5f748d;
 
     z-index:999999;
-}
 
-.gesture-text{
+    box-shadow:
+    0 10px 25px rgba(22,58,99,0.08);
 
-    margin-top:4px;
-
-    font-size:16px;
-
-    font-weight:700;
-
-    color:#163a63;
+    white-space:nowrap;
 }
 
 @media(max-width:768px){
@@ -610,6 +598,15 @@ body{
     .reader-container{
 
         width:92vw;
+    }
+
+    .gesture-status{
+
+        width:90vw;
+
+        white-space:normal;
+
+        text-align:center;
     }
 }
 
@@ -657,7 +654,7 @@ body{
                 </div>
 
                 <div class="subtitle">
-                    数字 / OK / 点赞 / 张手 / 握拳
+                    数字 / 点赞 / 张手 / 握拳
                 </div>
 
             </div>
@@ -700,14 +697,12 @@ body{
 </div>
 
 <!-- ========================= -->
-<!-- 手势操控页面 -->
+<!-- 手势阅读页面 -->
 <!-- ========================= -->
 
 <div
     class="control-page"
     id="controlPage">
-
-    <!-- 悬浮摄像头 -->
 
     <div class="floating-camera">
 
@@ -722,14 +717,10 @@ body{
 
     </div>
 
-    <!-- 光标 -->
-
     <div
         class="cursor"
         id="cursor">
     </div>
-
-    <!-- 阅读器 -->
 
     <div class="reader-container">
 
@@ -754,8 +745,6 @@ body{
                 class="book-page"
                 id="bookPage">
             </div>
-
-            <!-- 菜单 -->
 
             <div
                 class="menu-panel"
@@ -827,18 +816,12 @@ body{
 
     </div>
 
-    <!-- 手势状态 -->
-
     <div class="gesture-status">
 
-        当前手势
-
-        <div
-            class="gesture-text"
-            id="gestureText">
-
-            等待识别
-        </div>
+        👉 食指移动光标　
+        👆 悬停1秒自动点击　
+        ✋ 张开手掌左右挥动翻页　
+        📖 支持夜间 / 字体 / 阅读方向切换
 
     </div>
 
@@ -846,9 +829,7 @@ body{
 
 <script>
 
-/* ========================= */
 /* DOM */
-/* ========================= */
 
 const video =
     document.getElementById("video");
@@ -889,9 +870,6 @@ const controlPage =
 const cursor =
     document.getElementById("cursor");
 
-const gestureText =
-    document.getElementById("gestureText");
-
 const bookPage =
     document.getElementById("bookPage");
 
@@ -907,9 +885,7 @@ const buttons =
 const menuItems =
     document.querySelectorAll(".menu-item");
 
-/* ========================= */
 /* 页面切换 */
-/* ========================= */
 
 recognizeBtn.onclick = ()=>{
 
@@ -937,9 +913,7 @@ controlBtn.onclick = ()=>{
         "block";
 };
 
-/* ========================= */
 /* 小说 */
-/* ========================= */
 
 const pages = [
 
@@ -983,9 +957,7 @@ function renderPage(){
 
 renderPage();
 
-/* ========================= */
 /* 页面控制 */
-/* ========================= */
 
 function nextPage(){
 
@@ -1054,9 +1026,7 @@ function switchVertical(){
     );
 }
 
-/* ========================= */
 /* resize */
-/* ========================= */
 
 function resizeCanvas(){
 
@@ -1073,9 +1043,7 @@ function resizeCanvas(){
         controlVideo.videoHeight;
 }
 
-/* ========================= */
 /* 工具 */
-/* ========================= */
 
 function fingerUp(tip,pip){
 
@@ -1090,9 +1058,7 @@ function distance(a,b){
     );
 }
 
-/* ========================= */
 /* 手势识别 */
-/* ========================= */
 
 function recognize(lm){
 
@@ -1116,63 +1082,47 @@ function recognize(lm){
         distance(lm[4],lm[9]);
 
     if(
-
         thumbUp &&
-
         !index &&
         !middle &&
         !ring &&
         !pinky
-
     ){
-
         return "点赞";
     }
 
     if(
-
         thumbPalmDistance < 0.16 &&
-
         !index &&
         !middle &&
         !ring &&
         !pinky
-
     ){
-
         return "握拳";
     }
 
     if(
-
         index &&
         middle &&
         ring &&
         pinky
-
     ){
-
         return "张开手掌";
     }
 
     if(
-
         index &&
         !middle &&
         !ring &&
         !pinky
-
     ){
-
         return "数字1";
     }
 
     return "识别中";
 }
 
-/* ========================= */
 /* 绘制 */
-/* ========================= */
 
 function drawHand(points,context,w,h){
 
@@ -1212,9 +1162,7 @@ function drawHand(points,context,w,h){
     }
 }
 
-/* ========================= */
-/* Hover 点击 */
-/* ========================= */
+/* Hover点击 */
 
 let hoverTarget = null;
 
@@ -1236,14 +1184,11 @@ function hoverDetect(x,y){
             el.getBoundingClientRect();
 
         if(
-
             x >= rect.left &&
             x <= rect.right &&
             y >= rect.top &&
             y <= rect.bottom
-
         ){
-
             found = el;
         }
 
@@ -1265,12 +1210,8 @@ function hoverDetect(x,y){
             hoverStart = Date.now();
         }
 
-        /* 1秒点击 */
-
         if(
-
             Date.now() - hoverStart > 1000
-
         ){
 
             autoClick(found);
@@ -1285,13 +1226,9 @@ function hoverDetect(x,y){
     }
 }
 
-/* ========================= */
 /* 自动点击 */
-/* ========================= */
 
 function autoClick(el){
-
-    /* 主按钮 */
 
     if(el.dataset.action){
 
@@ -1313,8 +1250,6 @@ function autoClick(el){
             toggleMenu();
         }
     }
-
-    /* 菜单按钮 */
 
     if(el.dataset.menu){
 
@@ -1348,13 +1283,9 @@ function autoClick(el){
     }
 }
 
-/* ========================= */
 /* 挥手翻页 */
-/* ========================= */
 
-let lastX = null;
-
-let lastY = null;
+let swipeTrack = [];
 
 let lastSwipeTime = 0;
 
@@ -1362,60 +1293,99 @@ function detectSwipe(lm){
 
     const now = Date.now();
 
-    const x = lm[8].x;
+    const gesture =
+        recognize(lm);
 
-    const y = lm[8].y;
+    /* 必须张开手掌 */
 
-    if(lastX !== null){
+    if(gesture !== "张开手掌"){
 
-        const dx = x - lastX;
+        swipeTrack = [];
 
-        const dy = y - lastY;
-
-        if(now - lastSwipeTime > 1200){
-
-            /* 左右翻页 */
-
-            if(Math.abs(dx) > 0.20){
-
-                if(dx > 0){
-
-                    prevPage();
-
-                }else{
-
-                    nextPage();
-                }
-
-                lastSwipeTime = now;
-            }
-
-            /* 上下翻页 */
-
-            if(Math.abs(dy) > 0.20){
-
-                if(dy > 0){
-
-                    nextPage();
-
-                }else{
-
-                    prevPage();
-                }
-
-                lastSwipeTime = now;
-            }
-        }
+        return;
     }
 
-    lastX = x;
+    /* 冷却 */
 
-    lastY = y;
+    if(now - lastSwipeTime < 1200){
+
+        return;
+    }
+
+    /* 记录轨迹 */
+
+    swipeTrack.push({
+
+        x:lm[0].x,
+        y:lm[0].y
+    });
+
+    /* 保留最近12帧 */
+
+    if(swipeTrack.length > 12){
+
+        swipeTrack.shift();
+    }
+
+    if(swipeTrack.length < 6){
+
+        return;
+    }
+
+    const first =
+        swipeTrack[0];
+
+    const last =
+        swipeTrack[
+            swipeTrack.length - 1
+        ];
+
+    const dx =
+        last.x - first.x;
+
+    const dy =
+        last.y - first.y;
+
+    /* 左右翻页 */
+
+    if(Math.abs(dx) > 0.18){
+
+        if(dx > 0){
+
+            nextPage();
+
+        }else{
+
+            prevPage();
+        }
+
+        lastSwipeTime = now;
+
+        swipeTrack = [];
+
+        return;
+    }
+
+    /* 上下翻页 */
+
+    if(Math.abs(dy) > 0.18){
+
+        if(dy > 0){
+
+            nextPage();
+
+        }else{
+
+            prevPage();
+        }
+
+        lastSwipeTime = now;
+
+        swipeTrack = [];
+    }
 }
 
-/* ========================= */
 /* MediaPipe */
-/* ========================= */
 
 const hands = new Hands({
 
@@ -1436,9 +1406,7 @@ hands.setOptions({
     minTrackingConfidence:0.7
 });
 
-/* ========================= */
 /* results */
-/* ========================= */
 
 hands.onResults(results => {
 
@@ -1457,10 +1425,8 @@ hands.onResults(results => {
     );
 
     if(
-
         results.multiHandLandmarks &&
         results.multiHandLandmarks.length > 0
-
     ){
 
         const lm =
@@ -1486,15 +1452,8 @@ hands.onResults(results => {
         nameDom.innerText =
             gesture;
 
-        gestureText.innerText =
-            gesture;
-
-        /* 控制页面 */
-
         if(
-
             controlPage.style.display !== "none"
-
         ){
 
             const x =
@@ -1520,15 +1479,10 @@ hands.onResults(results => {
 
         nameDom.innerText =
             "未检测到手";
-
-        gestureText.innerText =
-            "未检测到手";
     }
 });
 
-/* ========================= */
 /* 启动 */
-/* ========================= */
 
 async function startCamera(){
 

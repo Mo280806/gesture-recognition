@@ -985,81 +985,77 @@ body{
     </div>
 
 </div>
-
 <script>
 
-/* DOM */
+/* =========================
+   DOM
+========================= */
 
-const video =
-    document.getElementById("video");
-
-const canvas =
-    document.getElementById("canvas");
-
-const ctx =
-    canvas.getContext("2d");
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
 const controlVideo =
-    document.getElementById("controlVideo");
+document.getElementById("controlVideo");
 
 const controlCanvas =
-    document.getElementById("controlCanvas");
+document.getElementById("controlCanvas");
 
 const controlCtx =
-    controlCanvas.getContext("2d");
+controlCanvas.getContext("2d");
 
 const nameDom =
-    document.getElementById("name");
+document.getElementById("name");
 
 const loading =
-    document.getElementById("loading");
+document.getElementById("loading");
 
 const recognizeBtn =
-    document.getElementById("recognizeBtn");
+document.getElementById("recognizeBtn");
 
 const controlBtn =
-    document.getElementById("controlBtn");
+document.getElementById("controlBtn");
 
 const recognizePage =
-    document.getElementById("recognizePage");
+document.getElementById("recognizePage");
 
 const controlPage =
-    document.getElementById("controlPage");
+document.getElementById("controlPage");
 
 const cursor =
-    document.getElementById("cursor");
+document.getElementById("cursor");
 
 const bookPage =
-    document.getElementById("bookPage");
+document.getElementById("bookPage");
 
 const pageInfo =
-    document.getElementById("pageInfo");
+document.getElementById("pageInfo");
 
 const menuPanel =
-    document.getElementById("menuPanel");
+document.getElementById("menuPanel");
 
 const buttons =
-    document.querySelectorAll(".control-btn");
+document.querySelectorAll(".control-btn");
 
 const menuItems =
-    document.querySelectorAll(".menu-item");
+document.querySelectorAll(".menu-item");
 
 const floatingCamera =
-    document.querySelector(".floating-camera");
+document.querySelector(".floating-camera");
 
 const isMobile =
-    window.innerWidth < 768;
+window.innerWidth < 768;
 
-/* 摄像头展开 */
+/* =========================
+   页面切换
+========================= */
 
 floatingCamera.onclick = ()=>{
 
-    floatingCamera.classList.toggle(
-        "expand"
-    );
-};
+    floatingCamera.classList.toggle("expand");
 
-/* 页面切换 */
+    setTimeout(updateHoverRects,300);
+};
 
 recognizeBtn.onclick = ()=>{
 
@@ -1082,10 +1078,12 @@ controlBtn.onclick = ()=>{
 
     controlPage.style.display = "block";
 
-    updateHoverRects();
+    setTimeout(updateHoverRects,120);
 };
 
-/* 小说 */
+/* =========================
+   小说内容
+========================= */
 
 const pages = [
 
@@ -1121,15 +1119,17 @@ let currentPage = 0;
 function renderPage(){
 
     bookPage.innerText =
-        pages[currentPage];
+    pages[currentPage];
 
     pageInfo.innerText =
-        `第 ${currentPage+1} 页 / 共 ${pages.length} 页`;
+    `第 ${currentPage+1} 页 / 共 ${pages.length} 页`;
 }
 
 renderPage();
 
-/* 页面功能 */
+/* =========================
+   阅读功能
+========================= */
 
 function nextPage(){
 
@@ -1155,10 +1155,7 @@ function toggleMenu(){
 
     menuPanel.classList.toggle("show");
 
-    requestAnimationFrame(()=>{
-
-        updateHoverRects();
-    });
+    setTimeout(updateHoverRects,120);
 }
 
 function toggleNight(){
@@ -1168,67 +1165,73 @@ function toggleNight(){
 
 let fontSize = 24;
 
-function fontIncrease(){
-
-    fontSize += 2;
+function applyFont(){
 
     bookPage.style.fontSize =
-        fontSize + "px";
+    fontSize + "px";
+}
+
+function fontIncrease(){
+
+    fontSize =
+    Math.min(fontSize + 2,42);
+
+    applyFont();
 }
 
 function fontDecrease(){
 
-    fontSize -= 2;
+    fontSize =
+    Math.max(fontSize - 2,16);
 
-    if(fontSize < 16){
-
-        fontSize = 16;
-    }
-
-    bookPage.style.fontSize =
-        fontSize + "px";
+    applyFont();
 }
 
 function switchHorizontal(){
 
-    bookPage.classList.add(
-        "horizontal-mode"
-    );
+    bookPage.classList.add("horizontal-mode");
 }
 
 function switchVertical(){
 
-    bookPage.classList.remove(
-        "horizontal-mode"
-    );
+    bookPage.classList.remove("horizontal-mode");
 }
 
-/* resize */
+/* =========================
+   resize
+========================= */
 
 function resizeCanvas(){
 
     if(video.videoWidth){
 
         canvas.width =
-            video.videoWidth;
+        video.videoWidth;
 
         canvas.height =
-            video.videoHeight;
+        video.videoHeight;
     }
 
     if(controlVideo.videoWidth){
 
         controlCanvas.width =
-            controlVideo.videoWidth;
+        controlVideo.videoWidth;
 
         controlCanvas.height =
-            controlVideo.videoHeight;
+        controlVideo.videoHeight;
     }
 
     updateHoverRects();
 }
 
-/* 工具 */
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+/* =========================
+   工具
+========================= */
 
 function fingerUp(tip,pip){
 
@@ -1243,59 +1246,97 @@ function distance(a,b){
     );
 }
 
-/* 手势识别 */
+function thumbUp(lm, handedness){
 
-function recognize(lm){
+    if(handedness === "Right"){
+
+        return lm[4].x < lm[3].x;
+
+    }else{
+
+        return lm[4].x > lm[3].x;
+    }
+}
+
+/* =========================
+   手势稳定器（升级）
+========================= */
+
+const gestureBuffer = [];
+
+function stableGesture(newGesture){
+
+    gestureBuffer.push(newGesture);
+
+    if(gestureBuffer.length > 10){
+
+        gestureBuffer.shift();
+    }
+
+    const counter = {};
+
+    gestureBuffer.forEach(g=>{
+
+        counter[g] = (counter[g]||0)+1;
+    });
+
+    let best = "";
+    let max = 0;
+
+    for(const k in counter){
+
+        if(counter[k] > max){
+
+            max = counter[k];
+            best = k;
+        }
+    }
+
+    return max >= 6
+    ? best
+    : "识别中...";
+}
+
+/* =========================
+   手势识别
+========================= */
+
+function recognize(lm, handedness){
 
     const thumb =
-        lm[4].x < lm[3].x;
+    thumbUp(lm, handedness);
 
     const index =
-        fingerUp(lm[8],lm[6]);
+    fingerUp(lm[8],lm[6]);
 
     const middle =
-        fingerUp(lm[12],lm[10]);
+    fingerUp(lm[12],lm[10]);
 
     const ring =
-        fingerUp(lm[16],lm[14]);
+    fingerUp(lm[16],lm[14]);
 
     const pinky =
-        fingerUp(lm[20],lm[18]);
+    fingerUp(lm[20],lm[18]);
 
     const total =
 
-        (thumb ? 1 : 0) +
-        (index ? 1 : 0) +
-        (middle ? 1 : 0) +
-        (ring ? 1 : 0) +
-        (pinky ? 1 : 0);
+    (thumb?1:0)+
+    (index?1:0)+
+    (middle?1:0)+
+    (ring?1:0)+
+    (pinky?1:0);
 
     const ok =
-        distance(lm[4],lm[8]) < 0.05 &&
-        middle &&
-        ring &&
-        pinky;
+    distance(lm[4],lm[8]) < 0.045 &&
+    middle &&
+    ring &&
+    pinky;
 
-    const fist =
+    if(ok) return "OK";
 
-        !index &&
-        !middle &&
-        !ring &&
-        !pinky;
+    if(index && middle && !ring && !pinky){
 
-    if(ok){
-
-        return "OK";
-    }
-
-    if(
-        index &&
-        middle &&
-        !ring &&
-        !pinky
-    ){
-
-        return "✌ 剪刀 / 数字2";
+        return "✌ 剪刀";
     }
 
     if(
@@ -1309,39 +1350,35 @@ function recognize(lm){
         return "👍 点赞";
     }
 
-    if(fist){
+    if(total === 0){
 
-        return "✊ 握拳 / 数字0";
+        return "✊ 握拳";
     }
 
     if(total === 5){
 
-        return "🖐 张手 / 数字5";
+        return "🖐 张手";
     }
 
     return `数字 ${total}`;
 }
 
-/* 绘制 */
+/* =========================
+   绘制
+========================= */
 
 function drawHand(points,context,w,h){
 
     const lines = [
 
         [0,1],[1,2],[2,3],[3,4],
-
         [0,5],[5,6],[6,7],[7,8],
-
         [0,9],[9,10],[10,11],[11,12],
-
         [0,13],[13,14],[14,15],[15,16],
-
         [0,17],[17,18],[18,19],[19,20]
     ];
 
-    context.strokeStyle =
-        "#163a63";
-
+    context.strokeStyle = "#163a63";
     context.lineWidth = 2;
 
     for(const [a,b] of lines){
@@ -1362,44 +1399,36 @@ function drawHand(points,context,w,h){
     }
 }
 
-/* 光标平滑 */
+/* =========================
+   光标系统（升级）
+========================= */
 
-let cursorTargetX = 0;
-let cursorTargetY = 0;
+let cursorX =
+window.innerWidth / 2;
 
-let cursorX = 0;
-let cursorY = 0;
+let cursorY =
+window.innerHeight / 2;
 
-let smoothX = 0;
-let smoothY = 0;
+let targetX = cursorX;
+let targetY = cursorY;
 
 function animateCursor(){
 
     const smooth =
-        isMobile ? 0.42 : 0.18;
+    isMobile ? 0.22 : 0.16;
 
     cursorX +=
-        (cursorTargetX - cursorX)
-        * smooth;
+    (targetX - cursorX) * smooth;
 
     cursorY +=
-        (cursorTargetY - cursorY)
-        * smooth;
-
-    if(
-        Math.abs(cursorTargetX - cursorX) < 0.3
-    ){
-        cursorX = cursorTargetX;
-    }
-
-    if(
-        Math.abs(cursorTargetY - cursorY) < 0.3
-    ){
-        cursorY = cursorTargetY;
-    }
+    (targetY - cursorY) * smooth;
 
     cursor.style.transform =
-        `translate3d(${cursorX}px,${cursorY}px,0)`;
+    `translate3d(
+        ${cursorX - 12}px,
+        ${cursorY - 12}px,
+        0
+    )`;
 
     requestAnimationFrame(
         animateCursor
@@ -1408,29 +1437,11 @@ function animateCursor(){
 
 animateCursor();
 
-/* hover */
-
-let hoverTarget = null;
-
-let hoverStart = 0;
-
-let clickedLock = false;
-
-let lastClickTime = 0;
-
-let leaveTimer = null;
-
-let hoverStableX = 0;
-
-let hoverStableY = 0;
+/* =========================
+   hover
+========================= */
 
 let hoverRects = [];
-
-let lastHoverEl = null;
-
-let hoverLeaveTimer = null;
-
-let lastHoverCheck = 0;
 
 function updateHoverRects(){
 
@@ -1442,236 +1453,198 @@ function updateHoverRects(){
     ].map(el=>({
 
         el,
-
-        rect:el.getBoundingClientRect()
+        rect:
+        el.getBoundingClientRect()
     }));
 }
 
 updateHoverRects();
+
+let hoverTarget = null;
+let hoverStart = 0;
+let hoverLocked = false;
 
 function hoverDetect(x,y){
 
     let found = null;
 
     const padding =
-        isMobile ? 34 : 22;
+    isMobile ? 34 : 18;
 
     for(const item of hoverRects){
 
-        const rect = item.rect;
-
-        const el = item.el;
+        const r = item.rect;
 
         if(
 
-            x >= rect.left - padding &&
-            x <= rect.right + padding &&
-            y >= rect.top - padding &&
-            y <= rect.bottom + padding
+            x >= r.left - padding &&
+            x <= r.right + padding &&
+            y >= r.top - padding &&
+            y <= r.bottom + padding
 
         ){
 
-            found = el;
-
+            found = item.el;
             break;
         }
     }
 
-    if(found !== lastHoverEl){
+    if(found !== hoverTarget){
 
-        clearTimeout(hoverLeaveTimer);
+        if(hoverTarget){
 
-        if(lastHoverEl){
-
-            lastHoverEl.classList.remove(
+            hoverTarget.classList.remove(
                 "hovering"
             );
         }
 
-        if(found){
+        hoverTarget = found;
 
-            found.classList.add(
-                "hovering"
-            );
-
-            cursor.classList.add(
-                "hovering"
-            );
-
-        }else{
-
-            cursor.classList.remove(
-                "hovering"
-            );
-        }
-
-        lastHoverEl = found;
+        hoverStart = Date.now();
     }
 
     if(found){
 
-        clearTimeout(leaveTimer);
+        found.classList.add("hovering");
 
-        if(hoverTarget !== found){
-
-            hoverStableX = x;
-
-            hoverStableY = y;
-
-            hoverTarget = found;
-
-            hoverStart = Date.now();
-
-            clickedLock = false;
-        }
-
-        const moveDist = Math.hypot(
-
-            x - hoverStableX,
-
-            y - hoverStableY
-        );
-
-        const stableTime =
-            Date.now() - hoverStart;
+        cursor.classList.add("hovering");
 
         if(
 
-            !clickedLock &&
-
-            moveDist < (isMobile ? 42 : 25) &&
-
-            stableTime > (isMobile ? 950 : 800) &&
-
-            Date.now() - lastClickTime > 1400
+            !hoverLocked &&
+            Date.now() - hoverStart >
+            (isMobile ? 1300 : 850)
 
         ){
 
+            hoverLocked = true;
+
             autoClick(found);
 
-            clickedLock = true;
+            setTimeout(()=>{
 
-            lastClickTime = Date.now();
+                hoverLocked = false;
 
-            hoverTarget = null;
-
-            hoverStart = 0;
+            },1200);
         }
 
     }else{
 
-        clearTimeout(leaveTimer);
-
-        leaveTimer = setTimeout(()=>{
-
-            hoverTarget = null;
-
-            hoverStart = 0;
-
-            clickedLock = false;
-
-        },180);
+        cursor.classList.remove(
+            "hovering"
+        );
     }
 }
 
-/* 自动点击 */
+/* =========================
+   自动点击
+========================= */
 
 function autoClick(el){
 
-    if(el.dataset.action){
+    cursor.animate(
+    [
+        {transform:"scale(1)"},
+        {transform:"scale(1.45)"},
+        {transform:"scale(1)"}
+    ],
+    {
+        duration:220
+    });
 
-        const action =
-            el.dataset.action;
+    const action =
+    el.dataset.action;
 
-        if(action === "next"){
+    const menu =
+    el.dataset.menu;
 
-            nextPage();
-        }
+    if(action){
 
-        if(action === "prev"){
+        if(action==="next") nextPage();
 
-            prevPage();
-        }
+        if(action==="prev") prevPage();
 
-        if(action === "menu"){
-
-            toggleMenu();
-        }
+        if(action==="menu") toggleMenu();
     }
 
-    if(el.dataset.menu){
+    if(menu){
 
-        const menu =
-            el.dataset.menu;
+        if(menu==="night") toggleNight();
 
-        if(menu === "night"){
+        if(menu==="big") fontIncrease();
 
-            toggleNight();
-        }
+        if(menu==="small") fontDecrease();
 
-        if(menu === "big"){
+        if(menu==="horizontal")
+        switchHorizontal();
 
-            fontIncrease();
-        }
-
-        if(menu === "small"){
-
-            fontDecrease();
-        }
-
-        if(menu === "horizontal"){
-
-            switchHorizontal();
-        }
-
-        if(menu === "vertical"){
-
-            switchVertical();
-        }
+        if(menu==="vertical")
+        switchVertical();
     }
 
     updateHoverRects();
 }
 
-/* 挥手翻页 */
+/* =========================
+   swipe（升级）
+========================= */
 
 let swipeTrack = [];
-
 let lastSwipeTime = 0;
 
 function detectSwipe(lm){
 
     const now = Date.now();
 
-    if(now - lastSwipeTime < 800){
+    if(now - lastSwipeTime < 1200){
 
         return;
     }
 
     swipeTrack.push({
 
-        x:lm[0].x
+        x: lm[0].x,
+        y: lm[0].y,
+        t: now
     });
 
-    if(swipeTrack.length > 8){
+    if(swipeTrack.length > 10){
 
         swipeTrack.shift();
     }
 
-    if(swipeTrack.length < 5){
+    if(swipeTrack.length < 6){
 
         return;
     }
 
+    const first =
+    swipeTrack[0];
+
+    const last =
+    swipeTrack[
+        swipeTrack.length-1
+    ];
+
     const dx =
+    last.x - first.x;
 
-        swipeTrack[
-            swipeTrack.length - 1
-        ].x -
+    const dy =
+    Math.abs(last.y - first.y);
 
-        swipeTrack[0].x;
+    const dt =
+    last.t - first.t;
 
-    if(Math.abs(dx) > 0.18){
+    const velocity =
+    Math.abs(dx) / dt;
+
+    if(
+
+        Math.abs(dx) > 0.34 &&
+        dy < 0.08 &&
+        velocity > 0.0028
+
+    ){
 
         if(dx > 0){
 
@@ -1682,20 +1655,21 @@ function detectSwipe(lm){
             prevPage();
         }
 
-        lastSwipeTime = now;
-
         swipeTrack = [];
+
+        lastSwipeTime = now;
     }
 }
 
-/* MediaPipe */
+/* =========================
+   MediaPipe
+========================= */
 
 const hands = new Hands({
 
-    locateFile:file => {
+    locateFile:file =>
 
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/${file}`;
-    }
+    `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
 });
 
 hands.setOptions({
@@ -1703,41 +1677,79 @@ hands.setOptions({
     maxNumHands:2,
 
     modelComplexity:
-        isMobile ? 0 : 1,
+    isMobile ? 0 : 1,
 
-    minDetectionConfidence:0.82,
+    minDetectionConfidence:0.72,
 
-    minTrackingConfidence:0.82
+    minTrackingConfidence:0.72
 });
 
-/* results */
+/* =========================
+   双手缩放
+========================= */
 
-hands.onResults(results => {
+let lastZoomDistance = 0;
+let zoomCooldown = 0;
+
+/* =========================
+   主识别
+========================= */
+
+hands.onResults(results=>{
 
     ctx.clearRect(
-        0,
-        0,
+        0,0,
         canvas.width,
         canvas.height
     );
 
     controlCtx.clearRect(
-        0,
-        0,
+        0,0,
         controlCanvas.width,
         controlCanvas.height
     );
 
     if(
 
-        results.multiHandLandmarks &&
-        results.multiHandLandmarks.length > 0
+        !results.multiHandLandmarks ||
+        results.multiHandLandmarks.length===0
 
     ){
 
-        let resultTexts = [];
+        nameDom.innerText =
+        "未检测到手势";
 
-        results.multiHandLandmarks.forEach((lm,index)=>{
+        cursor.style.opacity = 0;
+
+        gestureBuffer.length = 0;
+
+        hoverTarget = null;
+
+        return;
+    }
+
+    cursor.style.opacity = 1;
+
+    const texts = [];
+
+    results.multiHandLandmarks.forEach((lm,index)=>{
+
+        const handedness =
+        results.multiHandedness?.[index]
+        ?.label || "Right";
+
+        const gesture =
+        stableGesture(
+            recognize(lm, handedness)
+        );
+
+        texts.push(
+            `手${index+1}：${gesture}`
+        );
+
+        if(
+            recognizePage.style.display !== "none"
+        ){
 
             drawHand(
                 lm,
@@ -1745,6 +1757,11 @@ hands.onResults(results => {
                 canvas.width,
                 canvas.height
             );
+        }
+
+        if(
+            controlPage.style.display !== "none"
+        ){
 
             drawHand(
                 lm,
@@ -1752,127 +1769,94 @@ hands.onResults(results => {
                 controlCanvas.width,
                 controlCanvas.height
             );
-
-            const gesture =
-                recognize(lm);
-
-            resultTexts.push(
-                `手${index+1}：${gesture}`
-            );
-
-            if(index === 0){
-
-                const mobileBoost =
-                    isMobile ? 1.65 : 1.12;
-
-                smoothX +=
-                    (
-                        lm[8].x - smoothX
-                    ) * 0.35;
-
-                smoothY +=
-                    (
-                        lm[8].y - smoothY
-                    ) * 0.35;
-
-                const centerX = 0.5;
-                const centerY = 0.5;
-
-                const nx =
-
-                    (smoothX - centerX)
-                    * mobileBoost
-                    + centerX;
-
-                const ny =
-
-                    (smoothY - centerY)
-                    * mobileBoost
-                    + centerY;
-
-                cursorTargetX =
-
-                    (1 - nx)
-                    * window.innerWidth;
-
-                cursorTargetY =
-
-                    ny
-                    * window.innerHeight;
-
-                if(
-                    controlPage.style.display !== "none"
-                ){
-
-                    const now =
-                        performance.now();
-
-                    if(
-                        now - lastHoverCheck >
-                        (isMobile ? 55 : 33)
-                    ){
-
-                        hoverDetect(
-                            cursorX,
-                            cursorY
-                        );
-
-                        lastHoverCheck = now;
-                    }
-
-                    detectSwipe(lm);
-                }
-            }
-        });
-
-        /* 双手缩放 */
-
-        if(
-            results.multiHandLandmarks.length === 2
-        ){
-
-            const hand1 =
-                results.multiHandLandmarks[0];
-
-            const hand2 =
-                results.multiHandLandmarks[1];
-
-            const d =
-                distance(
-                    hand1[8],
-                    hand2[8]
-                );
-
-            const targetSize =
-                Math.max(
-                    16,
-                    Math.min(
-                        42,
-                        d * 120
-                    )
-                );
-
-            fontSize +=
-                (targetSize - fontSize)
-                * 0.15;
-
-            bookPage.style.fontSize =
-                fontSize + "px";
         }
 
-        nameDom.innerText =
-            resultTexts.join("\n");
+        if(index===0){
+
+            targetX =
+            (1-lm[8].x)
+            * window.innerWidth;
+
+            targetY =
+            lm[8].y
+            * window.innerHeight;
+
+            if(
+                controlPage.style.display !== "none"
+            ){
+
+                hoverDetect(
+                    targetX,
+                    targetY
+                );
+
+                detectSwipe(lm);
+            }
+        }
+    });
+
+    /* 双手缩放 */
+
+    if(
+        results.multiHandLandmarks.length===2
+    ){
+
+        const h1 =
+        results.multiHandLandmarks[0];
+
+        const h2 =
+        results.multiHandLandmarks[1];
+
+        const d =
+        distance(h1[8],h2[8]);
+
+        if(!lastZoomDistance){
+
+            lastZoomDistance = d;
+        }
+
+        const delta =
+        d - lastZoomDistance;
+
+        if(
+
+            Math.abs(delta) > 0.008 &&
+            Date.now() - zoomCooldown > 120
+
+        ){
+
+            if(delta > 0){
+
+                fontIncrease();
+
+            }else{
+
+                fontDecrease();
+            }
+
+            zoomCooldown = Date.now();
+        }
+
+        lastZoomDistance =
+
+        lastZoomDistance * 0.7 +
+        d * 0.3;
 
     }else{
 
-        nameDom.innerText =
-            "未检测到手势";
+        lastZoomDistance = 0;
     }
+
+    nameDom.innerText =
+    texts.join("\n");
 });
 
-let cameraStarted = false;
+/* =========================
+   启动摄像头
+========================= */
 
-/* 启动 */
+let cameraStarted = false;
+let processing = false;
 
 async function startCamera(){
 
@@ -1883,83 +1867,87 @@ async function startCamera(){
 
     cameraStarted = true;
 
+    loading.innerText =
+    "摄像头启动中...";
+
     try{
 
         const stream =
-            await navigator.mediaDevices.getUserMedia({
+        await navigator.mediaDevices.getUserMedia({
 
-                video:{
+            video:{
 
-                    facingMode:"user",
+                facingMode:"user",
 
-                    width:{
-                        ideal:isMobile ? 1280 : 960
-                    },
-
-                    height:{
-                        ideal:isMobile ? 720 : 720
-                    }
+                width:{
+                    ideal:
+                    isMobile ? 640 : 1280
                 },
 
-                audio:false
-            });
+                height:{
+                    ideal:
+                    isMobile ? 480 : 720
+                },
+
+                frameRate:{
+                    ideal:
+                    isMobile ? 24 : 30
+                }
+            },
+
+            audio:false
+        });
 
         video.srcObject = stream;
 
-        controlVideo.srcObject = stream;
+        controlVideo.srcObject =
+        stream;
 
         await video.play();
 
-        await controlVideo.play();
-
         resizeCanvas();
 
-        const camera =
-            new Camera(video,{
+        async function loop(){
 
-                onFrame:async()=>{
+            if(processing){
 
-                    await hands.send({
-                        image:video
-                    });
-                },
+                requestAnimationFrame(loop);
 
-                width:
-                    isMobile ? 1280 : 960,
+                return;
+            }
 
-                height:
-                    isMobile ? 720 : 720
+            processing = true;
+
+            await hands.send({
+
+                image:video
             });
 
-        camera.start();
+            processing = false;
+
+            requestAnimationFrame(loop);
+        }
+
+        loop();
 
         loading.style.display =
-            "none";
+        "none";
 
     }catch(err){
-
-        cameraStarted = false;
 
         console.error(err);
 
         loading.innerText =
-            "摄像头启动失败";
+        "摄像头启动失败";
+
+        cameraStarted = false;
     }
 }
 
 document
 .getElementById("startBtn")
-.onclick = ()=>{
-
-    startCamera();
-};
-
-window.addEventListener(
-    "resize",
-    resizeCanvas
-);
+.onclick = startCamera;
 
 </script>
-
 </body>
 </html>

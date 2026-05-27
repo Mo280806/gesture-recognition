@@ -7,14 +7,11 @@
 
 <title>手势交互系统</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/hands.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js"></script>
+<script src="./mediapipe/hands.js"></script>
 
+<script src="./camera_utils/camera_utils.js"></script>
+   
 <style>
-/* =========================
-   🎯 Ultra Minimal Gesture UI
-   高级极简设计系统 - 移动端优化版
-========================= */
 
 *{
     margin:0;
@@ -37,9 +34,7 @@ body{
     -moz-osx-font-smoothing:grayscale;
 }
 
-/* =========================
-   🧭 顶部导航（极简悬浮胶囊）
-========================= */
+/* 顶部导航 */
 
 .top-bar{
     position:fixed;
@@ -76,9 +71,7 @@ body{
     opacity:.7;
 }
 
-/* =========================
-   📷 识别页（更轻）
-========================= */
+/* 识别页 */
 
 .recognize-page{
     width:100vw;
@@ -173,9 +166,7 @@ body{
     font-weight:600;
 }
 
-/* =========================
-   📖 阅读模式（移动端优化重点）
-========================= */
+/* 阅读 */
 
 .control-page{
     width:100vw;
@@ -184,7 +175,7 @@ body{
     position:relative;
 }
 
-/* 浮动摄像头 - 移动端优化 */
+/* 浮动摄像头 */
 .floating-camera{
     position:fixed;
     top:50px;
@@ -213,7 +204,7 @@ body{
     transform:scaleX(-1);
 }
 
-/* 阅读容器 - 移动端全屏适配 */
+/* 阅读容器  */
 .reader-container{
 
     position:absolute;
@@ -267,7 +258,7 @@ body{
     color:#6b7280;
 }
 
-/* 内容区 - 关键修复 */
+/* 内容区 */
 .reader-content{
 
     flex:1;
@@ -286,7 +277,7 @@ body{
         120px;
 }
 
-/* 书页 - 移动端滚动优化 */
+/* 书页 */
 .book-page{
 
     width:min(860px,92vw);
@@ -320,7 +311,7 @@ body{
     will-change:scroll-position;
 }
 
-/* 横排模式 - 移动端优化 */
+/* 横排模式 */
 .horizontal-mode{
     column-count:2;
     column-gap:20px;
@@ -332,9 +323,7 @@ body{
     margin-bottom:12px;
 }
 
-/* =========================
-   🎛 底部控制栏（移动端优化）
-========================= */
+/* 底部控制栏 */
 
 .control-panel{
     position:fixed;
@@ -369,9 +358,7 @@ body{
     color:#fff;
 }
 
-/* =========================
-   📋 菜单浮层（移动端优化）
-========================= */
+/* 菜单浮层*/
 
 .menu-panel{
     position:fixed;
@@ -405,9 +392,7 @@ body{
     background:rgba(0,0,0,0.08);
 }
 
-/* =========================
-   🌙 夜间模式
-========================= */
+/* 夜间模式*/
 
 .night{
     background:#0a0d12;
@@ -457,9 +442,7 @@ body{
     background:rgba(255,255,255,0.1);
 }
 
-/* =========================
-   🎯 光标（移动端优化）
-========================= */
+/* 光标*/
 
 .cursor{
     position:fixed;
@@ -479,9 +462,7 @@ body{
     transform:scale(1.2);
 }
 
-/* =========================
-   手势状态提示（移动端优化）
-========================= */
+/* 手势状态 */
 
 .gesture-status{
     position:fixed;
@@ -510,9 +491,7 @@ body{
     color:#9ca3af;
 }
 
-/* =========================
-   📱 移动端彻底优化（核心修复）
-========================= */
+/* 移动端 */
 
 @media (max-width:768px){
 
@@ -563,7 +542,7 @@ body{
         font-size:14px;
     }
 
-    /* 阅读页 - 关键优化 */
+    /* 阅读页 */
        .floating-camera{
        position:fixed;
    
@@ -620,7 +599,7 @@ body{
         column-gap:16px;
     }
 
-    /* 控制栏 - 移动端增大触摸区域 */
+    /* 控制栏 */
     .control-panel{
         bottom:16px;
         gap:8px;
@@ -632,7 +611,7 @@ body{
         font-size:13px;
     }
 
-    /* 菜单 - 移动端调整位置 */
+    /* 菜单 */
     .menu-panel{
         right:12px;
         bottom:70px;
@@ -645,7 +624,7 @@ body{
         font-size:12px;
     }
 
-    /* 手势状态 - 移动端换行 */
+    /* 手势状态 */
     .gesture-status{
         bottom:8px;
         font-size:9px;
@@ -658,7 +637,7 @@ body{
         gap:8px;
     }
 
-    /* 光标 - 移动端稍微加大 */
+    /* 光标 */
     .cursor{
         width:16px;
         height:16px;
@@ -666,7 +645,7 @@ body{
     }
 }
 
-/* 超小屏幕（iPhone SE等） */
+/* 超小屏幕 */
 @media (max-width:380px){
     .control-btn{
         padding:6px 14px;
@@ -687,7 +666,7 @@ body{
     }
 }
 
-/* 横屏模式优化 */
+/* 横屏模式 */
 @media (orientation:landscape) and (max-height:500px){
     .floating-camera{
         width:40px;
@@ -717,7 +696,7 @@ body{
     }
 }
 
-/* 安全区域适配（全面屏） */
+/* 安全区域适配 */
 @supports (padding: max(0px)) {
     .control-panel {
         bottom: max(20px, env(safe-area-inset-bottom));
@@ -941,9 +920,7 @@ body{
 </div>
 <script>
 
-/* =========================
-   DOM
-========================= */
+/* DOM */
 
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
@@ -1000,9 +977,7 @@ document.querySelector(".floating-camera");
 const isMobile =
 window.innerWidth < 768;
 
-/* =========================
-   页面切换
-========================= */
+/* 页面切换 */
 
 floatingCamera.onclick = (e)=>{
     e.stopPropagation();
@@ -1034,9 +1009,7 @@ controlBtn.onclick = ()=>{
     setTimeout(updateHoverRects,120);
 };
 
-/* =========================
-   小说内容
-========================= */
+/* 小说内容 */
 
 const pages = [
 
@@ -1163,9 +1136,7 @@ function prevPage(){
     }
 }
 
-/* =========================
-   📖 平滑滚动
-========================= */
+/* 平滑滚动*/
 
 function smoothScrollDown(){
 
@@ -1239,9 +1210,7 @@ function switchVertical(){
     bookPage.classList.remove("horizontal-mode");
 }
 
-/* =========================
-   resize
-========================= */
+/* resize */
 
 function resizeCanvas(){
 
@@ -1271,9 +1240,7 @@ window.addEventListener(
     resizeCanvas
 );
 
-/* =========================
-   工具
-========================= */
+/* 工具 */
 
 function fingerUp(tip,pip){
 
@@ -1300,9 +1267,7 @@ function thumbUp(lm, handedness){
     }
 }
 
-/* =========================
-   手势稳定器（升级）
-========================= */
+/* 手势稳定器 */
 
 const gestureBuffer = [];
 
@@ -1339,9 +1304,7 @@ function stableGesture(newGesture){
     : "识别中...";
 }
 
-/* =========================
-   手势识别
-========================= */
+/* 手势识别 */
 
 function recognize(lm, handedness){
 
@@ -1405,9 +1368,7 @@ function recognize(lm, handedness){
     return `数字 ${total}`;
 }
 
-/* =========================
-   绘制
-========================= */
+/* 绘制 */
 
 function drawHand(points,context,w,h){
 
@@ -1441,9 +1402,7 @@ function drawHand(points,context,w,h){
     }
 }
 
-/* =========================
-   光标系统（升级）
-========================= */
+/* 光标系统 */
 
 let cursorX =
 window.innerWidth / 2;
@@ -1479,9 +1438,7 @@ function animateCursor(){
 
 animateCursor();
 
-/* =========================
-   hover
-========================= */
+/* hover */
 
 let hoverRects = [];
 
@@ -1578,9 +1535,7 @@ function hoverDetect(x,y){
     }
 }
 
-/* =========================
-   自动点击
-========================= */
+/* 自动点击 */
 
 function autoClick(el){
 
@@ -1627,9 +1582,7 @@ function autoClick(el){
     updateHoverRects();
 }
 
-/* =========================
-   🚀 四方向挥手翻页系统
-========================= */
+/* 挥手翻页系统 */
 
 let swipeTrack = [];
 
@@ -1756,9 +1709,7 @@ function detectSwipe(lm){
 
     let triggered = false;
 
-    /* =========================
-       👉 左右挥动
-    ========================= */
+    /* 左右挥动 */
          if(
          
              Math.abs(dx) >
@@ -1771,7 +1722,7 @@ function detectSwipe(lm){
 
         triggered = true;
 
-        /* 👉 向右挥 = 下一页 */
+        /* 向右挥 */
 
         if(dx > 0){
 
@@ -1783,9 +1734,7 @@ function detectSwipe(lm){
         }
     }
 
-    /* =========================
-       👆👇 上下挥动
-    ========================= */
+    /* 上下挥动 */
 
     else if(
 
@@ -1801,7 +1750,7 @@ function detectSwipe(lm){
 
         triggered = true;
 
-       /* 👇 向下挥 = 页面下滑 */
+       /* 向下挥 */
 
       if(dy > 0){
       
@@ -1813,9 +1762,7 @@ function detectSwipe(lm){
       }
     }
 
-    /* =========================
-       触发反馈
-    ========================= */
+    /* 触发反馈 */
 
     if(triggered){
 
@@ -1842,15 +1789,15 @@ function detectSwipe(lm){
         },SWIPE_COOLDOWN);
     }
 }
-/* =========================
-   MediaPipe
-========================= */
+/* MediaPipe */
 
 const hands = new Hands({
 
-    locateFile:file =>
+    locateFile: (file) => {
+       
+    return `./mediapipe/${file}`;
 
-    `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+    }
 });
 
 hands.setOptions({
@@ -1865,16 +1812,12 @@ hands.setOptions({
     minTrackingConfidence:0.72
 });
 
-/* =========================
-   双手缩放
-========================= */
+/* 双手缩放 */
 
 let lastZoomDistance = 0;
 let zoomCooldown = 0;
 
-/* =========================
-   主识别
-========================= */
+/* 主识别 */
 
 hands.onResults(results=>{
 
@@ -2032,9 +1975,7 @@ hands.onResults(results=>{
     texts.join("\n");
 });
 
-/* =========================
-   启动摄像头
-========================= */
+/* 启动摄像头 */
 
 let cameraStarted = false;
 let processing = false;
